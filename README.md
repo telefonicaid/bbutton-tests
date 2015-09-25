@@ -18,18 +18,36 @@ In the instances.json file set your ips of the instances under test
 Set your ports and config in the properties.json file (if needed)
  
 ### Launch the tests: 
+The tests are tagged to be launched.
 
-Smoke tests to validate the access and up&running enviroment
+
+Smoke tests are under the tag "ft-smoke" 
+ It validate the access and up&running enviroment
 
 ``` 
  behave tests/ --tags=ft-smoke
 ```
 
-Demo tag to launch a basic happy path flows that creates a services, subservices, buttons and four kinds of interaction with the platform
+Happy path tests are under the tag "ft-happypath" 
+ It validate the basic happy path flows that includes the services, subservices, buttons provision and four kinds of flows interaction with the platform
 
 ```
- behave tests/ --tags=ft-demo
+ behave tests/ --tags=ft-happypath
 ```
+
+Once the buttons are created if you want to relaunch just the flows (with the same values or not)
+```
+ behave tests/ --tags=hp-buttons-flows
+```
+or just a type os sync flow
+
+```
+ behave tests/ --tags=hp-buttons-async-flow
+```
+```
+ behave tests/ --tags=hp-buttons-sync-flow
+```
+
 
 
 
