@@ -99,7 +99,7 @@ Feature: Happy path E2E functionality Sync-Async
   @ft-happypath @hp-button-flows @hp-async-flow
   Scenario Outline: SC_3 Client push the button in the ASYNC mode
     Given a Client of "<SERVICE>" and a ThirdParty called "<SERVICEPATH>"
-    And a deviceaxb_request "<BT_REQUEST>" for mode "<SYNC_MODE>"
+    And a button_request "<BT_REQUEST>" for mode "<SYNC_MODE>"
     When the button "<DEVICE_ID>" is pressed in mode "<SYNC_MODE>" the IOTA should receive the request
     Then the button "<DEVICE_ID>" is pulling every "1" seconds during "10" times or until the IOTA request returns status "<STATUS>"
     And the button "<DEVICE_ID>" close the request and receive the final status "<FINAL_STATUS>"
@@ -114,7 +114,7 @@ Feature: Happy path E2E functionality Sync-Async
   @ft-happypath  @hp-buttons-flows @hp-sync-flow
   Scenario Outline: SC_4 Client push the button in the SYNC mode
     Given a Client of "<SERVICE>" and a ThirdParty called "<SERVICEPATH>"
-    And a deviceaxb_request "<BT_REQUEST>" for mode "<SYNC_MODE>"
+    And a button_request "<BT_REQUEST>" for mode "<SYNC_MODE>"
     When the button "<DEVICE_ID>" is pressed in mode "<SYNC_MODE>" the IOTA should receive the request
     And the ThirdParty "<TP_NAME>" changed the status to "<OP_RESULT>"
 
