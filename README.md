@@ -27,16 +27,16 @@ Smoke tests to validate the access and up&running enviroment
 
 Demo tag to launch a basic happy path flows that creates a services, subservices, buttons and four kinds of interaction with the platform
 
-´´´
+```
  behave tests/ --tags=ft-demo
-´´´
+```
 
 
 
 
 
 
-if 
+
 
 
 ### Enjoy :)
