@@ -359,6 +359,8 @@ def remember(context, key, value):
     context.remember[key] = value
 
 
-@staticmethod
-def get_endpoint(instance, protocol, port, path=None):
-    return "{}://{}:{}{}".format
+def get_endpoint(protocol, instance, port, path=None):
+    if not path:
+        return "{}://{}:{}".format(protocol, instance, port)
+    else:
+        return "{}://{}:{}{}".format(protocol, instance, port, path)

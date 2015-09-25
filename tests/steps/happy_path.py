@@ -104,7 +104,7 @@ def step_impl(context, INSTANCE, REQUEST, ACTION):
         print (context.create_service_entity)
 
     if INSTANCE == "ORC" and REQUEST == "SERVICE" and ACTION == "CREATE":
-        url = context.url_component + '/v1.0/service'
+        url = str("{0}/v1.0/service".format(context.url_component))
         json_payload = json.dumps(dict(context.table))
 
 
