@@ -4,20 +4,6 @@ Feature: Black Button Smoke tests
   I should check if the components are working properly
 
 
- # TO CHECK
- # IOTAM  'iotagent_manager'   8081
- # IOTA   'iotagent'           4041
- # CB     'contextBroker'      10026
- # ORC    'orchestrator'       8084
- # KS     'openstack-keystone' 5001
-
- # 'pepProxyPerseo'
- # 'pepProxyOrion'
- # 'sth'                8666
- # 'portal'             8008
- # 'keypass'            7070
-
-
   @ready @ft-smoke @smoke01 @check_uprunning
   Scenario Outline: SM_01 Instances are UP&Running
     Given the instance of "<INSTANCE>" is accessible
@@ -31,7 +17,8 @@ Feature: Black Button Smoke tests
       | CB       | PING    | /version   | 200           |
       | ORC      | PING    | /          | 404           |
       | KS       | GET     | /version   | 404           |
-    # | CA       | GET     | /version   | x                     |
+    # | CA       | GET     | /version   | x             |
+    # | STH      | GET     | /version   | x             |
 
 
 
@@ -42,12 +29,12 @@ Feature: Black Button Smoke tests
     Then the returned version from "<INSTANCE>" should match the "<VERSION>"
 
     Examples:
-      | INSTANCE | REQUEST | URI        | VERSION               |
-      | CB       | GET     | /version   | 0.24.0 |
-    #  | IOTA     | GET     | /iot/about | 0.7.0-next            |
-      | IOTM     | GET     | /iot/about | 1.0.1                 |
-    # | CA       | GET     | /version   | x                     |
-    # | ORC      | GET     | /version   | N/A                   |
+      | INSTANCE | REQUEST | URI        | VERSION    |
+      | CB       | GET     | /version   | 0.24.0     |
+      | IOTM     | GET     | /iot/about | 1.0.1      |
+    #  | IOTA     | GET     | /iot/about | 0.7.0-next |
+    #  | CA       | GET     | /version   | x          |
+    #  | ORC      | GET     | /version   | N/A        |
 
 
   @ready @ft-smoke @smoke04 @check_funcionality
@@ -63,8 +50,8 @@ Feature: Black Button Smoke tests
       | CB       | ENTITY    | CREATE | 200           |
       | CB       | ENTITY    | GET    | 200           |
       | KS       | TOKEN     | GET    | 201           |
-    #  | IOTA     | SERVICES  | GET    | 200           |
       | IOTM     | PROTOCOLS | GET    | 200           |
+    # | IOTA     | SERVICES  | GET    | 200           |
     # | ORC      | USER      | GET    | x             |
     # | CA       | NOTIFY    | GET    | x             |
 
