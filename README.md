@@ -8,9 +8,9 @@ BButton project Tests repository
 
 To the tests need python 2.7 and the required libs listed in the requirements file
 
-´´´
+```
 pip install -r requirements.txt
-´´´  
+```  
 
 ### Config your environment 
 
@@ -21,9 +21,9 @@ Set your ports and config in the properties.json file (if needed)
 
 Smoke tests to validate the access and up&running enviroment
 
-´´´ 
+``` 
  behave tests/ --tags=ft-smoke
-´´´
+```
 
 Demo tag to launch a basic happy path flows that creates a services, subservices, buttons and four kinds of interaction with the platform
 
