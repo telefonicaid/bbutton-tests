@@ -6,7 +6,7 @@ Feature: Happy path E2E functionality Sync-Async
   I should validate the ability of the platform to process the buttons requests to a third party
 
 
-  @ft-happypath @hp_provision
+  @ft-happypath @hp-provision
   Scenario Outline: SC_1 Service and BlackButton get provisioned in BB-platform
     Given a Client of "<SERVICE>" and a ThirdParty called "<SERVICEPATH>"
     When the "ORC" receive the request "SERVICE" and action "CREATE"
@@ -82,7 +82,7 @@ Feature: Happy path E2E functionality Sync-Async
       | servi0103 | testpizza   | admin_bb      | 4passw0rd   | button_sa_0103 | synchronous          | asynchronous   | TP/async/create |
       | servi0104 | testpizza   | admin_bb      | 4passw0rd   | button_ss_0104 | synchronous          | synchronous    | TP/sync/request |
 
-  @ft-happypath @hp_provision_check
+  @ft-happypath @hp-provision-check
   Scenario Outline: SC_2 User check a BlackButton is registered in BB-platform
     Given a Client of "<SERVICE>" and a ThirdParty called "<SERVICEPATH>"
     And a valid token is retrieved for user "<SERVICE_ADMIN>" and password "<SERVICE_PWD>"
@@ -96,7 +96,7 @@ Feature: Happy path E2E functionality Sync-Async
       | servi0104 | testpizza   | admin_bb      | 4passw0rd   | button_ss_0104 |
 
 
-  @ft-happypath @hp_button_flows @hp-async-flow
+  @ft-happypath @hp-button-flows @hp-async-flow
   Scenario Outline: SC_3 Client push the button in the ASYNC mode
     Given a Client of "<SERVICE>" and a ThirdParty called "<SERVICEPATH>"
     And a button_request "<BT_REQUEST>" for mode "<SYNC_MODE>"
@@ -111,7 +111,7 @@ Feature: Happy path E2E functionality Sync-Async
       | servi0102 | testpizza   | button_as_0102 | asynchronous | #1,BT,C,3,2,2000$WakeUp,#0,K1,30$ | C.S    | X      |
 
 
-  @ft-happypath  @hp_buttons_flows @hp-sync-flow
+  @ft-happypath  @hp-buttons-flows @hp-sync-flow
   Scenario Outline: SC_4 Client push the button in the SYNC mode
     Given a Client of "<SERVICE>" and a ThirdParty called "<SERVICEPATH>"
     And a button_request "<BT_REQUEST>" for mode "<SYNC_MODE>"
