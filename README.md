@@ -6,16 +6,28 @@ BButton project Tests repository
 
 ### Requirements
 
-To the tests need python 2.7 and the required libs listed in the requirements file
+To launch the tests need python 2.7 and the required libs listed in the requirements file
+
 
 ```
+git clone https://github.com/telefonicaid/bbutton-tests.git
+cd bbutton-tests/
+(optional) git checkout develop
 pip install -r requirements.txt
-```  
+``` 
+
 
 ### Config your environment 
 
 In the instances.json file set your ips of the instances under test
 Set your ports and config in the properties.json file (if needed)
+ 
+```
+vi tests/properties.json 
+vi tests/instances.json
+```
+ 
+ 
  
 ### Launch the tests: 
 The tests are tagged to be launched.
