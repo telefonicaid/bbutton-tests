@@ -1,8 +1,8 @@
 Feature: Happy path E2E functionality Sync-Async
   In order to check if a blackbutton that can order a product
-  In a Service servicexyz and Subservice testpizza
-  As a client has ASYNC BlackButtons: idbutt123_aa_01 and idbutt123_as_02
-  As a client has SYNC  BlackButtons: idbutt123_sa_03 and idbutt123_ss_04
+  In a Service serviceaxb and Subservice testpizza
+  As a client has ASYNC BlackButtons: deviceaxb_aa_01 and deviceaxb_as_02
+  As a client has SYNC  BlackButtons: deviceaxb_sa_03 and deviceaxb_ss_04
   I should validate the ability of the platform to process the buttons requests to a third party
 
 
@@ -77,10 +77,10 @@ Feature: Happy path E2E functionality Sync-Async
 
     Examples:
       | SERVICE   | SERVICEPATH | SERVICE_ADMIN | SERVICE_PWD | DEVICE_ID      | ATT_INTERACTION_TYPE | TP_INTERACTION | TP_URL          |
-      | servicexyz01 | testpizza   | admin_bb      | 4passw0rd   | idbutt123_aa_0101 | asynchronous         | asynchronous   | TP/async/create |
-      | servicexyz02 | testpizza   | admin_bb      | 4passw0rd   | idbutt123_as_0102 | asynchronous         | synchronous    | TP/sync/request |
-      | servicexyz03 | testpizza   | admin_bb      | 4passw0rd   | idbutt123_sa_0103 | synchronous          | asynchronous   | TP/async/create |
-      | servicexyz04 | testpizza   | admin_bb      | 4passw0rd   | idbutt123_ss_0104 | synchronous          | synchronous    | TP/sync/request |
+      | serviceaxb01 | testpizza   | admin_bb      | 4passw0rd   | deviceaxb_aa_0101 | asynchronous         | asynchronous   | TP/async/create |
+      | serviceaxb02 | testpizza   | admin_bb      | 4passw0rd   | deviceaxb_as_0102 | asynchronous         | synchronous    | TP/sync/request |
+      | serviceaxb03 | testpizza   | admin_bb      | 4passw0rd   | deviceaxb_sa_0103 | synchronous          | asynchronous   | TP/async/create |
+      | serviceaxb04 | testpizza   | admin_bb      | 4passw0rd   | deviceaxb_ss_0104 | synchronous          | synchronous    | TP/sync/request |
 
   @ft-happypath @hp-provision-check
   Scenario Outline: SC_2 User check a BlackButton is registered in BB-platform
@@ -90,16 +90,16 @@ Feature: Happy path E2E functionality Sync-Async
 
     Examples:
       | SERVICE   | SERVICEPATH | SERVICE_ADMIN | SERVICE_PWD | DEVICE_ID      |
-      | servicexyz01 | testpizza   | admin_bb      | 4passw0rd   | idbutt123_aa_0101 |
-      | servicexyz02 | testpizza   | admin_bb      | 4passw0rd   | idbutt123_as_0102 |
-      | servicexyz03 | testpizza   | admin_bb      | 4passw0rd   | idbutt123_sa_0103 |
-      | servicexyz04 | testpizza   | admin_bb      | 4passw0rd   | idbutt123_ss_0104 |
+      | serviceaxb01 | testpizza   | admin_bb      | 4passw0rd   | deviceaxb_aa_0101 |
+      | serviceaxb02 | testpizza   | admin_bb      | 4passw0rd   | deviceaxb_as_0102 |
+      | serviceaxb03 | testpizza   | admin_bb      | 4passw0rd   | deviceaxb_sa_0103 |
+      | serviceaxb04 | testpizza   | admin_bb      | 4passw0rd   | deviceaxb_ss_0104 |
 
 
   @ft-happypath @hp-button-flows @hp-async-flow
   Scenario Outline: SC_3 Client push the button in the ASYNC mode
     Given a Client of "<SERVICE>" and a ThirdParty called "<SERVICEPATH>"
-    And a idbutt123_request "<BT_REQUEST>" for mode "<SYNC_MODE>"
+    And a deviceaxb_request "<BT_REQUEST>" for mode "<SYNC_MODE>"
     When the button "<DEVICE_ID>" is pressed in mode "<SYNC_MODE>" the IOTA should receive the request
     Then the button "<DEVICE_ID>" is pulling every "1" seconds during "10" times or until the IOTA request returns status "<STATUS>"
     And the button "<DEVICE_ID>" close the request and receive the final status "<FINAL_STATUS>"
@@ -107,18 +107,18 @@ Feature: Happy path E2E functionality Sync-Async
 
     Examples:
       | SERVICE   | SERVICEPATH | DEVICE_ID      | SYNC_MODE    | BT_REQUEST                        | STATUS | STATUS |
-      | servicexyz01 | testpizza   | idbutt123_aa_0101 | asynchronous | #1,BT,C,1,1,2000$WakeUp,#0,K1,30$ | C.S    | X      |
-      | servicexyz02 | testpizza   | idbutt123_as_0102 | asynchronous | #1,BT,C,3,2,2000$WakeUp,#0,K1,30$ | C.S    | X      |
+      | serviceaxb01 | testpizza   | deviceaxb_aa_0101 | asynchronous | #1,BT,C,1,1,2000$WakeUp,#0,K1,30$ | C.S    | X      |
+      | serviceaxb02 | testpizza   | deviceaxb_as_0102 | asynchronous | #1,BT,C,3,2,2000$WakeUp,#0,K1,30$ | C.S    | X      |
 
 
   @ft-happypath  @hp-buttons-flows @hp-sync-flow
   Scenario Outline: SC_4 Client push the button in the SYNC mode
     Given a Client of "<SERVICE>" and a ThirdParty called "<SERVICEPATH>"
-    And a idbutt123_request "<BT_REQUEST>" for mode "<SYNC_MODE>"
+    And a deviceaxb_request "<BT_REQUEST>" for mode "<SYNC_MODE>"
     When the button "<DEVICE_ID>" is pressed in mode "<SYNC_MODE>" the IOTA should receive the request
     And the ThirdParty "<TP_NAME>" changed the status to "<OP_RESULT>"
 
     Examples:
       | SERVICE   | SERVICEPATH | DEVICE_ID      | SYNC_MODE   | BT_REQUEST                        | TP_NAME | OP_RESULT           |
-      | servicexyz03 | testpizza   | idbutt123_sa_0103 | synchronous | #1,BT,S,2,1,2000$WakeUp,#0,K1,30$ | TP      | rgb-66CCDD%3Bt-2%3B |
-      | servicexyz04 | testpizza   | idbutt123_ss_0104 | synchronous | #3,BT,S,3,2,2000$WakeUp,#0,K1,30$ | TP      | rgb-66CCDD%3Bt-2%3B |
+      | serviceaxb03 | testpizza   | deviceaxb_sa_0103 | synchronous | #1,BT,S,2,1,2000$WakeUp,#0,K1,30$ | TP      | rgb-66CCDD%3Bt-2%3B |
+      | serviceaxb04 | testpizza   | deviceaxb_ss_0104 | synchronous | #3,BT,S,3,2,2000$WakeUp,#0,K1,30$ | TP      | rgb-66CCDD%3Bt-2%3B |
