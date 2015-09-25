@@ -49,8 +49,6 @@ coverage.xml
 *.mo
 *.pot
 
-# Django stuff:
-*.log
 
 # Sphinx documentation
 docs/_build/
@@ -60,9 +58,15 @@ target/
 
 # Test Results files
 *.xml
+tests/results/
+
+# logs stuff:
+*.log
+tests/logs/
 
 # MacOS files
 .DS_Store
 
 # IDE files
+/tests/steps/happy_path.py
 .idea/
