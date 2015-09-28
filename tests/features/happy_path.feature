@@ -1,8 +1,8 @@
 Feature: Happy path E2E functionality Sync-Async
   In order to check if a blackbutton that can order a product
-  In a Service serviceaxb and Subservice testpizza
-  As a client has ASYNC BlackButtons: deviceaxb_aa_01 and deviceaxb_as_02
-  As a client has SYNC  BlackButtons: deviceaxb_sa_03 and deviceaxb_ss_04
+  In a Service blackbutton and Subservice testpizza
+  As a client has ASYNC BlackButtons: devicebb_aa_01 and devicebb_as_02
+  As a client has SYNC  BlackButtons: devicebb_sa_03 and devicebb_ss_04
   I should validate the ability of the platform to process the buttons requests to a third party
 
 
@@ -77,10 +77,10 @@ Feature: Happy path E2E functionality Sync-Async
 
     Examples:
       | SERVICE   | SERVICEPATH | SERVICE_ADMIN | SERVICE_PWD | DEVICE_ID      | ATT_INTERACTION_TYPE | TP_INTERACTION | TP_URL          |
-      | serviceaxb01 | testpizza   | admin_bb      | 4passw0rd   | deviceaxb_aa_0101 | asynchronous         | asynchronous   | TP/async/create |
-      | serviceaxb02 | testpizza   | admin_bb      | 4passw0rd   | deviceaxb_as_0102 | asynchronous         | synchronous    | TP/sync/request |
-      | serviceaxb03 | testpizza   | admin_bb      | 4passw0rd   | deviceaxb_sa_0103 | synchronous          | asynchronous   | TP/async/create |
-      | serviceaxb04 | testpizza   | admin_bb      | 4passw0rd   | deviceaxb_ss_0104 | synchronous          | synchronous    | TP/sync/request |
+      | blackbutton01 | testpizza   | admin_bb      | 4passw0rd   | devicebb_aa_0101 | asynchronous         | asynchronous   | TP/async/create |
+      | blackbutton02 | testpizza   | admin_bb      | 4passw0rd   | devicebb_as_0102 | asynchronous         | synchronous    | TP/sync/request |
+      | blackbutton03 | testpizza   | admin_bb      | 4passw0rd   | devicebb_sa_0103 | synchronous          | asynchronous   | TP/async/create |
+      | blackbutton04 | testpizza   | admin_bb      | 4passw0rd   | devicebb_ss_0104 | synchronous          | synchronous    | TP/sync/request |
 
   @ft-happypath @hp-provision-check
   Scenario Outline: SC_2 User check a BlackButton is registered in BB-platform
@@ -90,10 +90,10 @@ Feature: Happy path E2E functionality Sync-Async
 
     Examples:
       | SERVICE   | SERVICEPATH | SERVICE_ADMIN | SERVICE_PWD | DEVICE_ID      |
-      | serviceaxb01 | testpizza   | admin_bb      | 4passw0rd   | deviceaxb_aa_0101 |
-      | serviceaxb02 | testpizza   | admin_bb      | 4passw0rd   | deviceaxb_as_0102 |
-      | serviceaxb03 | testpizza   | admin_bb      | 4passw0rd   | deviceaxb_sa_0103 |
-      | serviceaxb04 | testpizza   | admin_bb      | 4passw0rd   | deviceaxb_ss_0104 |
+      | blackbutton01 | testpizza   | admin_bb      | 4passw0rd   | devicebb_aa_0101 |
+      | blackbutton02 | testpizza   | admin_bb      | 4passw0rd   | devicebb_as_0102 |
+      | blackbutton03 | testpizza   | admin_bb      | 4passw0rd   | devicebb_sa_0103 |
+      | blackbutton04 | testpizza   | admin_bb      | 4passw0rd   | devicebb_ss_0104 |
 
 
   @ft-happypath @hp-button-flows @hp-async-flow
@@ -107,8 +107,8 @@ Feature: Happy path E2E functionality Sync-Async
 
     Examples:
       | SERVICE   | SERVICEPATH | DEVICE_ID      | SYNC_MODE    | BT_REQUEST                        | STATUS | STATUS |
-      | serviceaxb01 | testpizza   | deviceaxb_aa_0101 | asynchronous | #1,BT,C,1,1,2000$WakeUp,#0,K1,30$ | C.S    | X      |
-      | serviceaxb02 | testpizza   | deviceaxb_as_0102 | asynchronous | #1,BT,C,3,2,2000$WakeUp,#0,K1,30$ | C.S    | X      |
+      | blackbutton01 | testpizza   | devicebb_aa_0101 | asynchronous | #1,BT,C,1,1,2000$WakeUp,#0,K1,30$ | C.S    | X      |
+      | blackbutton02 | testpizza   | devicebb_as_0102 | asynchronous | #1,BT,C,3,2,2000$WakeUp,#0,K1,30$ | C.S    | X      |
 
 
   @ft-happypath  @hp-buttons-flows @hp-sync-flow
@@ -120,5 +120,5 @@ Feature: Happy path E2E functionality Sync-Async
 
     Examples:
       | SERVICE   | SERVICEPATH | DEVICE_ID      | SYNC_MODE   | BT_REQUEST                        | TP_NAME | OP_RESULT           |
-      | serviceaxb03 | testpizza   | deviceaxb_sa_0103 | synchronous | #1,BT,S,2,1,2000$WakeUp,#0,K1,30$ | TP      | rgb-66CCDD%3Bt-2%3B |
-      | serviceaxb04 | testpizza   | deviceaxb_ss_0104 | synchronous | #3,BT,S,3,2,2000$WakeUp,#0,K1,30$ | TP      | rgb-66CCDD%3Bt-2%3B |
+      | blackbutton03 | testpizza   | devicebb_sa_0103 | synchronous | #1,BT,S,2,1,2000$WakeUp,#0,K1,30$ | TP      | rgb-66CCDD%3Bt-2%3B |
+      | blackbutton04 | testpizza   | devicebb_ss_0104 | synchronous | #3,BT,S,3,2,2000$WakeUp,#0,K1,30$ | TP      | rgb-66CCDD%3Bt-2%3B |

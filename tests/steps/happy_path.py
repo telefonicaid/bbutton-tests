@@ -46,6 +46,7 @@ def step_impl(context, SERVICE, SERVICEPATH):
     """
     context.service = SERVICE
     context.servicepath = SERVICEPATH
+    context.subservice = "/{}".format(SERVICEPATH)
 
 
 @step('the "(?P<INSTANCE>.+)" receive the request "(?P<REQUEST>.+)" and action "(?P<ACTION>.+)"')

@@ -34,28 +34,31 @@ The tests are tagged to be launched.
 
 
 Smoke tests are under the tag "ft-smoke" 
- It validate the access and up&running enviroment
+ - It validate the access and up&running environment
 
 ``` 
  behave tests/ --tags=ft-smoke
 ```
 
 Happy path tests are under the tag "ft-happypath" 
- It validate the basic happy path flows that includes the services, subservices, buttons provision and four kinds of flows interaction with the platform
+ - It validate the basic happy path flows that includes the services, subservices, buttons provision and four kinds of flows interaction with the platform
 
 ```
  behave tests/ --tags=ft-happypath
 ```
 
-Once the buttons are created if you want to relaunch just the flows (with the same values or not)
+Once the buttons are created if you want to relaunch just the flows (with the same values or others)
+
 ```
  behave tests/ --tags=hp-button-flow
 ```
-or just a type os sync flow
+
+To launch just a type os sync flow:
 
 ```
  behave tests/ --tags=hp-async-flow
 ```
+OR
 ```
  behave tests/ --tags=hp-sync-flow
 ```

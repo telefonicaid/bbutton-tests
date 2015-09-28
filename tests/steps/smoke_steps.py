@@ -85,10 +85,14 @@ def step_impl(context, request, uri):
 
     if uri != "None":
         try:
+            print (context.url_component)
+            print (context.headers)
+            print (context.verify_ssl)
             context.r = requests.get(url=context.url_component, headers=context.headers, verify=context.verify_ssl)
         except requests.exceptions.RequestException, e:
+            print (e)
             context.r = 'ERROR'
-            __logger__.error('[ERROR] ', e)
+            __logger__.debug('[ERROR] ', e)
             assert_true(False, msg='[NETWORK ERROR]')
     else:
         context.r = 'ERROR'
@@ -192,6 +196,7 @@ def step_impl(context, REQUEST, ACTION):
 
 
     elif REQUEST == "TOKEN" and ACTION == "GET":
+
         # Recover a Token
         context.token_header = ks_get_token(context)
         print ("\n #>> Token to use: {}".format(context.token_header))

@@ -11,15 +11,15 @@ Feature: Black Button Smoke tests
     Then the result should be "<HTTP_RESPONSE>"
 
     Examples:
-      | INSTANCE | REQUEST | URI        | HTTP_RESPONSE |
-      | IOTA     | PING    | /iot/about | 200           |
-      | IOTM     | PING    | /iot/about | 200           |
-      | CB       | PING    | /version   | 200           |
-      | ORC      | PING    | /          | 404           |
-      | KS       | GET     | /version   | 404           |
+      | INSTANCE | REQUEST | URI           | HTTP_RESPONSE |
+      | IOTA     | PING    | /iot/about    | 200           |
+      | IOTM     | PING    | /iot/about    | 200           |
+      | CB       | PING    | /version      | 200           |
+      | ORC      | PING    | /             | 404           |
+      | KS       | GET     | /version      | 404           |
+      | TP       | GET    | /sync/request | 405           |
     # | CA       | GET     | /version   | x             |
     # | STH      | GET     | /version   | x             |
-
 
 
   @ready @ft-smoke @smoke02 @check_version
@@ -29,9 +29,9 @@ Feature: Black Button Smoke tests
     Then the returned version from "<INSTANCE>" should match the "<VERSION>"
 
     Examples:
-      | INSTANCE | REQUEST | URI        | VERSION    |
-      | CB       | GET     | /version   | 0.24.0     |
-      | IOTM     | GET     | /iot/about | 1.0.1      |
+      | INSTANCE | REQUEST | URI        | VERSION |
+      | CB       | GET     | /version   | 0.24.0  |
+      | IOTM     | GET     | /iot/about | 1.0.1   |
     #  | IOTA     | GET     | /iot/about | 0.7.0-next |
     #  | CA       | GET     | /version   | x          |
     #  | ORC      | GET     | /version   | N/A        |
@@ -40,7 +40,7 @@ Feature: Black Button Smoke tests
   @ready @ft-smoke @smoke04 @check_funcionality
   Scenario Outline: SM_03 Instances are WORKING
     Given the instance of "<INSTANCE>" is accessible
-    And service "blackbutton" and subservice "/telepizza"
+    And a Client of "blackbutton01" and a ThirdParty called "testpizza"
     And user "admin_bb" and password "4passw0rd"
     When I send a request type "<REQUEST>" and action "<ACTION>"
     Then the result should be "<HTTP_RESPONSE>"
