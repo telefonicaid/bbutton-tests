@@ -1,12 +1,12 @@
 Feature: Happy path E2E functionality Sync-Async
   In order to check if a blackbutton that can order a product
-  In a Service blackbutton and Subservice testpizza
-  As a client has ASYNC BlackButtons: devicebb_aa_01 and devicebb_as_02
-  As a client has SYNC  BlackButtons: devicebb_sa_03 and devicebb_ss_04
+  In a Service servicea0c and Subservice testpizza
+  As a client has ASYNC BlackButtons: devicea0c_aa_01 and devicea0c_as_02
+  As a client has SYNC  BlackButtons: devicea0c_sa_03 and devicea0c_ss_04
   I should validate the ability of the platform to process the buttons requests to a third party
 
 
-  @ft-happypath @hp-provision
+  @ft-happypath @hp-provision @hp_sc01
   Scenario Outline: SC_1 Service and BlackButton get provisioned in BB-platform
     Given a Client of "<SERVICE>" and a ThirdParty called "<SERVICEPATH>"
     When the "ORC" receive the request "SERVICE" and action "CREATE"
@@ -77,12 +77,12 @@ Feature: Happy path E2E functionality Sync-Async
 
     Examples:
       | SERVICE   | SERVICEPATH | SERVICE_ADMIN | SERVICE_PWD | DEVICE_ID      | ATT_INTERACTION_TYPE | TP_INTERACTION | TP_URL          |
-      | blackbutton01 | testpizza   | admin_bb      | 4passw0rd   | devicebb_aa_0101 | asynchronous         | asynchronous   | TP/async/create |
-      | blackbutton02 | testpizza   | admin_bb      | 4passw0rd   | devicebb_as_0102 | asynchronous         | synchronous    | TP/sync/request |
-      | blackbutton03 | testpizza   | admin_bb      | 4passw0rd   | devicebb_sa_0103 | synchronous          | asynchronous   | TP/async/create |
-      | blackbutton04 | testpizza   | admin_bb      | 4passw0rd   | devicebb_ss_0104 | synchronous          | synchronous    | TP/sync/request |
+      | servicea0c01 | testpizza   | admin_bb      | 4passw0rd   | devicea0c_aa_0101 | asynchronous         | asynchronous   | TP/async/create |
+      | servicea0c02 | testpizza   | admin_bb      | 4passw0rd   | devicea0c_as_0102 | asynchronous         | synchronous    | TP/sync/request |
+      | servicea0c03 | testpizza   | admin_bb      | 4passw0rd   | devicea0c_sa_0103 | synchronous          | asynchronous   | TP/async/create |
+      | servicea0c04 | testpizza   | admin_bb      | 4passw0rd   | devicea0c_ss_0104 | synchronous          | synchronous    | TP/sync/request |
 
-  @ft-happypath @hp-provision-check
+  @ft-happypath @hp-provision-check @hp_sc02
   Scenario Outline: SC_2 User check a BlackButton is registered in BB-platform
     Given a Client of "<SERVICE>" and a ThirdParty called "<SERVICEPATH>"
     And a valid token is retrieved for user "<SERVICE_ADMIN>" and password "<SERVICE_PWD>"
@@ -90,13 +90,13 @@ Feature: Happy path E2E functionality Sync-Async
 
     Examples:
       | SERVICE   | SERVICEPATH | SERVICE_ADMIN | SERVICE_PWD | DEVICE_ID      |
-      | blackbutton01 | testpizza   | admin_bb      | 4passw0rd   | devicebb_aa_0101 |
-      | blackbutton02 | testpizza   | admin_bb      | 4passw0rd   | devicebb_as_0102 |
-      | blackbutton03 | testpizza   | admin_bb      | 4passw0rd   | devicebb_sa_0103 |
-      | blackbutton04 | testpizza   | admin_bb      | 4passw0rd   | devicebb_ss_0104 |
+      | servicea0c01 | testpizza   | admin_bb      | 4passw0rd   | devicea0c_aa_0101 |
+      | servicea0c02 | testpizza   | admin_bb      | 4passw0rd   | devicea0c_as_0102 |
+      | servicea0c03 | testpizza   | admin_bb      | 4passw0rd   | devicea0c_sa_0103 |
+      | servicea0c04 | testpizza   | admin_bb      | 4passw0rd   | devicea0c_ss_0104 |
 
 
-  @ft-happypath @hp-button-flows @hp-async-flow
+  @ft-happypath @hp-button-flows @hp-button-async @hp_sc03
   Scenario Outline: SC_3 Client push the button in the ASYNC mode
     Given a Client of "<SERVICE>" and a ThirdParty called "<SERVICEPATH>"
     And a button_request "<BT_REQUEST>" for mode "<SYNC_MODE>"
@@ -107,11 +107,11 @@ Feature: Happy path E2E functionality Sync-Async
 
     Examples:
       | SERVICE   | SERVICEPATH | DEVICE_ID      | SYNC_MODE    | BT_REQUEST                        | STATUS | STATUS |
-      | blackbutton01 | testpizza   | devicebb_aa_0101 | asynchronous | #1,BT,C,1,1,2000$WakeUp,#0,K1,30$ | C.S    | X      |
-      | blackbutton02 | testpizza   | devicebb_as_0102 | asynchronous | #1,BT,C,3,2,2000$WakeUp,#0,K1,30$ | C.S    | X      |
+    #  | servicea0c01 | testpizza   | devicea0c_aa_0101 | asynchronous | #1,BT,C,1,1,2000$WakeUp,#0,K1,30$ | C.S    | X      |
+      | servicea0c02 | testpizza   | devicea0c_as_0102 | asynchronous | #1,BT,C,3,2,2000$WakeUp,#0,K1,30$ | C.S    | X      |
 
 
-  @ft-happypath  @hp-buttons-flows @hp-sync-flow
+  @ft-happypath  @hp-button-flows @hp-button-sync @hp_sc04
   Scenario Outline: SC_4 Client push the button in the SYNC mode
     Given a Client of "<SERVICE>" and a ThirdParty called "<SERVICEPATH>"
     And a button_request "<BT_REQUEST>" for mode "<SYNC_MODE>"
@@ -120,5 +120,5 @@ Feature: Happy path E2E functionality Sync-Async
 
     Examples:
       | SERVICE   | SERVICEPATH | DEVICE_ID      | SYNC_MODE   | BT_REQUEST                        | TP_NAME | OP_RESULT           |
-      | blackbutton03 | testpizza   | devicebb_sa_0103 | synchronous | #1,BT,S,2,1,2000$WakeUp,#0,K1,30$ | TP      | rgb-66CCDD%3Bt-2%3B |
-      | blackbutton04 | testpizza   | devicebb_ss_0104 | synchronous | #3,BT,S,3,2,2000$WakeUp,#0,K1,30$ | TP      | rgb-66CCDD%3Bt-2%3B |
+   #   | servicea0c03 | testpizza   | devicea0c_sa_0103 | synchronous | #1,BT,S,2,1,2000$WakeUp,#0,K1,30$ | TP      | rgb-66CCDD%3Bt-2%3B |
+      | servicea0c04 | testpizza   | devicea0c_ss_0104 | synchronous | #3,BT,S,3,2,2000$WakeUp,#0,K1,30$ | TP      | rgb-66CCDD%3Bt-2%3B |

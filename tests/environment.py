@@ -49,14 +49,7 @@ def merge(a, b, path=None):
     return a
 
 
-
-def before_all(context):
-    """
-    Parse the JSON instances configuration file
-    :param context: Context to be updated
-    :return: None
-    """
-
+def load_config(context):
     try:
         with open("./tests/properties.json") as config_file:
             properties = json.load(config_file)
@@ -77,6 +70,23 @@ def before_all(context):
     __logger__.info("#>> INSTANCES LOADED: [OK] ")
 
     context.config = merge(properties, instances)
+
+
+
+def before_all(context):
+    """
+    Parse the JSON instances configuration file
+    :param context: Context to be updated
+    :return: None
+    """
+
+    # Setup logging conf
+    context.config.setup_logging()
+
+    # Read and load config files
+    load_config(context)
+
+
 
 
 

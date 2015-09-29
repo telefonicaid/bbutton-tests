@@ -17,8 +17,8 @@ Feature: Black Button Smoke tests
       | CB       | PING    | /version      | 200           |
       | ORC      | PING    | /             | 404           |
       | KS       | GET     | /version      | 404           |
-      | TP       | GET    | /sync/request | 405           |
-    # | CA       | GET     | /version   | x             |
+      | TP       | GET     | /sync/request | 405           |
+      | CA       | GET     | /version      | 200           |
     # | STH      | GET     | /version   | x             |
 
 
@@ -32,8 +32,8 @@ Feature: Black Button Smoke tests
       | INSTANCE | REQUEST | URI        | VERSION |
       | CB       | GET     | /version   | 0.24.0  |
       | IOTM     | GET     | /iot/about | 1.0.1   |
-    #  | IOTA     | GET     | /iot/about | 0.7.0-next |
-    #  | CA       | GET     | /version   | x          |
+      | IOTA     | GET     | /iot/about | 0.8.0   |
+      | CA       | GET     | /version   | 0.1.0   |
     #  | ORC      | GET     | /version   | N/A        |
 
 
@@ -51,7 +51,8 @@ Feature: Black Button Smoke tests
       | CB       | ENTITY    | GET    | 200           |
       | KS       | TOKEN     | GET    | 201           |
       | IOTM     | PROTOCOLS | GET    | 200           |
-    # | IOTA     | SERVICES  | GET    | 200           |
+      | IOTA     | SERVICES  | GET    | 200           |
     # | ORC      | USER      | GET    | x             |
-    # | CA       | NOTIFY    | GET    | x             |
+    # | CA       | NOTIFY    | GET    | 200             |
+
 

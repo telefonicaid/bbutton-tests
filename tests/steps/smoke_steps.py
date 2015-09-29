@@ -140,7 +140,7 @@ def step_impl(context, version):
     iota_version = context.r.content
     if context.config['components']["IOTA"]['iota_type'] == "node":
         __logger__.debug(iota_version)
-        returned_version = jsobject = json.loads(iota_version)["version"]
+        returned_version = json.loads(iota_version)["version"]
     else:
         returned_version = iota_version.split(" ")[3]
     eq_(returned_version, version,
@@ -160,6 +160,24 @@ def step_impl(context, version):
 
     iotm_version = context.r.content
     returned_version = iotm_version.split(" ")[7]
+    eq_(returned_version, version,
+        'Not the correct version: found({}) expected({})'.format(returned_version, version))
+    __logger__.debug("{} Version: {}".format(comp, returned_version))
+
+@then(u'the returned version from "CA" should match the "(?P<version>.+)"')
+def step_impl(context, version):
+    comp = "CA"
+
+    eq_(context.r.status_code, 200,
+        "[ERROR] when calling {} responsed a HTTP {}".format(context.url_component, context.r.status_code))
+    "<INSTANCE>"
+
+    assert_in('r', context, 'Not response found for component {}'.format(context.instance))
+
+    ca_version = context.r.content
+    __logger__.debug(ca_version)
+
+    returned_version = json.loads(ca_version)["version"]
     eq_(returned_version, version,
         'Not the correct version: found({}) expected({})'.format(returned_version, version))
     __logger__.debug("{} Version: {}".format(comp, returned_version))

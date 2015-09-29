@@ -7,7 +7,7 @@
     "CA": {
       "basiccheck": "/version",
       "path": "/",
-      "port": "8889",
+      "port": "9999",
       "protocol": "http",
       "verifyssl": "True"
     },

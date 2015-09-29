@@ -58,11 +58,11 @@ target/
 
 # Test Results files
 *.xml
-tests/results/
+/tests/results/
 
 # logs stuff:
 *.log
-tests/logs/
+/tests/logs/
 
 # MacOS files
 .DS_Store
