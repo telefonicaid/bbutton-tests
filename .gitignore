@@ -60,9 +60,11 @@ target/
 *.xml
 /tests/results/
 
+
 # logs stuff:
 *.log
 /tests/logs/
+/tests/logs/behave.log
 
 # MacOS files
 .DS_Store
