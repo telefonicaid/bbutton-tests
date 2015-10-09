@@ -27,11 +27,12 @@ import json
 import time
 
 from iotqatools.orchestator_utils import Orchestrator
-from nose.tools import eq_, assert_in, assert_true, assert_greater_equal
 from iotqatools.iota_utils import Rest_Utils_IoTA
 from common.common import cb_sample_entity_create, cb_sample_entity_recover, ks_get_token, \
-    component_verifyssl_check
+    component_verifyssl_check, orc_get_services, orc_delete_service
 from common.test_utils import *
+from nose.tools import eq_, assert_in, assert_true, assert_greater_equal, assert_not_in
+from pymongo import MongoClient
 
 __logger__ = logging.getLogger("happy_path")
 use_step_matcher("re")
@@ -95,19 +96,22 @@ def step_impl(context, INSTANCE, REQUEST, ACTION):
         json_payload = json.dumps(payload_table)
         print (json_payload)
         __logger__.debug("Create service: {}, \n url: {}".format(json_payload, url))
-        context.r = requests.post(url=url,
-                                  headers=context.headers,
-                                  data=json_payload)
 
-        eq_(context.r.status_code, 201,
-            "[ERROR] when calling {} responsed a HTTP {}".format(url, context.r.status_code))
-        context.create_service_entity = context.r.content
-        print (context.create_service_entity)
+        try:
+            context.r = requests.post(url=url,
+                                      headers=context.headers,
+                                      data=json_payload)
+
+            eq_(context.r.status_code, 201,
+                "[ERROR] when calling {} responsed a HTTP {}".format(url, context.r.status_code))
+            context.create_service_entity = context.r.content
+            print (context.create_service_entity)
+        except:
+            print ("# Error Creating SERVICE_ENTITY")
 
     if INSTANCE == "ORC" and REQUEST == "SERVICE" and ACTION == "CREATE":
         url = str("{0}/v1.0/service".format(context.url_component))
         json_payload = json.dumps(dict(context.table))
-
 
         # print (json_payload)
         __logger__.debug("Create service: {}, \n url: {}".format(json_payload, url))
@@ -126,6 +130,27 @@ def step_impl(context, INSTANCE, REQUEST, ACTION):
         context.token_service = jsobject["token"]
         print ("\n --->>  ID service: {} <<--- \n".format(context.service_id))
         print ("TOKEN service: {} \n".format(context.token_service))
+
+    if INSTANCE == "ORC" and REQUEST == "SERVICE" and ACTION == "DELETE":
+        url = str("{0}/v1.0/service".format(context.url_component))
+
+        # Get list of services
+        for service in context.services:
+            if context.service == service["name"]:
+                print ("service retrieved: {} {}".format(service["name"], service["id"]))
+                context.service_id = service["id"]
+                break
+
+        # Get config env credentials
+        context.user_admin = "cloud_admin"
+        context.password_admin = "password"
+
+        if "service_id" in context:
+            delete_response = orc_delete_service(context, context.service_id)
+            eq_(204, delete_response,
+                "[ERROR] Deleting Service {} responsed a HTTP {}".format(context.service_id, delete_response))
+        else:
+            eq_(True, False, "[Error] Service to delete ({}) not found".format(context.service))
 
 
 @then('subservice "(?P<SERVICEPATH>.+)" under the service is created')
@@ -234,6 +259,21 @@ def step_impl(context, SERVICE_ADMIN, SERVICE_PWD):
     context.subservice = context.servicepath
     context.token = ks_get_token(context)
     print ("\n #>> Token to use: {} \n".format(context.token))
+
+
+@step('a list of services for admin_cloud is retrieved')
+def step_impl(context):
+    """
+    :type context behave.runner.Context
+    :type SERVICE_ADMIN str
+    :type SERVICE_PWD str
+    """
+    # Recover a Token
+    context.user_admin = "cloud_admin"
+    context.password_admin = "password"
+    context.service_admin = "admin_domain"
+    context.services = orc_get_services(context)
+    print ("\n #>> Services availables: {} \n".format(context.services))
 
 
 @step("the new service should be available in the IOTA")
@@ -402,9 +442,15 @@ def step_impl(context, DEVICE_ID, SECONDS, TIMES, STATUS):
         context.answer_mod0 = iota_answer[3]
 
         print (context.answer_mod1.split(","))
-        if context.answer_mod1.split(",")[3].split(":")[1] == STATUS:
-            print ("STATUS CHANGED to {}".format(context.answer_mod1.split(",")[3].split(":")[1]))
-            break
+        try:
+            if context.answer_mod1.split(",")[3].split(":")[1] == STATUS:
+                print ("STATUS CHANGED to {}".format(context.answer_mod1.split(",")[3].split(":")[1]))
+                context.final_state = context.answer_mod1.split(",")[3].split(":")[1]
+                break
+        except:
+            print ("Error received in response: {} ".format(context.answer_mod1.split(",")))
+            eq_(True, False, "ERROR: Exception trying to chop the response of the iota pulling request")
+
     time.sleep(float(SECONDS))
 
 
@@ -415,7 +461,15 @@ def step_impl(context, DEVICE_ID, FINAL_STATUS):
     :type DEVICE_ID str
     :type FINAL_STATUS str
     """
-    # TODO: Close the request to TP
+
+    if context.final_state is not None:
+        eq_(FINAL_STATUS,
+            context.final_state,
+            "# Error final status ({}) does not match the expected result ({})".format(
+                FINAL_STATUS,
+                context.final_state))
+
+        # TODO: Close the request to TP
 
 
 @step('the ThirdParty "(?P<THIRDPARTY>.+)" changed the status to "(?P<OP_RESULT>.+)"')
@@ -561,3 +615,38 @@ def step_impl(context, DEVICE_ID, TP_RETURN):
     print (context.r.status_code)
     print (context.r.content)
     """
+
+
+@then('the service "(?P<SERVICE>.+)" should not be listed')
+def step_impl(context, SERVICE):
+    """
+    :type context behave.runner.Context
+    :type SERVICE str
+    """
+    context.execute_steps(u'''
+        Given a list of services for admin_cloud is retrieved
+        ''')
+
+    assert_not_in(SERVICE, context.services, "Service FOUND IN LIST retrieved: service {}".format(SERVICE))
+
+
+@when('the device "(?P<DEVICE_ID>.+)" is marked to be deleted')
+def step_impl(context, DEVICE_ID):
+    """
+    :type context behave.runner.Context
+    :type DEVICE_ID str
+    """
+    # TODO: Remove devices from iota PR pending
+    # workaround to clean the devices generated during the test execution
+    # client = MongoClient("localhost", 27017)
+    mongo_instance = context.config["backend"]["mongodb"]["instance"]
+    mongo_port = context.config["components"]["backend"]["mongodb"]["port"]
+
+    client = MongoClient(mongo_instance, mongo_port)
+    db = client.iotagent
+    devices = db.devices
+    # result = devices.find()
+    result = devices.find({"id": DEVICE_ID}, {"id": 1})
+    for doc in result:
+        delete = devices.remove({"id": DEVICE_ID})
+        print ("Deleted device {}, result: {}".format(DEVICE_ID, delete))

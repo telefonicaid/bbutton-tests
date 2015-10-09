@@ -1,6 +1,6 @@
 Feature: Black Button Smoke tests
   In order to validate the proper status of the components
-  As a Black button checker
+  As a Black button platform backend checker
   I should check if the components are working properly
 
 
@@ -12,14 +12,14 @@ Feature: Black Button Smoke tests
 
     Examples:
       | INSTANCE | REQUEST | URI           | HTTP_RESPONSE |
+      | CB       | PING    | /version      | 200           |
+      | CA       | GET     | /version      | 200           |
       | IOTA     | PING    | /iot/about    | 200           |
       | IOTM     | PING    | /iot/about    | 200           |
-      | CB       | PING    | /version      | 200           |
       | ORC      | PING    | /             | 404           |
       | KS       | GET     | /version      | 404           |
       | TP       | GET     | /sync/request | 405           |
-      | CA       | GET     | /version      | 200           |
-    # | STH      | GET     | /version   | x             |
+    # | STH      | GET     | /version      | Nan             |
 
 
   @ready @ft-smoke @smoke02 @check_version
@@ -31,10 +31,10 @@ Feature: Black Button Smoke tests
     Examples:
       | INSTANCE | REQUEST | URI        | VERSION |
       | CB       | GET     | /version   | 0.24.0  |
-      | IOTM     | GET     | /iot/about | 1.0.1   |
-      | IOTA     | GET     | /iot/about | 0.8.0   |
-      | CA       | GET     | /version   | 0.1.0   |
-    #  | ORC      | GET     | /version   | N/A        |
+      | IOTM     | GET     | /iot/about | 1.2.1   |
+      | IOTA     | GET     | /iot/about | 0.8.2   |
+      | CA       | GET     | /version   | 0.1.2   |
+    # | ORC      | GET     | /version   | Nan     |
 
 
   @ready @ft-smoke @smoke04 @check_funcionality
@@ -46,13 +46,13 @@ Feature: Black Button Smoke tests
     Then the result should be "<HTTP_RESPONSE>"
 
     Examples:
-      | INSTANCE | REQUEST   | ACTION | HTTP_RESPONSE |
-      | CB       | ENTITY    | CREATE | 200           |
-      | CB       | ENTITY    | GET    | 200           |
-      | KS       | TOKEN     | GET    | 201           |
-      | IOTM     | PROTOCOLS | GET    | 200           |
-      | IOTA     | SERVICES  | GET    | 200           |
-    # | ORC      | USER      | GET    | x             |
-    # | CA       | NOTIFY    | GET    | 200             |
+      | INSTANCE | REQUEST | ACTION | HTTP_RESPONSE |
+      | CB       | ENTITY  | CREATE | 200           |
+      | CB       | ENTITY  | GET    | 200           |
+    #  | KS       | TOKEN     | GET    | 201         |
+    #  | IOTM     | PROTOCOLS | GET    | 200         |
+    #  | IOTA     | SERVICES  | GET    | 200         |
+    #  | ORC      | USER      | GET    | 200         |
+    #  | CA       | NOTIFY    | GET    | 200         |
 
 

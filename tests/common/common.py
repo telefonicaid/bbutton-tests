@@ -174,6 +174,65 @@ def ks_get_token(context):
     return ks_headers["x-subject-token"]
 
 
+def orc_get_services(context):
+    orc_url = context.config["components"]["ORC"]["protocol"] + "://" + \
+              context.config["components"]["ORC"]["instance"] + ":" + \
+              context.config["components"]["ORC"]["port"] + \
+              "/v1.0/service"
+
+    headers = {
+        'content-type': "application/json"
+    }
+
+    payload = {
+        'DOMAIN_NAME': context.service_admin,
+        'SERVICE_ADMIN_USER': context.user_admin,
+        'SERVICE_ADMIN_PASSWORD': context.password_admin
+    }
+    payload = json.dumps(payload)
+
+    __logger__.debug(orc_url)
+    __logger__.debug(payload)
+
+    try:
+        context.r_orc = requests.get(orc_url, data=payload, headers=headers)
+        print (context.r_orc.text)
+        eq_(context.r_orc.status_code, 200, "Response not valid from ORC instance getting services")
+        context.r_orc = json.loads(context.r_orc.content)
+        __logger__.debug(context.r_orc["domains"])
+        return context.r_orc["domains"]
+    except:
+        return []
+
+def orc_delete_service(context, service_id):
+    orc_url = context.config["components"]["ORC"]["protocol"] + "://" + \
+              context.config["components"]["ORC"]["instance"] + ":" + \
+              context.config["components"]["ORC"]["port"] + \
+              "/v1.0/service/{}".format(service_id)
+
+    headers = {
+        'content-type': "application/json"
+    }
+
+    payload = {
+        'SERVICE_ADMIN_USER': context.user_admin,
+        'SERVICE_ADMIN_PASSWORD': context.password_admin
+    }
+    payload = json.dumps(payload)
+
+    __logger__.debug(orc_url)
+    __logger__.debug(payload)
+
+    try:
+        context.r_orc = requests.delete(orc_url, data=payload, headers=headers)
+        eq_(context.r_orc.status_code, 204, "Response not valid from ORC instance deleting service")
+        __logger__.debug(context.r_orc)
+        print ("Service ({}) DELETED".format(service_id))
+        return context.r_orc.status_code
+    except:
+        return "Error deleting service {}".format(service_id)
+
+
 def component_verifyssl_check(context, component):
     if "verifyssl" in context.config['components'][component]:
         verify_ssl = ast.literal_eval(context.config['components'][component]['verifyssl'])
