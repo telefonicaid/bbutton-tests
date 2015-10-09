@@ -1,0 +1,108 @@
+{
+  "environment": {
+    "name": "BB-TEST",
+    "test_mode": "REMOTE"
+  },
+  "components": {
+    "CA": {
+      "basiccheck": "/version",
+      "path": "/",
+      "port": "9999",
+      "protocol": "http",
+      "verifyssl": "True"
+    },
+    "CB": {
+      "basiccheck": "/version",
+      "path": "/NGSI10",
+      "port": "10026",
+      "protocol": "http",
+      "verifyssl": "True"
+    },
+    "TP": {
+      "basiccheck": "/version",
+      "path": "/async",
+      "port": "6500",
+      "protocol": "http",
+      "verifyssl": "True"
+    },
+    "IOTA": {
+      "defaultservice": "test",
+      "heartbeat": "/",
+      "path": "/iot",
+      "port": "4041",
+      "south_port": "8885",
+      "protocol": "http",
+      "iota_type": "node",
+      "version": "",
+      "verifyssl": "True"
+    },
+    "IOTM": {
+      "defaultservice": "test",
+      "heartbeat": "/",
+      "path": "/iot",
+      "port": "8081",
+      "protocol": "http",
+      "version": "",
+      "verifyssl": "True"
+    },
+    "ORC": {
+      "basiccheck": "/",
+      "heartbeat": "/",
+      "port": "8084",
+      "protocol": "http",
+      "version": ""
+    },
+    "KS": {
+      "basiccheck": "/",
+      "heartbeat": "/",
+      "port": "5001",
+      "protocol": "http",
+      "version": "",
+      "verifyssl": "True"
+    },
+    "backend": {
+      "mongodb": {
+        "_id": "_id",
+        "database": "x",
+        "heartbeat": "",
+        "password": "x",
+        "port": 27017,
+        "user": "orion",
+        "version": ""
+      }
+    }
+  },
+  "env_data": {
+    "users": {
+      "user_1": {
+        "user_name": "defaultuser",
+        "user_password": "password",
+        "user_service": "service1",
+        "user_subservice": "/sub1",
+        "user_role": "service_customer"
+      }
+    },
+    "services": {
+      "service_1": {
+        "service_name": "service1",
+        "subservices": [
+          "/sub1",
+          "/",
+          "/sub2"
+        ]
+      },
+      "service_2": {
+        "service_name": "service2",
+        "subservices": [
+          "/path1",
+          "/",
+          "/path2"
+        ]
+      }
+    },
+    "subservices": [
+      "/subservice1",
+      "/"
+    ]
+  }
+}

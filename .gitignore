@@ -1,6 +1,8 @@
+### Python template
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
+*$py.class
 
 # C extensions
 *.so
@@ -47,11 +49,26 @@ coverage.xml
 *.mo
 *.pot
 
-# Django stuff:
-*.log
 
 # Sphinx documentation
 docs/_build/
 
 # PyBuilder
 target/
+
+# Test Results files
+*.xml
+/tests/results/
+
+
+# logs stuff:
+*.log
+/tests/logs/
+/tests/logs/behave.log
+
+# MacOS files
+.DS_Store
+
+# IDE files
+/tests/steps/happy_path.py
+.idea/

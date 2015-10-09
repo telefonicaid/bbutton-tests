@@ -1,0 +1,41 @@
+{
+  "environment": {
+    "name": "BB-TEST",
+    "test_mode": "REMOTE"
+  },
+  "components": {
+    "CA": {
+      "instance": "127.0.0.1",
+      "pep": "127.0.0.1"
+    },
+    "CB": {
+      "instance": "127.0.0.1",
+      "pep": "127.0.0.1"
+    },
+    "ORC": {
+      "instance": "127.0.0.1",
+      "pep": "127.0.0.1"
+    },
+    "KS": {
+      "instance": "127.0.0.1",
+      "pep": "127.0.0.1"
+    },
+    "IOTA": {
+      "instance": "127.0.0.1",
+      "pep": "127.0.0.1"
+    },
+    "IOTM": {
+      "instance": "127.0.0.1",
+      "pep": "127.0.0.1"
+    },
+    "TP": {
+      "instance_default": "127.0.0.1",
+      "instance": "52.24.15.222"
+    }
+  },
+  "backend": {
+    "mongodb": {
+      "instance": "127.0.0.1"
+    }
+  }
+}
