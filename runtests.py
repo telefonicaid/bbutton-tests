@@ -5,11 +5,16 @@ import subprocess
 import sys
 import os
 
-# In case we are run from the source directory, we don't want to import the
-# project from there:
-sys.path.pop(0)
 
-print ("Executing tests: \n")
+def execute(cmd):
+    process = subprocess.Popen(cmd.split())
+    output = process.communicate()[0]
 
+
+print ("Executing SMOKE tests: \n")
 cmd = "behave tests/ --tags=ft-smoke"
-ret = subprocess.call(cmd)
+execute(cmd)
+
+print ("Executing HAPPY PATH tests: \n")
+cmd = "behave tests/ --tags=ft-happypath"
+execute(cmd)
