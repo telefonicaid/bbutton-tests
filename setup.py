@@ -63,7 +63,7 @@ requirements = parse_requirements('requirements.txt'),
 # -----------------------------------------------------------------------------
 setup(
     name="bbutton-tests",
-    version="0.1.0-dev",
+    version="0.1.8.dev",
     description="bbuton tests",
     long_description=description,
     author="XVC",
