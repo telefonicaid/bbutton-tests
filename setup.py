@@ -67,7 +67,7 @@ setup(
     description="bbuton tests",
     long_description=description,
     author="XVC",
-    author_email="behave-users@googlegroups.com",
+    author_email="xavier -at- telefonica.com",
     url="aaa",
     provides=["bbutton"],
     py_modules=["setuptools_behave"],
@@ -85,7 +85,7 @@ setup(
     cmdclass={
         "behave_test": behave_test,
     },
-    use_2to3=bool(python_version >= 3.0),
+    use_2to3=bool(python_version >= 2.7),
     license="GNU",
     classifiers=[
         "Development Status :: 4 - Beta",

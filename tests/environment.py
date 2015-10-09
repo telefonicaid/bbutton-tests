@@ -41,7 +41,7 @@ def merge(a, b, path=None):
             if isinstance(a[key], dict) and isinstance(b[key], dict):
                 merge(a[key], b[key], path + [str(key)])
             elif a[key] == b[key]:
-                pass # same leaf value
+                pass  # same leaf value
             else:
                 raise Exception('Conflict at %s' % '.'.join(path + [str(key)]))
         else:
@@ -72,7 +72,6 @@ def load_config(context):
     context.config = merge(properties, instances)
 
 
-
 def before_all(context):
     """
     Parse the JSON instances configuration file
@@ -85,9 +84,6 @@ def before_all(context):
 
     # Read and load config files
     load_config(context)
-
-
-
 
 
 def before_feature(context, feature):
@@ -107,6 +103,3 @@ def before_scenario(context, scenario):
 def after_scenario(context, scenario):
     if 'entity_clean' in context.tags:
         __logger__.info("*********** Cleaning entities in scenario {} --->>>>>>>>".format(scenario))
-
-
-

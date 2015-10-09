@@ -50,18 +50,17 @@ Happy path tests are under the tag "ft-happypath"
 Once the buttons are created if you want to relaunch just the flows (with the same values or others)
 
 ```
- behave tests/ --tags=hp-button-flow
+ behave tests/ --tags=hp-button-flows
 ```
 
 To launch just a type os sync flow:
 
 ```
- behave tests/ --tags=hp-async-flow
+ behave tests/ --tags=hp-button-async
 ```
 OR
 ```
- behave tests/ --tags=hp-sync-flow
+ behave tests/ --tags=hp-button-sync
 ```
-
 
 ### Enjoy :)
