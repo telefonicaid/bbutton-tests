@@ -25,6 +25,7 @@ import logging
 from iotqatools.cb_utils import CbNgsi10Utils, PayloadUtils
 from iotqatools.ks_utils import KeystoneCrud
 from iotqatools.iota_utils import Rest_Utils_IoTA
+from common import orc_delete_service
 
 __logger__ = logging.getLogger("test utils")
 
@@ -364,3 +365,29 @@ def get_endpoint(protocol, instance, port, path=None):
         return "{}://{}:{}".format(protocol, instance, port)
     else:
         return "{}://{}:{}{}".format(protocol, instance, port, path)
+
+
+@staticmethod
+def bb_delete_method(context):
+    context.url_component = get_endpoint(context.instance_protocol,
+                                         context.instance_ip,
+                                         context.instance_port)
+    url = str("{}/v1.0/service".format(context.url_component))
+    print(url)
+    #Get list of services
+    for service in context.services:
+        if context.service == service["name"]:
+            print ("service retrieved: {} {}".format(service["name"], service["id"]))
+            context.service_id = service["id"]
+            break
+
+    # Get config env credentials
+    context.user_admin = "cloud_admin"
+    context.password_admin = "password"
+
+    if "service_id" in context:
+        delete_response = orc_delete_service(context, context.service_id)
+        eq_(204, delete_response,
+            "[ERROR] Deleting Service {} responsed a HTTP {}".format(context.service_id, delete_response))
+    else:
+        eq_(True, False, "[Error] Service to delete ({}) not found".format(context.service))
