@@ -21,11 +21,12 @@ please contact with::[iot_support@tid.es]
 __author__ = 'xvc'
 
 import re
+import requests
 import logging
 from iotqatools.cb_utils import CbNgsi10Utils, PayloadUtils
 from iotqatools.ks_utils import KeystoneCrud
 from iotqatools.iota_utils import Rest_Utils_IoTA
-from common import orc_delete_service
+from common import orc_delete_service, orc_get_services
 
 __logger__ = logging.getLogger("test utils")
 
@@ -367,14 +368,18 @@ def get_endpoint(protocol, instance, port, path=None):
         return "{}://{}:{}{}".format(protocol, instance, port, path)
 
 
-@staticmethod
+
 def bb_delete_method(context):
     context.url_component = get_endpoint(context.instance_protocol,
                                          context.instance_ip,
                                          context.instance_port)
     url = str("{}/v1.0/service".format(context.url_component))
-    print(url)
+
     #Get list of services
+    context.service_admin = "admin_domain"
+    context.user_admin = "cloud_admin"
+    context.password_admin = "password"
+    context.services = orc_get_services(context)
     for service in context.services:
         if context.service == service["name"]:
             print ("service retrieved: {} {}".format(service["name"], service["id"]))
@@ -385,9 +390,30 @@ def bb_delete_method(context):
     context.user_admin = "cloud_admin"
     context.password_admin = "password"
 
-    if "service_id" in context:
-        delete_response = orc_delete_service(context, context.service_id)
-        eq_(204, delete_response,
-            "[ERROR] Deleting Service {} responsed a HTTP {}".format(context.service_id, delete_response))
-    else:
-        eq_(True, False, "[Error] Service to delete ({}) not found".format(context.service))
+    try:
+        if "service_id" in context:
+            delete_response = orc_delete_service(context, context.service_id)
+
+    except ValueError:
+        __logger__.error("[Error] Service to delete ({}) not found".format(context.service))
+
+
+def devices_delete_method(context):
+    if "Fiware-Service" not in context.headers:
+        context.headers.update({"Fiware-Service": context.service, "Fiware-ServicePath": context.servicepath})
+
+
+    context.url_component = get_endpoint(context.instance_protocol,
+                                         "localhost",
+                                         "4041")
+
+    url = str("{}/iot/devices/{}".format(context.url_component, context.device_id))
+
+    try:
+        resp = requests.post(url=url, headers=context.headers)
+        print(context.headers)
+        print(url)
+        print(resp)
+    except ValueError:
+        __logger__.error("[Error] Device to delete ({}) not found".format(context.device_id))
+

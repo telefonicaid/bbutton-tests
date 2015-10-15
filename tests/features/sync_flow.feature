@@ -8,26 +8,17 @@ Feature: Complete path E2E functionality Sync-Async / Sync-Sync
   @ft-syncflow @sf-button-flows @sf-party-sync
   Scenario Outline: SC1 client push the button in the SYNC mode, and third party is SYNC
     Given a Client of "<SERVICE>" and a ThirdParty called "<SERVICEPATH>"
-    When the subservice is created in the "ORC"
+    When a service and subservice are created in the "ORC"
       | key                        | value           |
       | DOMAIN_NAME                | admin_domain    |
       | DOMAIN_ADMIN_USER          | cloud_admin     |
       | DOMAIN_ADMIN_PASSWORD      | password        |
       | NEW_SERVICE_NAME           | <SERVICE>       |
-      | NEW_SERVICE_DESCRIPTION    | <SERVICE>       |
       | NEW_SERVICE_ADMIN_USER     | <SERVICE_ADMIN> |
       | NEW_SERVICE_ADMIN_PASSWORD | <SERVICE_PWD>   |
-      | KEYPASS_PROTOCOL           | http            |
-      | KEYPASS_HOST               | localhost       |
       | KEYPASS_PORT               | 8080            |
-      | KEYSTONE_PROTOCOL          | http            |
-      | KEYSTONE_HOST              | localhost       |
       | KEYSTONE_PORT              | 5000            |
-      | SERVICE_NAME               | <SERVICE>       |
-      | SERVICE_ADMIN_USER         | <SERVICE_ADMIN> |
-      | SERVICE_ADMIN_PASSWORD     | <SERVICE_PWD>   |
       | NEW_SUBSERVICE_NAME        | <SERVICEPATH>   |
-      | NEW_SUBSERVICE_DESCRIPTION | <SERVICEPATH>   |
     And the "ORC" receive the request "SERVICE_ENTITY" and action "CREATE"
       | SERVICE_NAME          | <SERVICE>         |
       | SERVICE_USER_NAME     | admin_bb          |
@@ -45,37 +36,18 @@ Feature: Complete path E2E functionality Sync-Async / Sync-Sync
       | ATT_MAPPING           | []                |
       | ATT_INTERACTION_TYPE  | <TP_INTERACTION>  |
       | ATT_TIMEOUT           | 120               |
-    And device should get registered under service and subservice
-      | KEYSTONE_PROTOCOL      | http                   |
-      | KEYSTONE_HOST          | localhost              |
-      | KEYSTONE_PORT          | 5000                   |
-      | SERVICE_NAME           | <SERVICE>              |
-      | SUBSERVICE_NAME        | <SERVICEPATH>          |
-      | SERVICE_ADMIN_USER     | <SERVICE_ADMIN>        |
-      | SERVICE_ADMIN_PASSWORD | <SERVICE_PWD>          |
-      | SERVICE_USER_NAME      | <SERVICE_ADMIN>        |
-      | SERVICE_USER_PASSWORD  | <SERVICE_PWD>          |
-      | DEVICE_ID              | <DEVICE_ID>            |
-      | PROTOCOL               | TT_BLACKBUTTON         |
-      | ENTITY_TYPE            | BlackButton            |
-      | ATT_CCID               | AAA                    |
-      | ATT_IMEI               | 1234567890             |
-      | ATT_IMSI               | 0987654321             |
-      | ATT_INTERACTION_TYPE   | <ATT_INTERACTION_TYPE> |
-      | ATT_SERVICE_ID         | <SERVICE>              |
-      | ATT_GEOLOCATION        | 40.4188,-3.6919        |
-      | IOTA_PROTOCOL          | http                   |
-      | IOTA_HOST              | localhost              |
-      | IOTA_PORT              | 4041                   |
-      | ORION_PROTOCOL         | http                   |
-      | ORION_HOST             | localhost              |
-      | ORION_PORT             | 10026                  |
     And a valid token is retrieved for user "<SERVICE_ADMIN>" and password "<SERVICE_PWD>"
+    And a device "<DEVICE_ID>" of entity_type "<ENTITY_TYPE>" should be provisioned for service and subservice
+      | attribute            | value                  |
+      | ATT_INTERACTION_TYPE | <ATT_INTERACTION_TYPE> |
+      | ATT_GEOLOCATION      | <ATT_LOCATION>         |
+
+
     Then device "<DEVICE_ID>" should be listed under service and subservice
     And the button "<DEVICE_ID>" is pressed in mode "<SYNC_MODE>" the IOTA should receive the request
     And the ThirdParty "<TP_NAME>" changed the status to "<OP_RESULT>"
 
 
     Examples:
-      | SERVICE    | SERVICEPATH | SERVICE_ADMIN | SERVICE_PWD | DEVICE_ID         | ATT_INTERACTION_TYPE | TP_INTERACTION | TP_URL          |
-      | service2sy | testpizza   | admin_bb      | 4passw0rd   | devicea1a_ss_0101 | synchronous          | synchronous    | TP/sync/request |
+      | SERVICE    | SERVICEPATH | SERVICE_ADMIN | SERVICE_PWD | DEVICE_ID | ENTITY_TYPE | ATT_INTERACTION_TYPE | ATT_LOCATION | TP_INTERACTION | TP_URL          |
+      | service2sy | testpizza   | admin_bb      | 4passw0rd   | device1   | BlackButton | synchronous          | 33,-122      | synchronous    | TP/sync/request |

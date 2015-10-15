@@ -23,7 +23,7 @@ import logging
 import json
 
 from nose.tools import assert_true
-from common.test_utils import bb_delete_method
+from common.test_utils import bb_delete_method, devices_delete_method
 
 logging.basicConfig(filename="./tests/logs/behave.log", level=logging.DEBUG)
 __logger__ = logging.getLogger("qa")
@@ -103,12 +103,9 @@ def before_scenario(context, scenario):
 
 
 def after_scenario(context, scenario):
-    if 'entity_clean' in context.tags:
-        __logger__.info("*********** Cleaning entities in scenario {} --->>>>>>>>".format(scenario))
-
-def after_feature(context, feature):
-    if "ft-syncflow" in context.feature["tags"]:
+    if "ft-syncflow" in context.tags:
         print("*************\n*****************\n***************\n**************")
+        devices_delete_method(context)
         bb_delete_method(context)
 
-    context.feature = {}
+
