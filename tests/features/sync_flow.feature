@@ -44,10 +44,13 @@ Feature: Complete path E2E functionality Sync-Async / Sync-Sync
 
 
     Then device "<DEVICE_ID>" should be listed under service and subservice
-    And the button "<DEVICE_ID>" is pressed in mode "<SYNC_MODE>" the IOTA should receive the request
-    And the ThirdParty "<TP_NAME>" changed the status to "<OP_RESULT>"
+    And a button_request "<BT_REQUEST>" for mode "synchronous"
+
+    And the button "<DEVICE_ID>" is pressed in mode "synchronous" the IOTA should receive the request
+
+    And the ThirdParty "TP" changed the status to "<OP_RESULT>"
 
 
     Examples:
-      | SERVICE    | SERVICEPATH | SERVICE_ADMIN | SERVICE_PWD | DEVICE_ID | ENTITY_TYPE | ATT_INTERACTION_TYPE | ATT_LOCATION | TP_INTERACTION | TP_URL          |
-      | service2sy | testpizza   | admin_bb      | 4passw0rd   | device1   | BlackButton | synchronous          | 33,-122      | synchronous    | TP/sync/request |
+      | SERVICE    | SERVICEPATH | SERVICE_ADMIN | SERVICE_PWD | DEVICE_ID | ENTITY_TYPE | ATT_INTERACTION_TYPE | ATT_LOCATION | TP_INTERACTION | BT_REQUEST                        | TP_URL          | OP_RESULT           |
+      | service2sy | testpizza   | admin_bb      | 4passw0rd   | device1   | BlackButton | synchronous          | 33,-122      | synchronous    | #1,BT,C,1,1,2000$WakeUp,#0,K1,30$ | TP/sync/request | rgb-66CCDD%3Bt-2%3B |

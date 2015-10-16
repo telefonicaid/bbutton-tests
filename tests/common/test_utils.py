@@ -410,10 +410,7 @@ def devices_delete_method(context):
     url = str("{}/iot/devices/{}".format(context.url_component, context.device_id))
 
     try:
-        resp = requests.post(url=url, headers=context.headers)
-        print(context.headers)
-        print(url)
-        print(resp)
+        resp = requests.delete(url=url, headers=context.headers)
     except ValueError:
         __logger__.error("[Error] Device to delete ({}) not found".format(context.device_id))
 

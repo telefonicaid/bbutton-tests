@@ -101,14 +101,6 @@ def provision_atorchestrator(context, instance):
 
 
 
-@step(u'the button "{device_id}" is pressed in mode "{sync_mode}" the IOTA should receive the request')
-def step_impl(context, device_id, sync_mode):
-    """
-    :type context behave.runner.Context
-    :type DEVICE_ID str
-    :type SYNC_MODE str
-    """
-    pass
 
 
 @step(
