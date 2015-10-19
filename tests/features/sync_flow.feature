@@ -5,7 +5,7 @@ Feature: Complete path E2E functionality Sync-Async / Sync-Sync
   I should validate the ability of the platform to process the buttons requests to a Sync or Async third party
 
 
-  @ft-syncflow @sf-button-flows @sf-party-sync
+  @ft-syncflow @sf-button-flows @sf-01
   Scenario Outline: SC1 client push the button in the SYNC mode, and third party is SYNC
     Given a Client of "<SERVICE>" and a ThirdParty called "<SERVICEPATH>"
     When a service and subservice are created in the "ORC"
@@ -34,23 +34,33 @@ Feature: Complete path E2E functionality Sync-Async / Sync-Sync
       | ATT_METHOD            | POST              |
       | ATT_AUTHENTICATION    | context-adapter   |
       | ATT_MAPPING           | []                |
-      | ATT_INTERACTION_TYPE  | <TP_INTERACTION>  |
+      | ATT_INTERACTION_TYPE  | synchronous       |
       | ATT_TIMEOUT           | 120               |
     And a valid token is retrieved for user "<SERVICE_ADMIN>" and password "<SERVICE_PWD>"
     And a device "<DEVICE_ID>" of entity_type "<ENTITY_TYPE>" should be provisioned for service and subservice
-      | attribute            | value                  |
-      | ATT_INTERACTION_TYPE | <ATT_INTERACTION_TYPE> |
-      | ATT_GEOLOCATION      | <ATT_LOCATION>         |
-
+      | attribute            | value          |
+      | TOKEN                | <TOKEN>        |
+      | ATT_INTERACTION_TYPE | synchronous    |
+      | ATT_GEOLOCATION      | <ATT_LOCATION> |
 
     Then device "<DEVICE_ID>" should be listed under service and subservice
-    And a button_request "<BT_REQUEST>" for mode "synchronous"
-
-    And the button "<DEVICE_ID>" is pressed in mode "synchronous" the IOTA should receive the request
-
+    And the button "<DEVICE_ID>" pressed in mode "synchronous" the IOTA should receive the request "<BT_REQUEST>"
     And the ThirdParty "TP" changed the status to "<OP_RESULT>"
+    #And a close request is sent to finish the operation
 
 
     Examples:
-      | SERVICE    | SERVICEPATH | SERVICE_ADMIN | SERVICE_PWD | DEVICE_ID | ENTITY_TYPE | ATT_INTERACTION_TYPE | ATT_LOCATION | TP_INTERACTION | BT_REQUEST                        | TP_URL          | OP_RESULT           |
-      | service2sy | testpizza   | admin_bb      | 4passw0rd   | device1   | BlackButton | synchronous          | 33,-122      | synchronous    | #1,BT,C,1,1,2000$WakeUp,#0,K1,30$ | TP/sync/request | rgb-66CCDD%3Bt-2%3B |
+      | SERVICE    | SERVICEPATH | SERVICE_ADMIN | SERVICE_PWD | DEVICE_ID | ENTITY_TYPE | TOKEN | ATT_LOCATION | BT_REQUEST                        | TP_URL          | OP_RESULT           |
+      | service2sy | testpizza   | admin_bb      | 4passw0rd   | device1   | BlackButton | no    | 33,-122      | #1,BT,S,1,1,2000$WakeUp,#0,K1,30$ | TP/sync/request | rgb-66CCDD%3Bt-2%3B |
+      | service2sy | testpizza   | admin_bb      | 4passw0rd   | device2   | BlackButton | no    | 15,-2        | #1,BT,S,1,0,#0,K1,0$              | TP/sync/request | NaN                 |
+      | service2sy | testpizza   | admin_bb      | 4passw0rd   | device3   | BlackButton | no    | 16,21        | #1,BT,S,0,0,512WakeUp#0,K1,0$,    | TP/sync/request | rgb-66CCDD%3Bt-2%3B |
+      | service2sy | testpizza   | admin_bb      | 4passw0rd   | device4   | BlackButton | yes   | 31,-40       | #1,BT,S,1,1,2000$WakeUp,#0,K1,30$ | TP/sync/request | rgb-66CCDD%3Bt-2%3B |
+
+
+
+  @ft-syncflow @sf-button-flows @sf-02
+  Scenario Outline: SC1 client push the button in the SYNC mode, and third party is SYNC but request is failured
+
+
+
+    Examples:

@@ -38,6 +38,31 @@ __logger__ = logging.getLogger("sync_flow")
 
 @step(u'a service and subservice are created in the "{instance}"')
 def provision_atorchestrator(context, instance):
+    """
+    context.service_admin = "admin_domain"
+    context.user_admin = "cloud_admin"
+    context.password_admin = "password"
+    context.services = orc_get_services(context)
+    for service in context.services:
+        if context.service == service["name"]:
+            print ("service retrieved: {} {}".format(service["name"], service["id"]))
+            context.service_id = service["id"]
+            break
+
+    # Get config env credentials
+    context.user_admin = "cloud_admin"
+    context.password_admin = "password"
+
+    try:
+        if "service_id" in context:
+            delete_response = orc_delete_service(context, context.service_id)
+
+    except ValueError:
+        __logger__.error("[Error] Service to delete ({}) not found".format(context.service))
+
+    """
+
+
 
     # Composing payloads
     payload_service = dict(context.table[0:6])
@@ -109,30 +134,90 @@ def step_impl(context, device_id, entity_type):
     # Preparing device provision
     context.device_id = str(device_id)
     device_payload = dict(context.table)
-    device_payload.update({"PROTOCOL": "TT_BLACKBUTTON", "DEVICE_ID": device_id, "ENTITY_TYPE": entity_type})
-    device_payload.update({"SERVICE_ADMIN_USER": context.user, "SERVICE_ADMIN_PASSWORD": context.pwd, "SERVICE_USER_NAME": context.user, "SERVICE_USER_PASSWORD": context.pwd, "SERVICE_NAME": context.service, "SUBSERVICE_NAME": context.subservice})
-    device_payload.update({"IOTA_PROTOCOL": "http", "IOTA_HOST": "localhost", "IOTA_PORT": "4041",
-                           "ORION_PROTOCOL": "http", "ORION_HOST": "localhost", "ORION_PORT": "10026",
-                           "KEYSTONE_HOST": "localhost", "KEYSTONE_PORT": "5000"})
+    if "no" in device_payload["TOKEN"]:
+        device_payload.update({"SERVICE_USER_NAME": context.user, "SERVICE_USER_PASSWORD": context.pwd, "SERVICE_NAME": context.service, "SUBSERVICE_NAME": context.subservice})
+    else:
+        device_payload.update({"SERVICE_NAME": context.service, "SUBSERVICE_NAME": context.subservice})
+        context.headers.update({"X-Auth-Token": context.token})
+    del device_payload['TOKEN']
 
-    imei = str(random.randint(1000000, 9999999999))
-    imsi = str(random.randint(1000000, 9999999999))
-    device_payload.update({"ATT_IMEI": imei, "ATT_IMSI": imsi, "ATT_CCID": "AAA", "ATT_SERVICE_ID": context.service})
+    device_payload.update({"PROTOCOL": "TT_BLACKBUTTON", "DEVICE_ID": device_id, "ENTITY_TYPE": entity_type})
+    device_payload.update({"SERVICE_ADMIN_USER": context.user, "SERVICE_ADMIN_PASSWORD": context.pwd})
+    device_payload.update({"SERVICE_USER_NAME": context.user, "SERVICE_USER_PASSWORD": context.pwd, "SERVICE_NAME": context.service, "SUBSERVICE_NAME": context.subservice})
+    #device_payload.update({"IOTA_PROTOCOL": "http", "IOTA_HOST": "localhost", "IOTA_PORT": "4041",
+    #                       "ORION_PROTOCOL": "http", "ORION_HOST": "localhost", "ORION_PORT": "10026",
+    #                       "KEYSTONE_HOST": "localhost", "KEYSTONE_PORT": "5000"})
+
+    if "NaN" not in device_payload["ATT_GEOLOCATION"]:
+        imei = str(random.randint(1000000, 9999999999))
+        imsi = str(random.randint(1000000, 9999999999))
+        device_payload.update({"ATT_IMEI": imei, "ATT_IMSI": imsi, "ATT_CCID": "AAA", "ATT_SERVICE_ID": context.service})
+    else:
+        del device_payload['ATT_GEOLOCATION']
+        del device_payload["ATT_INTERACTION_TYPE"]
+
     json_payload = json.dumps(device_payload)
+
     # Preparing url
     url = context.url_component + '/v1.0/service/' + \
           context.service_id + '/subservice/' + \
           context.subservice_id + '/register_device'
-    print(json_payload)
-    print("*")
-    print(url)
-    print("*")
-    print(context.headers)
+
     __logger__.debug("Create service: {}, \n url: {}".format(json_payload, url))
 
     context.resp = requests.post(url=url,
                               headers=context.headers,
                               data=json_payload)
-    print("####################")
-    print(context.resp)
-    print(context.resp.text)
+
+
+@step("a close request is sent to finish the operation")
+def close_message(context):
+    cl_message = "#1,BT,X,1,0,#0,K1,30$"
+    iota_url = context.config["components"]["IOTA"]["protocol"] + "://" + \
+               context.config["components"]["IOTA"]["instance"] + ":" + \
+               context.config["components"]["IOTA"]["south_port"] + "/thinkingthings"
+
+    # /custom uri
+    iota_url = iota_url + "/Receive"
+    headers = {
+        'Content-Type': "application/x-www-form-urlencoded"
+        # 'Accept': "application/json"
+    }
+
+    measure = "#{},{}".format(context.device_id, cl_message)
+    data = {"cadena": measure}
+    context.r = requests.post(url=iota_url, data=data, headers=headers)
+    print("_*_*_*_*_*_*_*_*_*_**_*_*_")
+    print (context.r.status_code)
+    print (context.r.content)
+
+    eq_(200, context.r.status_code, "ERROR: MEASURE request IOTA failed: {}".format(context.r.status_code))
+    assert False
+    # show returned response
+    __logger__.debug("IOTA (send_measure) returns {} ".format(context.r.content))
+
+
+@step(
+    'the button "{}" pressed in mode "{}" the IOTA should receive the request "{}"')
+def send_button(context, device_id, sync_mode, bt_request):
+    iota_url = context.config["components"]["IOTA"]["protocol"] + "://" + \
+               context.config["components"]["IOTA"]["instance"] + ":" + \
+               context.config["components"]["IOTA"]["south_port"] + "/thinkingthings"
+
+    # /custom uri
+    iota_url = iota_url + "/Receive"
+
+    headers = {
+        'Content-Type': "application/x-www-form-urlencoded"
+        # 'Accept': "application/json"
+    }
+
+    measure = "#{},{}".format(device_id, bt_request)
+    data = {"cadena": measure}
+    context.r = requests.post(url=iota_url, data=data, headers=headers)
+
+    eq_(200, context.r.status_code, "ERROR: MEASURE request IOTA failed: {}".format(context.r.status_code))
+
+    # show returned response
+    __logger__.debug("IOTA (send_measure) returns {} ".format(context.r.content))
+

@@ -195,6 +195,7 @@ def step_impl(context, SERVICEPATH):
 
 @step("device should get registered under service and subservice")
 def step_impl(context):
+
     """
     :type context behave.runner.Context
     """
@@ -216,6 +217,7 @@ def step_impl(context):
     url = context.url_component + '/v1.0/service/' + \
           context.service_id + '/subservice/' + \
           context.subservice_id + '/register_device'
+    print(url)
 
     json_payload = json.dumps(dict(context.table))
 
@@ -224,7 +226,8 @@ def step_impl(context):
     context.r = requests.post(url=url,
                               headers=context.headers,
                               data=json_payload)
-
+    print(json_payload)
+    print(context.r)
     # print(context.r.content)
     __logger__.debug(context.r.content)
     __logger__.debug(context.r.status_code)
@@ -232,7 +235,6 @@ def step_impl(context):
         "[ERROR] when calling {} responsed a HTTP {}".format(url, context.r.status_code))
     context.add_device = context.r.content
     print ("ID registration: {}".format(context.add_device))
-
 
 @step('with a service id "(?P<SERVICE_ID>.+)" and subservice id "(?P<SUBSERVICE_ID>.+)"')
 def step_impl(context, SERVICE_ID, SUBSERVICE_ID):
@@ -479,6 +481,8 @@ def step_impl(context, THIRDPARTY, OP_RESULT):
     :type THIRDPARTY str
     :type OP_RESULT str
     """
+    if "NaN" in OP_RESULT:
+        OP_RESULT = ""
     # chop the response:
     iota_answer = context.r.content.split("#")
 
@@ -537,7 +541,7 @@ def step_impl(context, DEVICE_ID):
     __logger__.debug("IOTA (send_measure) returns {} ".format(context.r.content))
 
 
-@when('the button "(?P<DEVICE_ID>.+)" is pressed in mode "synchronous" the IOTA should receive the request')
+@step('the button "(?P<DEVICE_ID>.+)" is pressed in mode "synchronous" the IOTA should receive the request')
 def step_impl(context, DEVICE_ID):
     """
     :type context behave.runner.Context

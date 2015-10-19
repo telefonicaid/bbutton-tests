@@ -218,6 +218,7 @@ def orc_delete_service(context, service_id):
         'SERVICE_ADMIN_USER': context.user_admin,
         'SERVICE_ADMIN_PASSWORD': context.password_admin
     }
+
     payload = json.dumps(payload)
 
     __logger__.debug(orc_url)

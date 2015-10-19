@@ -104,7 +104,6 @@ def before_scenario(context, scenario):
 
 def after_scenario(context, scenario):
     if "ft-syncflow" in context.tags:
-        print("*************\n*****************\n***************\n**************")
         devices_delete_method(context)
         bb_delete_method(context)
 
