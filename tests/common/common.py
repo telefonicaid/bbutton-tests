@@ -179,7 +179,7 @@ def orc_get_services(context):
               context.config["components"]["ORC"]["instance"] + ":" + \
               context.config["components"]["ORC"]["port"] + \
               "/v1.0/service"
-
+    
     headers = {
         'content-type': "application/json"
     }
@@ -196,7 +196,7 @@ def orc_get_services(context):
 
     try:
         context.r_orc = requests.get(orc_url, data=payload, headers=headers)
-        print (context.r_orc.text)
+        #print (context.r_orc.text)
         eq_(context.r_orc.status_code, 200, "Response not valid from ORC instance getting services")
         context.r_orc = json.loads(context.r_orc.content)
         __logger__.debug(context.r_orc["domains"])
@@ -218,6 +218,7 @@ def orc_delete_service(context, service_id):
         'SERVICE_ADMIN_USER': context.user_admin,
         'SERVICE_ADMIN_PASSWORD': context.password_admin
     }
+
     payload = json.dumps(payload)
 
     __logger__.debug(orc_url)
