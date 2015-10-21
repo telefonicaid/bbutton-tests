@@ -382,7 +382,6 @@ def bb_delete_method(context):
     context.services = orc_get_services(context)
     for service in context.services:
         if context.service == service["name"]:
-            print ("service retrieved: {} {}".format(service["name"], service["id"]))
             context.service_id = service["id"]
             break
 
@@ -411,6 +410,7 @@ def devices_delete_method(context):
 
     try:
         resp = requests.delete(url=url, headers=context.headers)
+        __logger__.info("DEVICE ({}) deleted".format(context.device_id))
     except ValueError:
         __logger__.error("[Error] Device to delete ({}) not found".format(context.device_id))
 

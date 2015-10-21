@@ -38,14 +38,14 @@ __logger__ = logging.getLogger("sync_flow")
 
 @step(u'a service and subservice are created in the "{instance}"')
 def provision_atorchestrator(context, instance):
-    """
+
     context.service_admin = "admin_domain"
     context.user_admin = "cloud_admin"
     context.password_admin = "password"
     context.services = orc_get_services(context)
     for service in context.services:
         if context.service == service["name"]:
-            print ("service retrieved: {} {}".format(service["name"], service["id"]))
+            __logger__.debug("service retrieved: {} {}".format(service["name"], service["id"]))
             context.service_id = service["id"]
             break
 
@@ -60,7 +60,7 @@ def provision_atorchestrator(context, instance):
     except ValueError:
         __logger__.error("[Error] Service to delete ({}) not found".format(context.service))
 
-    """
+
 
 
 
@@ -170,7 +170,7 @@ def step_impl(context, device_id, entity_type):
                               data=json_payload)
 
 
-@step("a close request is sent to finish the operation")
+@step(u'a close request is sent to finish the operation')
 def close_message(context):
     cl_message = "#1,BT,X,1,0,#0,K1,30$"
     iota_url = context.config["components"]["IOTA"]["protocol"] + "://" + \
@@ -187,12 +187,8 @@ def close_message(context):
     measure = "#{},{}".format(context.device_id, cl_message)
     data = {"cadena": measure}
     context.r = requests.post(url=iota_url, data=data, headers=headers)
-    print("_*_*_*_*_*_*_*_*_*_**_*_*_")
-    print (context.r.status_code)
-    print (context.r.content)
 
     eq_(200, context.r.status_code, "ERROR: MEASURE request IOTA failed: {}".format(context.r.status_code))
-    assert False
     # show returned response
     __logger__.debug("IOTA (send_measure) returns {} ".format(context.r.content))
 
@@ -220,4 +216,34 @@ def send_button(context, device_id, sync_mode, bt_request):
 
     # show returned response
     __logger__.debug("IOTA (send_measure) returns {} ".format(context.r.content))
+
+
+
+@step(u"a device should be provisioned for service and subservice with certain fields")
+def registration_fields(context):
+    payload = dict(context.table)
+    if "yes" in payload["TOKEN"]:
+        context.headers.update({"X-Auth-Token": context.token})
+    del payload['TOKEN']
+
+    for key, value in payload.items():
+        if "NaN" in value:
+            del payload[key]
+
+    json_payload=json.dumps(payload)
+    url = context.url_component + '/v1.0/service/' + \
+          context.service_id + '/subservice/' + \
+          context.subservice_id + '/register_device'
+
+    __logger__.debug("Create service: {}, \n url: {}".format(json_payload, url))
+
+    context.resp_validation = requests.post(url=url, headers=context.headers, data=json_payload)
+
+
+
+@step(u'registration is not sucessful and device "{device_id}" is not listened under the service and subservice')
+def registration_fail_validation(context, device_id):
+    __logger__.debug("ERROR CASE: {}. \nREASON: {}".format(context.resp_validation.status_code, context.resp_validation.text))
+    eq_(400, context.resp_validation.status_code, "Device was created successfully")
+
 

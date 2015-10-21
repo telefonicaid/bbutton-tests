@@ -322,6 +322,7 @@ def step_impl(context, DEVICE_ID):
     :type context behave.runner.Context
     :type DEVICE_ID str
     """
+    context.device_id = DEVICE_ID
     # Recover created services (if any)
     iota_url = context.config["components"]["IOTA"]["protocol"] + "://" + \
                context.config["components"]["IOTA"]["instance"] + ":" + \
