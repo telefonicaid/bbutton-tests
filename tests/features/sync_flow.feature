@@ -1,6 +1,6 @@
 Feature: Complete path E2E functionality Sync-Async / Sync-Sync
   In order to check if a blackbutton that can order a product
-  In a Service servicea1a and Subservice testpizza
+  In a Service service2sy and Subservice testpizza
   As a client has SYNC BlackButtons: device1, device2, ...
   I should validate the ability of the platform to process the buttons requests to a Sync or Async third party
 
@@ -42,12 +42,10 @@ Feature: Complete path E2E functionality Sync-Async / Sync-Sync
       | TOKEN                | <TOKEN>        |
       | ATT_INTERACTION_TYPE | synchronous    |
       | ATT_GEOLOCATION      | <ATT_LOCATION> |
-
     Then device "<DEVICE_ID>" should be listed under service and subservice
     And the button "<DEVICE_ID>" pressed in mode "synchronous" the IOTA should receive the request "<BT_REQUEST>"
     And the ThirdParty "TP" changed the status to "<OP_RESULT>"
     #And a close request is sent to finish the operation
-
 
     Examples:
       | SERVICE    | SERVICEPATH | SERVICE_ADMIN | SERVICE_PWD | DEVICE_ID | ENTITY_TYPE | TOKEN | ATT_LOCATION | BT_REQUEST                        | TP_URL          | OP_RESULT           |
@@ -99,7 +97,6 @@ Feature: Complete path E2E functionality Sync-Async / Sync-Sync
       | SERVICE_USER_NAME     | <SERVICE_USER_NAME>     |
       | SERVICE_USER_PASSWORD | <SERVICE_USER_PASSWORD> |
       | TOKEN                 | <TOKEN>                 |
-
     Then registration is not sucessful and device "<DEVICE_ID>" is not listened under the service and subservice
 
     Examples:
@@ -155,8 +152,6 @@ Feature: Complete path E2E functionality Sync-Async / Sync-Sync
       | TOKEN                 | <TOKEN>         |
     Then device "<DEVICE_ID>" should be listed under service and subservice
     #And the button "<DEVICE_ID>" pressed in mode "synchronous" the IOTA should not receive the request "<BT_REQUEST>"
-
-
 
 
     Examples:
