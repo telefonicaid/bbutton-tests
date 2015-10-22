@@ -28,6 +28,10 @@
       "instance": "127.0.0.1",
       "pep": "127.0.0.1"
     },
+    "MYSQL" : {
+      "cygnus" : "127.0.0.1",
+      "instance" : "127.0.0.1"
+    },
     "TP": {
       "instance_default": "127.0.0.1",
       "instance": "52.24.15.222"

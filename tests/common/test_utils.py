@@ -26,6 +26,7 @@ import logging
 from iotqatools.cb_utils import CbNgsi10Utils, PayloadUtils
 from iotqatools.ks_utils import KeystoneCrud
 from iotqatools.iota_utils import Rest_Utils_IoTA
+from iotqatools.mysql_utils import Mysql
 from common import orc_delete_service, orc_get_services
 
 __logger__ = logging.getLogger("test utils")
@@ -42,7 +43,7 @@ def initialize_log(log_level='INFO'):
     # eval(__logger__+".log_level"+"("+"#>> Test_utils: [LOG] Initialized"+")", log_level)
 
 
-@staticmethod
+#@staticmethod
 def initialize_cb(context):
     """
     Configuring the CB Utility lib
@@ -60,7 +61,7 @@ def initialize_cb(context):
     __logger__.info("#>> Test_utils: [CB] Initialized")
 
 
-@staticmethod
+#@staticmethod
 def initialize_cygnus2comp(context, comp):
     """
     Configuring the cyguns2mysql Utility lib
@@ -342,11 +343,12 @@ def remove_cb_entities(context):
         __logger__.info(" -> Nothing to delete ")
 
 
-@staticmethod
+#@staticmethod
 def remove_mysql_databases(context):
     if context.o['db2remove']:
         try:
             for db in context.o['db2remove']:
+
                 context.o["MYSQL"].drop_database(db)
                 __logger__.info(" -> DELETED database: {}".format(db))
         except AssertionError, e:
@@ -355,7 +357,7 @@ def remove_mysql_databases(context):
         __logger__.info(" -> Nothing to delete ")
 
 
-@staticmethod
+#@staticmethod
 def remember(context, key, value):
     """Add the value to context remember dict"""
     context.remember[key] = value

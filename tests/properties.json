@@ -52,6 +52,23 @@
       "protocol": "http",
       "version": ""
     },
+    "MYSQL": {
+      "cygnus_path": "/notify",
+      "cygnus_port": "5050",
+      "cygnus_protocol": "http",
+      "cygnus_version_port": "8081",
+      "cygnus_version_path": "/version",
+      "cygnussync": "column",
+      "defaultservice": "test",
+      "heartbeat": "",
+      "password": "",
+      "path": "/",
+      "port": "3306",
+      "prefix": "cy",
+      "protocol": "http",
+      "user": "root",
+      "version": ""
+    },
     "KS": {
       "basiccheck": "/",
       "heartbeat": "/",

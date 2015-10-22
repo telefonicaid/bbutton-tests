@@ -23,6 +23,7 @@ import logging
 import json
 
 from nose.tools import assert_true
+from common.test_utils import remove_mysql_databases
 from common.test_utils import bb_delete_method, devices_delete_method
 
 logging.basicConfig(filename="./tests/logs/behave.log", level=logging.DEBUG)
@@ -89,12 +90,17 @@ def before_all(context):
 
 def before_feature(context, feature):
     # model.init(environment='test')
+
     if 'specialtag' in feature.tags:
         __logger__.info("***********SPECIAL TAG BEFORE FEATURE --->>>>>>>>")
 
+    print(feature.tags)
     context.remember = {}
     context.o = {}
     context.feature = {}
+    context.arrays = {}
+    context.o['db2remove'] = []
+
 
 def before_scenario(context, scenario):
     context.feature["tags"] = context.tags
@@ -107,5 +113,17 @@ def after_scenario(context, scenario):
         if "sf-02" not in context.tags:
             devices_delete_method(context)
         bb_delete_method(context)
+
+
+def after_feature(context, feature):
+    if 'ft-cbcygsql' in context.feature["tags"]:
+        __logger__.info("***********Cleaning DB {} --->>>>>>>>".format(context.o["db2remove"]))
+        remove_mysql_databases(context)
+
+    context.remember = {}
+    context.o = {}
+    context.feature = {}
+    context.arrays = {}
+
 
 
