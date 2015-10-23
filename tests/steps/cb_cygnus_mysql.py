@@ -44,7 +44,6 @@ def db_table_creation(context, service, servicepath, entity_id):
                        database=context.config["components"]["MYSQL"]["defaultservice"],
                        version=context.config["components"]["MYSQL"]["version"], mysql_verify_version="False")
 
-    print(context.config["components"]["MYSQL"]["instance"])
     context.mysql_init.connect()
 
     # Create database
@@ -60,14 +59,19 @@ def db_table_creation(context, service, servicepath, entity_id):
     if "/" in servicepath:
         servicepath.replace("/","")
 
-    table_name = servicepath #"{}_{}".format(servicepath, entity_id)
+    table_name = servicepath  #"{}_{}".format(servicepath, entity_id)
     table_fields = "(recvTimeTs VARCHAR(250),\
                 recvTime VARCHAR(250),\
                 entityId VARCHAR(50),\
                 entityType VARCHAR(250),\
-                att_ccid VARCHAR(50),\
-                attrType VARCHAR(250),\
-                attrValue VARCHAR(250),\
+                ccid_name VARCHAR(50),\
+                ccid_value VARCHAR(250),\
+                imsi_name VARCHAR(50),\
+                imsi_value VARCHAR(250),\
+                imei_name VARCHAR(50),\
+                imei_value VARCHAR(250),\
+                location_name VARCHAR(50), \
+                location_value VARCHAR(250),\
                 attrMd VARCHAR(250))"
 
     context.mysql_init.create_table(name=table_name, database_name=service, fields=table_fields)
@@ -106,9 +110,56 @@ def step_impl(context, attvalue, attname, servicepath):
     # Pick the returned value from DB:
     resp = context.mysql_init.table_search_columns_last_row(database_name=context.databasename, table_name=servicepath,
                                                             columns=attname)
-    print(resp)
     if resp:
         # Exit from first range in tuple
         returned_value = resp[0]
         context.mysql_init.table_pretty_output(database_name=context.databasename, table_name=servicepath)
         eq_(attvalue, returned_value, "ASSERT ERROR --> Value in MYSQL table was not updated")
+
+
+@then('I check values "{values}" in column names "{att_names}" of "{servicepath}" table in MySQL')
+def step_impl(context, values, att_names, servicepath):
+    att_names = att_names.split(';')
+    values = values.split(';')
+    count = 0
+
+    table = context.mysql_init.table_search_columns_last_row(database_name=context.databasename, table_name=servicepath, columns="*")
+    #table = table[0]
+    print(table)
+    # Sketch the attributes sent from CB and check their values
+    for name in att_names:
+        if name == "temperature":
+            index = att_names.index(name)
+            if values[index] == table[3]:
+                count += 1
+        elif name == "lastIP":
+            index = att_names.index(name)
+            if values[index] == table[5]:
+                count += 1
+        elif name == "device":
+            index = att_names.index(name)
+            if values[index] == table[7]:
+                count += 1
+        elif name == "Phenomenons":
+            index = att_names.index(name)
+            if values[index] == table[9]:
+                count += 1
+        elif name == "status":
+            index = att_names.index(name)
+            if values[index] == table[11]:
+                count += 1
+        elif name == "fill_level":
+            index = att_names.index(name)
+            if values[index] == table[13]:
+                count += 1
+        elif name == "test1":
+            index = att_names.index(name)
+            if values[index] == table[15]:
+                count += 1
+        elif name == "test2":
+            index = att_names.index(name)
+            if values[index] == table[17]:
+                count += 1
+
+    #context.mysql_init.table_pretty_output(database_name=context.databasename, table_name=servicepath)
+    eq_(count, len(values), "ASSERT ERROR --> Some of the attributes were not passed to the table")

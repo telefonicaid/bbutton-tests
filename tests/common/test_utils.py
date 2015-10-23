@@ -23,7 +23,7 @@ __author__ = 'xvc'
 import re
 import requests
 import logging
-from iotqatools.cb_utils import CbNgsi10Utils, PayloadUtils
+from iotqatools.cb_utils import CbNgsi10Utils, PayloadUtils, ContextElements
 from iotqatools.ks_utils import KeystoneCrud
 from iotqatools.iota_utils import Rest_Utils_IoTA
 from iotqatools.mysql_utils import Mysql
@@ -327,12 +327,12 @@ def set_user_service_and_subservice(context, user, service, subservice):
     context.o['CB'].set_subservice(context.remember["subservice"])
 
 
-@staticmethod
+#@staticmethod
 def remove_cb_entities(context):
     if context.o['entities2remove']:
         try:
             for entity in context.o['entities2remove']:
-                payload = PayloadUtils.build_standard_entity_delete_payload(entity['context'])
+                payload = PayloadUtils.build_standard_entity_delete_payload(context_elements=entity['context'])
                 context.o['CB'].set_service(entity['service'])
                 context.o['CB'].set_subservice(entity['subservice'])
                 context.o['CB'].standard_entity_delete(payload)

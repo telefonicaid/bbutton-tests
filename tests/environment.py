@@ -23,8 +23,9 @@ import logging
 import json
 
 from nose.tools import assert_true
+from iotqatools.cb_utils import CbNgsi10Utils
 from common.test_utils import remove_mysql_databases
-from common.test_utils import bb_delete_method, devices_delete_method
+from common.test_utils import bb_delete_method, devices_delete_method, remove_cb_entities
 
 logging.basicConfig(filename="./tests/logs/behave.log", level=logging.DEBUG)
 __logger__ = logging.getLogger("qa")
@@ -114,6 +115,9 @@ def after_scenario(context, scenario):
             devices_delete_method(context)
         bb_delete_method(context)
 
+    if "ft-cbcygsql" in context.tags:
+        print(context.o["CB"])
+        context.o['CB'].convenience_entity_delete_url_method(entity_id=context.remember["entity_id"], entity_type=context.remember["entity_type"])
 
 def after_feature(context, feature):
     if 'ft-cbcygsql' in context.feature["tags"]:
