@@ -83,6 +83,7 @@ def create_subscription(context):
         eq_(200, resp.status_code)
 
 
+
 @step(u'I send an entity update to context broker with service "{service}", subservice "{subservice}", entity_id "{entity_id}", entity_type "{entity_type}", entity_pattern "{entity_pattern}"')
 def update_entity(context, service, subservice, entity_id, entity_type, entity_pattern):
     """
