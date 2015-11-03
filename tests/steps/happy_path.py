@@ -424,7 +424,7 @@ def step_impl(context, DEVICE_ID, SECONDS, TIMES, STATUS):
     eq_(b_module_0, "0,K1,300$,")
 
     measure = "#{0}#{1}#{2}".format(DEVICE_ID, b_module_1, b_module_0)
-    data = {"cadena": measure}
+    data = {"c": measure}
     print (iota_url)
     print (data)
     print (headers)
@@ -481,13 +481,35 @@ def step_impl(context, THIRDPARTY, OP_RESULT):
     """
     # chop the response:
     iota_answer = context.r.content.split("#")
+    # chop the expected_result:
+    expected = OP_RESULT.split("#")
+
+    c_sent = context.bt_request.split("#")
 
     print ("\n iota resp={} \n".format(iota_answer))
-    eq_(iota_answer[1], context.device_id, "Device id does not match")
+    print ("\n expected resp={} \n".format(expected))
 
-    eq_(iota_answer[2].split(",")[5], OP_RESULT,
-        "Expected result does not match \n Received: {} \n Expected: {}".format(iota_answer[2].split(",")[5],
-                                                                                OP_RESULT))
+    # check device_id
+    eq_(iota_answer[1], context.device_id, "Device_id does not match")
+
+    # check mod1
+    mod1 = expected[1]
+    rec_mod1 = iota_answer[2]
+    eq_(rec_mod1, mod1,
+        "Expected result mod1 does not match \n "
+        "Received: {} \n Expected: {}".format(
+            rec_mod1, mod1))
+
+    # check mod2
+    mod0 = expected[2]
+    rec_mod0 = iota_answer[3]
+    eq_(rec_mod0, mod0,
+        "Expected result mod0 does not match \n "
+        "Received: {} \n Expected: {}".format(
+            rec_mod0, mod0))
+
+    print ("\n iota resp={} \n".format(iota_answer))
+
     # extract the relevant info
     # bb_request_id = context.answer_mod1.split(",")[4]
 
@@ -516,7 +538,7 @@ def step_impl(context, DEVICE_ID):
     }
 
     measure = "#{},{}".format(DEVICE_ID, context.bt_request)
-    data = {"cadena": measure}
+    data = {"c": measure}
 
     context.r = requests.post(url=iota_url, data=data, headers=headers)
     print (context.r.status_code)
@@ -562,7 +584,9 @@ def step_impl(context, DEVICE_ID):
     }
 
     measure = "#{},{}".format(DEVICE_ID, context.bt_request)
-    data = {"cadena": measure}
+    data = {"c": measure}
+    print(iota_url)
+    print(data)
 
     context.r = requests.post(url=iota_url, data=data, headers=headers)
     print (context.r.status_code)

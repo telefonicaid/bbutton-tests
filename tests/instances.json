@@ -29,7 +29,7 @@
       "pep": "127.0.0.1"
     },
     "TP": {
-      "instance_default": "127.0.0.1",
+      "instance__buissld": "127.0.0.1",
       "instance": "52.24.15.222"
     }
   },
