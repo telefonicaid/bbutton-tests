@@ -50,9 +50,9 @@ Feature: Complete path E2E functionality Sync-Async / Sync-Sync
     Examples:
       | SERVICE    | SERVICEPATH | SERVICE_ADMIN | SERVICE_PWD | DEVICE_ID | ENTITY_TYPE | TOKEN | ATT_LOCATION | BT_REQUEST                        | TP_URL          | OP_RESULT           |
       | service2sy | testpizza   | admin_bb      | 4passw0rd   | device1   | BlackButton | no    | 33,-122      | #1,BT,S,1,1,2000$WakeUp,#0,K1,30$ | TP/sync/request | rgb-66CCDD%3Bt-2%3B |
-      | service2sy | testpizza   | admin_bb      | 4passw0rd   | device2   | BlackButton | no    | 15,-2        | #1,BT,S,1,0,#0,K1,0$              | TP/sync/request | rgb-66CCDD%3Bt-2%3B |
-      | service2sy | testpizza   | admin_bb      | 4passw0rd   | device3   | BlackButton | no    | 16,21        | #1,BT,S,0,0,512WakeUp#0,K1,0$,    | TP/sync/request | rgb-66CCDD%3Bt-2%3B |
-      | service2sy | testpizza   | admin_bb      | 4passw0rd   | device4   | BlackButton | yes   | 31,-40       | #1,BT,S,1,1,2000$WakeUp,#0,K1,30$ | TP/sync/request | rgb-66CCDD%3Bt-2%3B |
+#      | service2sy | testpizza   | admin_bb      | 4passw0rd   | device2   | BlackButton | no    | 15,-2        | #1,BT,S,1,0,#0,K1,0$              | TP/sync/request | rgb-66CCDD%3Bt-2%3B |
+#      | service2sy | testpizza   | admin_bb      | 4passw0rd   | device3   | BlackButton | no    | 16,21        | #1,BT,S,0,0,512WakeUp#0,K1,0$,    | TP/sync/request | rgb-66CCDD%3Bt-2%3B |
+#      | service2sy | testpizza   | admin_bb      | 4passw0rd   | device4   | BlackButton | yes   | 31,-40       | #1,BT,S,1,1,2000$WakeUp,#0,K1,30$ | TP/sync/request | rgb-66CCDD%3Bt-2%3B |
 
 
   @ft-syncflow @sf-button-flows @sf-02

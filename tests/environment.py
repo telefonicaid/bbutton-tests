@@ -94,10 +94,11 @@ def before_feature(context, feature):
 
     context.remember = {}
     context.o = {}
-    context.feature = {}
+    context.feature_data = {}
+
 
 def before_scenario(context, scenario):
-    context.feature["tags"] = context.tags
+    context.feature_data["tags"] = context.tags
     if 'init_db' in context.tags:
         __logger__.info("*********** Init DB to be used in scenario {} --->>>>>>>>".format(scenario))
 

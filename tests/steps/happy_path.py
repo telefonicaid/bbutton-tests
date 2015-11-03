@@ -489,8 +489,6 @@ def step_impl(context, THIRDPARTY, OP_RESULT):
     # chop the expected_result:
     expected = OP_RESULT.split("#")
 
-    c_sent = context.bt_request.split("#")
-
     print ("\n iota resp={} \n".format(iota_answer))
     print ("\n expected resp={} \n".format(expected))
 
