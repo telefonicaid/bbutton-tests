@@ -134,24 +134,9 @@ Feature: Happy path E2E functionality Sync-Async
 
     Examples:
       | SERVICE     | SERVICEPATH  |
-      | servicetta4 | thinkinthing |
-      | servicetta3 | thinkinthing |
-      | servicetta2 | thinkinthing |
       | servicetta1 | thinkinthing |
+      | servicetta2 | thinkinthing |
+      | servicetta3 | thinkinthing |
+      | servicetta4 | thinkinthing |
       | servicetta5 | thinkinthing |
-
-
-  @ft-happypath  @hp-service-clean @hp_sc06 @wip
-  Scenario Outline: SC_6 Clean DEVICE data generated in happy path scenarios
-    Given a Client of "<SERVICE>" and a ThirdParty called "<SERVICEPATH>"
-    When the device "<DEVICE_ID>" is marked to be deleted
-    #Then the "IOTA" receive the request "DEVICE" and action "DELETE"
-
-    Examples:
-      | SERVICE     | SERVICEPATH  | DEVICE_ID |
-     #  | servicetta4 | thinkinthing   | AAtta1044 |
-     # | servicetta3 | thinkinthing   | AStta1033 |
-     # | servicetta2 | thinkinthing   | SAtta1022 |
-    #  | servicetta1 | thinkinthing | SStta1011 |
-     # | servicetta5 | thinkinthing   | SStta105 |
 
