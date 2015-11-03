@@ -48,10 +48,10 @@ Feature: Complete path E2E functionality Sync-Async / Sync-Sync
     #And a close request is sent to finish the operation
 
     Examples:
-      | SERVICE    | SERVICEPATH | SERVICE_ADMIN | SERVICE_PWD | DEVICE_ID | ENTITY_TYPE | TOKEN | ATT_LOCATION | BT_REQUEST                        | TP_URL          | OP_RESULT           |
-      | service2sy | testpizza   | admin_bb      | 4passw0rd   | device1   | BlackButton | no    | 33,-122      | #1,BT,S,1,1,2000$WakeUp,#0,K1,30$ | TP/sync/request | #1,BT,S,1,rt-20;rrgb-00FF00;,0$#0,K1,300$, |
-      | service2sy | testpizza   | admin_bb      | 4passw0rd   | device2   | BlackButton | no    | 15,-2        | #2,BT,S,3,0,#0,K1,0$              | TP/sync/request | #2,BT,S,1,rt-20;rrgb-00FF00;,0$#0,K1,300$, |
-      | service2sy | testpizza   | admin_bb      | 4passw0rd   | device3   | BlackButton | no    | 16,21        | #3,BT,S,0,0,512WakeUp#0,K1,0$,    | TP/sync/request | #3,BT,S,1,rt-20;rrgb-00FF00;,0$#0,K1,300$, |
+      | SERVICE    | SERVICEPATH | SERVICE_ADMIN | SERVICE_PWD | DEVICE_ID | ENTITY_TYPE | TOKEN | ATT_LOCATION | BT_REQUEST                         | TP_URL          | OP_RESULT                                  |
+      | service2sy | testpizza   | admin_bb      | 4passw0rd   | device1   | BlackButton | no    | 33,-122      | #1,BT,S,1,1,2000$WakeUp,#0,K1,30$  | TP/sync/request | #1,BT,S,1,rt-20;rrgb-00FF00;,0$#0,K1,300$, |
+      | service2sy | testpizza   | admin_bb      | 4passw0rd   | device2   | BlackButton | no    | 15,-2        | #2,BT,S,3,0,#0,K1,0$               | TP/sync/request | #2,BT,S,1,rt-20;rrgb-00FF00;,0$#0,K1,300$, |
+      | service2sy | testpizza   | admin_bb      | 4passw0rd   | device3   | BlackButton | no    | 16,21        | #3,BT,S,0,0,512WakeUp#0,K1,0$,     | TP/sync/request | #3,BT,S,1,rt-20;rrgb-00FF00;,0$#0,K1,300$, |
       | service2sy | testpizza   | admin_bb      | 4passw0rd   | device4   | BlackButton | yes   | 31,-40       | #4,BT,S,9,10,2000$WakeUp,#0,K1,30$ | TP/sync/request | #4,BT,S,1,rt-20;rrgb-00FF00;,0$#0,K1,300$, |
 
 
@@ -151,9 +151,8 @@ Feature: Complete path E2E functionality Sync-Async / Sync-Sync
       | SERVICE_USER_PASSWORD | <SERVICE_PWD>   |
       | TOKEN                 | <TOKEN>         |
     Then device "<DEVICE_ID>" should be listed under service and subservice
-    #And the button "<DEVICE_ID>" pressed in mode "synchronous" the IOTA should not receive the request "<BT_REQUEST>"
 
 
     Examples:
-      | DEVICE_ID | ENTITY_TYPE | TOKEN | SERVICE    | SERVICEPATH | SERVICE_ADMIN | SERVICE_PWD | TP_URL          | BT_REQUEST                         |
-      | deviceA   | BlackButton | no    | service2sy | testpizza   | admin_bb      | 4passw0rd   | TP/sync/request | #1,BT,S,1,1,2000$WakeUp,#0,K1,30$  |
+      | DEVICE_ID | ENTITY_TYPE | TOKEN | SERVICE    | SERVICEPATH | SERVICE_ADMIN | SERVICE_PWD | TP_URL          | BT_REQUEST                        |
+      | deviceA   | BlackButton | no    | service2sy | testpizza   | admin_bb      | 4passw0rd   | TP/sync/request | #1,BT,S,1,1,2000$WakeUp,#0,K1,30$ |
