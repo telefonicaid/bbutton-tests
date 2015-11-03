@@ -241,7 +241,7 @@ def registration_fields(context):
 
 
 
-@step(u'registration is not sucessful and device "{device_id}" is not listened under the service and subservice')
+@step(u'registration is not successful and device "{device_id}" is not listened under the service and subservice')
 def registration_fail_validation(context, device_id):
     __logger__.debug("ERROR CASE: {}. \nREASON: {}".format(context.resp_validation.status_code, context.resp_validation.text))
     eq_(400, context.resp_validation.status_code, "Device was created successfully")
