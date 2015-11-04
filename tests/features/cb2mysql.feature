@@ -3,7 +3,7 @@ Feature: Context Broker connection with MySQL
   As a Long Tail Platform backend checker
   I should validate the ability of the platform to export datasets into MySQL database
 
-  @ft-cbcygsql @ccm-01 @ready
+  @ft-cb2mysql @c2m-01 @ready
   Scenario Outline: Entities updated should be stored in MySQL
     Given I set a MySQL database under name "<SERVICE>" and a table under name given by "<SERVICEPATH>" and "<ENTITY_ID>"
     And I launch a cygnus connection with "MYSQL"
@@ -22,7 +22,7 @@ Feature: Context Broker connection with MySQL
       | testservice | /testpath   | entity3   | bbutton     | attrName  | 291371   | met3     | type3    | val3      |
 
 
-  @ft-cbcygsql @ccm-02 @no-ready
+  @ft-cb2mysql @c2m-02 @wip
   Scenario Outline: Entities with several attributes should be stored in MySQL
     Given I set a MySQL database under name "<SERVICE>" and a table under name given by "<SERVICEPATH>" and "<ENTITY_ID>"
     And I launch a cygnus connection with "MYSQL"
