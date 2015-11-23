@@ -27,8 +27,8 @@ from tests.common.test_utils import *
 from iotqatools.cb_utils import CbNgsi10Utils, EntitiesConsults, PayloadUtils, NotifyConditions, ContextElements, \
     AttributesCreation, MetadatasCreation
 from iotqatools.iota_utils import Rest_Utils_IoTA
-from common.common import cb_sample_entity_create, cb_sample_entity_recover, ks_get_token, component_verifyssl_check
-
+from common.common import cb_sample_entity_create, cb_sample_entity_recover, ks_get_token, component_verifyssl_check, \
+    component_version_check
 import logging
 import ast
 import json
@@ -66,9 +66,9 @@ def step_impl(context, INSTANCE):
     context.instance = INSTANCE
     context.instance_ip = context.config['components'][INSTANCE]['instance']
     context.instance_port = context.config['components'][INSTANCE]['port']
-    context.url_component = context.config['components'][INSTANCE]['protocol'] + "://" + \
-                            context.instance_ip + ":" + \
-                            context.instance_port
+    context.url_component = "{}://{}:{}".format(context.config['components'][INSTANCE]['protocol'],
+                                                context.instance_ip,
+                                                context.instance_port)
 
     context.verify_ssl = component_verifyssl_check(context, INSTANCE)
 
@@ -80,14 +80,18 @@ def step_impl(context, INSTANCE):
 
 @when(u'I send a request "(?P<request>.+)" to URI "(?P<uri>.+)"')
 def step_impl(context, request, uri):
-    context.url_component = context.url_component + uri
+    context.url_component = "{}{}".format(context.url_component, uri)
     context.kind_request = request
+    context.verbose = False
 
     if uri != "None":
         try:
-            print (context.url_component)
-            print (context.headers)
-            print (context.verify_ssl)
+            print ("Url: {} \n".format(context.url_component))
+
+            if context.verbose:
+                print ("Headers: {} \n".format(context.headers))
+                print ("Verify ssl: {} \n".format(context.verify_ssl))
+
             context.r = requests.get(url=context.url_component, headers=context.headers, verify=context.verify_ssl)
         except requests.exceptions.RequestException, e:
             print (e)
@@ -164,22 +168,46 @@ def step_impl(context, version):
         'Not the correct version: found({}) expected({})'.format(returned_version, version))
     __logger__.debug("{} Version: {}".format(comp, returned_version))
 
+
 @then(u'the returned version from "CA" should match the "(?P<version>.+)"')
 def step_impl(context, version):
     comp = "CA"
 
-    eq_(context.r.status_code, 200,
-        "[ERROR] when calling {} responsed a HTTP {}".format(context.url_component, context.r.status_code))
-    "<INSTANCE>"
+    # Cast version returned (if any)
+    returned_version = component_version_check(context, component=comp)
 
-    assert_in('r', context, 'Not response found for component {}'.format(context.instance))
-
-    ca_version = context.r.content
-    __logger__.debug(ca_version)
-
-    returned_version = json.loads(ca_version)["version"]
+    # compare the version with the expected one
     eq_(returned_version, version,
         'Not the correct version: found({}) expected({})'.format(returned_version, version))
+
+    __logger__.debug("{} Version: {}".format(comp, returned_version))
+
+
+@then(u'the returned version from "STH" should match the "(?P<version>.+)"')
+def step_impl(context, version):
+    comp = "STH"
+
+    # Cast version returned (if any)
+    returned_version = component_version_check(context, component=comp)
+
+    # compare the version with the expected one
+    eq_(returned_version, version,
+        'Not the correct version: found({}) expected({})'.format(returned_version, version))
+
+    __logger__.debug("{} Version: {}".format(comp, returned_version))
+
+
+@then(u'the returned version from "ORC" should match the "(?P<version>.+)"')
+def step_impl(context, version):
+    comp = "ORC"
+
+    # Cast version returned (if any)
+    returned_version = component_version_check(context, component=comp)
+
+    # compare the version with the expected one
+    eq_(returned_version, version,
+        'Not the correct version: found({}) expected({})'.format(returned_version, version))
+
     __logger__.debug("{} Version: {}".format(comp, returned_version))
 
 

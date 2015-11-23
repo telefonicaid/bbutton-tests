@@ -52,6 +52,13 @@
       "protocol": "http",
       "version": ""
     },
+    "STH": {
+      "basiccheck": "/",
+      "heartbeat": "/",
+      "port": "8666",
+      "protocol": "http",
+      "version": ""
+    },
     "KS": {
       "basiccheck": "/",
       "heartbeat": "/",
