@@ -18,8 +18,8 @@ Feature: Context Broker connection with MySQL
     Examples:
       | SERVICE     | SERVICEPATH | ENTITY_ID | ENTITY_TYPE | ATTNAME   | ATTVALUE | METANAME | METATYPE | METAVALUE |
       | testservice | /testpath   | entity1   | bbutton     | ccid_name | 254156   | met1     | type1    | val1      |
-      | testservice | /testpath   | entity2   | bbutton     | imei_name | 8348938  | met2     | type2    | val2      |
-      | testservice | /testpath   | entity3   | bbutton     | attrName  | 291371   | met3     | type3    | val3      |
+#      | testservice | /testpath   | entity2   | bbutton     | imei_name | 8348938  | met2     | type2    | val2      |
+#      | testservice | /testpath   | entity3   | bbutton     | attrName  | 291371   | met3     | type3    | val3      |
 
 
   @ft-cb2mysql @c2m-02 @wip

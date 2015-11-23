@@ -59,7 +59,7 @@
       "cygnus_version_port": "8081",
       "cygnus_version_path": "/version",
       "defaultservice": "testservice",
-      "password": "password",
+      "password": "",
       "path": "/",
       "port": "3306",
       "protocol": "http",

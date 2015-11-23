@@ -21,7 +21,6 @@ __author__ = 'xvc'
 
 import logging
 import json
-
 from nose.tools import assert_true
 from iotqatools.cb_utils import CbNgsi10Utils
 from common.test_utils import remove_mysql_databases
@@ -98,13 +97,13 @@ def before_feature(context, feature):
     print(feature.tags)
     context.remember = {}
     context.o = {}
-    context.feature = {}
+    context.feature_data = {}
     context.arrays = {}
     context.o['db2remove'] = []
 
 
 def before_scenario(context, scenario):
-    context.feature["tags"] = context.tags
+    context.feature_data["tags"] = context.tags
     if 'init_db' in context.tags:
         __logger__.info("*********** Init DB to be used in scenario {} --->>>>>>>>".format(scenario))
 
@@ -115,19 +114,19 @@ def after_scenario(context, scenario):
             devices_delete_method(context)
         bb_delete_method(context)
 
-    if "ft-cbcygsql" in context.tags:
-        print(context.o["CB"])
-        context.o['CB'].convenience_entity_delete_url_method(entity_id=context.remember["entity_id"], entity_type=context.remember["entity_type"])
+    if "ft-cb2mysql" in context.tags:
+        if context.o and "CB" in context.o:
+            print (context.o["CB"])
+            context.o['CB'].convenience_entity_delete_url_method(entity_id=context.remember["entity_id"],
+                                                             entity_type=context.remember["entity_type"])
+
 
 def after_feature(context, feature):
-    if 'ft-cbcygsql' in context.feature["tags"]:
+    if 'ft-cb2mysql1' in context.feature_data["tags"]:
         __logger__.info("***********Cleaning DB {} --->>>>>>>>".format(context.o["db2remove"]))
         remove_mysql_databases(context)
 
     context.remember = {}
     context.o = {}
-    context.feature = {}
+    context.feature_data = {}
     context.arrays = {}
-
-
-
