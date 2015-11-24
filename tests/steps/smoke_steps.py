@@ -165,7 +165,7 @@ def step_impl(context, version):
     iota_version = context.r.content
     if context.config['components']["IOTA"]['iota_type'] == "node":
         __logger__.debug(iota_version)
-        returned_version = json.loads(iota_version)["LibVersion"]
+        returned_version = json.loads(iota_version)["libVersion"]
     else:
         returned_version = iota_version.split(" ")[3]
     eq_(returned_version, version,
