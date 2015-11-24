@@ -1,7 +1,8 @@
 {
   "environment": {
     "name": "BB-TEST",
-    "test_mode": "REMOTE"
+    "test_mode": "REMOTE",
+    "version": "v0.9"
   },
   "components": {
     "CA": {
@@ -49,6 +50,13 @@
       "basiccheck": "/",
       "heartbeat": "/",
       "port": "8084",
+      "protocol": "http",
+      "version": ""
+    },
+    "STH": {
+      "basiccheck": "/",
+      "heartbeat": "/",
+      "port": "8666",
       "protocol": "http",
       "version": ""
     },

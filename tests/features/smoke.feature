@@ -16,10 +16,10 @@ Feature: Black Button Smoke tests
       | CA       | GET     | /version      | 200           |
       | IOTA     | PING    | /iot/about    | 200           |
       | IOTM     | PING    | /iot/about    | 200           |
-      | ORC      | PING    | /             | 404           |
+      | ORC      | PING    | /v1.0/version | 200           |
       | KS       | GET     | /version      | 404           |
       | TP       | GET     | /sync/request | 405           |
-    # | STH      | GET     | /version      | Nan             |
+      | STH      | GET     | /version      | 200           |
 
 
   @ready @ft-smoke @smoke02 @check_version
@@ -29,12 +29,13 @@ Feature: Black Button Smoke tests
     Then the returned version from "<INSTANCE>" should match the "<VERSION>"
 
     Examples:
-      | INSTANCE | REQUEST | URI        | VERSION |
-      | CB       | GET     | /version   | 0.24.0  |
-      | IOTM     | GET     | /iot/about | 1.2.1   |
-      | IOTA     | GET     | /iot/about | 0.8.2   |
-      | CA       | GET     | /version   | 0.1.2   |
-    # | ORC      | GET     | /version   | Nan     |
+      | INSTANCE | REQUEST | URI           | VERSION |
+      | CB       | GET     | /version      | 0.25.0  |
+      | IOTM     | GET     | /iot/about    | 1.2.1   |
+      | IOTA     | GET     | /iot/about    | 0.8.4   |
+      | CA       | GET     | /version      | 0.1.3   |
+      | ORC      | GET     | /v1.0/version | 0.5.1   |
+      | STH      | GET     | /version      | 0.2.1   |
 
 
   @ready @ft-smoke @smoke04 @check_funcionality
@@ -54,5 +55,7 @@ Feature: Black Button Smoke tests
     #  | IOTA     | SERVICES  | GET    | 200         |
     #  | ORC      | USER      | GET    | 200         |
     #  | CA       | NOTIFY    | GET    | 200         |
+    #  | STH       | STHQUERY    | GET    | 200         |
+
 
 

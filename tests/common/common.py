@@ -20,7 +20,7 @@ __author__ = 'xvc'
 
 from behave import *
 import requests
-from nose.tools import eq_
+from nose.tools import eq_, assert_in
 from iotqatools.cb_utils import PayloadUtils, ContextElements, AttributesCreation
 
 import logging
@@ -241,3 +241,17 @@ def component_verifyssl_check(context, component):
         verify_ssl = False
 
     return verify_ssl
+
+def component_version_check(context, component):
+    eq_(context.r.status_code, 200,
+        "[ERROR] when calling {} responsed a HTTP {}".format(context.url_component, context.r.status_code))
+    "<INSTANCE>"
+
+    assert_in('r', context, 'Not response found for component {}'.format(context.instance))
+
+    version = context.r.content
+    __logger__.debug(version)
+
+    returned_version = json.loads(version)["version"]
+
+    return returned_version

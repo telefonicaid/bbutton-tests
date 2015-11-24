@@ -1,7 +1,8 @@
 {
   "environment": {
     "name": "BB-TEST",
-    "test_mode": "REMOTE"
+    "test_mode": "REMOTE",
+    "version": "v0.9"
   },
   "components": {
     "CA": {
@@ -25,6 +26,10 @@
       "pep": "127.0.0.1"
     },
     "IOTM": {
+      "instance": "127.0.0.1",
+      "pep": "127.0.0.1"
+    },
+    "STH": {
       "instance": "127.0.0.1",
       "pep": "127.0.0.1"
     },
