@@ -228,7 +228,7 @@ def step_impl(context):
                               data=json_payload)
     print(json_payload)
     print(context.r)
-    # print(context.r.content)
+    print(context.r.content)
     __logger__.debug(context.r.content)
     __logger__.debug(context.r.status_code)
     eq_(context.r.status_code, 201,

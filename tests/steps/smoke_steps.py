@@ -62,17 +62,19 @@ def step_impl(context, INSTANCE):
     :type context behave.runner.Context
     :type INSTANCE str
     """
+    if INSTANCE == "IOTA_LIB":
+        context.instance = "IOTA"
+    else:
+        context.instance = INSTANCE
 
-    context.instance = INSTANCE
-    context.instance_ip = context.config['components'][INSTANCE]['instance']
-    context.instance_port = context.config['components'][INSTANCE]['port']
-    context.url_component = "{}://{}:{}".format(context.config['components'][INSTANCE]['protocol'],
+    context.instance_ip = context.config['components'][context.instance]['instance']
+    context.instance_port = context.config['components'][context.instance]['port']
+    context.url_component = "{}://{}:{}".format(context.config['components'][context.instance]['protocol'],
                                                 context.instance_ip,
                                                 context.instance_port)
 
-    context.verify_ssl = component_verifyssl_check(context, INSTANCE)
+    context.verify_ssl = component_verifyssl_check(context, context.instance)
 
-    # context.headers=headers
     # default headers
     context.headers = {}
     context.headers = {'Accept': 'application/json'}
