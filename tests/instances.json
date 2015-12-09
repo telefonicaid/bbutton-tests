@@ -38,6 +38,9 @@
     },
     "CYGNUS": {
       "instance": "127.0.0.1"
+    },
+        "PEP": {
+      "instance": "127.0.0.1"
     }
   },
   "backend": {

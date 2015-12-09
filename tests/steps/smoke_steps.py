@@ -232,6 +232,19 @@ def step_impl(context, version):
 
     __logger__.debug("{} Version: {}".format(comp, returned_version))
 
+@then(u'the returned version from "PEP" should match the "(?P<version>.+)"')
+def step_impl(context, version):
+    comp = "PEP"
+
+    # Cast version returned (if any)
+    returned_version = component_version_check(context, component=comp)
+
+    # compare the version with the expected one
+    eq_(returned_version, version,
+        'Not the correct version: found({}) expected({})'.format(returned_version, version))
+
+    __logger__.debug("{} Version: {}".format(comp, returned_version))
+
 
 @then(u'the returned version from "ORC" should match the "(?P<version>.+)"')
 def step_impl(context, version):

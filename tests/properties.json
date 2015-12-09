@@ -76,6 +76,14 @@
       "version": "",
       "verifyssl": "True"
     },
+    "PEP": {
+      "basiccheck": "/",
+      "heartbeat": "/",
+      "port": "11211",
+      "protocol": "http",
+      "version": "",
+      "verifyssl": "True"
+    },
     "backend": {
       "mongodb": {
         "_id": "_id",

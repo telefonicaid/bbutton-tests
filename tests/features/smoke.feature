@@ -21,6 +21,7 @@ Feature: Black Button Smoke tests
       | TP       | GET     | /sync/request | 405           |
       | STH      | GET     | /version      | 200           |
       | CYGNUS   | GET     | /version      | 500           |
+      | PEP      | GET     | /version      | 200           |
 
 
   @ready @ft-smoke @smoke02 @check_version
@@ -38,7 +39,10 @@ Feature: Black Button Smoke tests
       | CA       | GET     | /version      | 0.1.3   |
       | ORC      | GET     | /v1.0/version | 0.6.0   |
       | STH      | GET     | /version      | 0.3.0   |
-   #   | CYGNUS   | GET     | /version      | 0.11.0  |
+      | PEP      | GET     | /version      | 0.7.1   |
+       #   | CYGNUS   | GET     | /about      | 0.11.0  |
+
+
 
 
   @ready @ft-smoke @smoke04 @check_funcionality
