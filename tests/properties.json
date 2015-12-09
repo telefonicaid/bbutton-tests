@@ -68,6 +68,14 @@
       "version": "",
       "verifyssl": "True"
     },
+    "CYGNUS": {
+      "basiccheck": "/",
+      "heartbeat": "/",
+      "port": "5050",
+      "protocol": "http",
+      "version": "",
+      "verifyssl": "True"
+    },
     "backend": {
       "mongodb": {
         "_id": "_id",

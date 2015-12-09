@@ -20,6 +20,7 @@ Feature: Black Button Smoke tests
       | KS       | GET     | /version      | 404           |
       | TP       | GET     | /sync/request | 405           |
       | STH      | GET     | /version      | 200           |
+      | CYGNUS   | GET     | /version      | 500           |
 
 
   @ready @ft-smoke @smoke02 @check_version
@@ -36,7 +37,8 @@ Feature: Black Button Smoke tests
       | IOTA_LIB | GET     | /iot/about    | 0.8.4   |
       | CA       | GET     | /version      | 0.1.3   |
       | ORC      | GET     | /v1.0/version | 0.6.0   |
-      | STH      | GET     | /version      | 0.2.2   |
+      | STH      | GET     | /version      | 0.3.0   |
+   #   | CYGNUS   | GET     | /version      | 0.11.0  |
 
 
   @ready @ft-smoke @smoke04 @check_funcionality
