@@ -71,7 +71,8 @@
     "CYGNUS": {
       "basiccheck": "/",
       "heartbeat": "/",
-      "port": "5050",
+      "port": "8089",
+      "norhport": "5050",
       "protocol": "http",
       "version": "",
       "verifyssl": "True"

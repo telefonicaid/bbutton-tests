@@ -20,7 +20,7 @@ Feature: Black Button Smoke tests
       | KS       | GET     | /version      | 404           |
       | TP       | GET     | /sync/request | 405           |
       | STH      | GET     | /version      | 200           |
-      | CYGNUS   | GET     | /version      | 500           |
+      | CYGNUS   | GET     | /version      | 200           |
       | PEP      | GET     | /version      | 200           |
 
 
@@ -31,18 +31,16 @@ Feature: Black Button Smoke tests
     Then the returned version from "<INSTANCE>" should match the "<VERSION>"
 
     Examples:
-      | INSTANCE | REQUEST | URI           | VERSION |
-      | CB       | GET     | /version      | 0.25.0  |
-      | IOTM     | GET     | /iot/about    | 1.2.1   |
-      | IOTA     | GET     | /iot/about    | 0.5.2   |
-      | IOTA_LIB | GET     | /iot/about    | 0.8.4   |
-      | CA       | GET     | /version      | 0.1.3   |
-      | ORC      | GET     | /v1.0/version | 0.6.0   |
-      | STH      | GET     | /version      | 0.3.0   |
-      | PEP      | GET     | /version      | 0.7.1   |
-       #   | CYGNUS   | GET     | /about      | 0.11.0  |
-
-
+      | INSTANCE | REQUEST | URI           | VERSION                                         |
+      | CB       | GET     | /version      | 0.25.0                                          |
+      | IOTM     | GET     | /iot/about    | 1.2.1                                           |
+      | IOTA     | GET     | /iot/about    | 0.5.2                                           |
+      | IOTA_LIB | GET     | /iot/about    | 0.8.4                                           |
+      | CA       | GET     | /version      | 0.1.3                                           |
+      | ORC      | GET     | /v1.0/version | 0.6.0                                           |
+      | STH      | GET     | /version      | 0.3.1                                           |
+      | PEP      | GET     | /version      | 0.7.1                                           |
+      | CYGNUS   | GET     | /version      | 0.11.0.2a9c87fb7fd6156225e2eed7fbc9792f1d9c5dfe |
 
 
   @ready @ft-smoke @smoke04 @check_funcionality
