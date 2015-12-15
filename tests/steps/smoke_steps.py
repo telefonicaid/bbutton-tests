@@ -96,10 +96,11 @@ def step_impl(context, request, uri):
 
             context.r = requests.get(url=context.url_component, headers=context.headers, verify=context.verify_ssl)
         except requests.exceptions.RequestException, e:
-            print (e)
             context.r = 'ERROR'
-            __logger__.debug('[ERROR] ', e)
-            assert_true(False, msg='[NETWORK ERROR]')
+            __logger__.debug('[ERROR] {}', e)
+            assert_true(False, msg='[{}] #NETWORK_ERROR at {} \n{}'.format( context.instance,
+                                                                            context.url_component,
+                                                                            e))
     else:
         context.r = 'ERROR'
 
@@ -129,7 +130,7 @@ def step_impl(context, version):
     assert_in('version', interior, 'Not version in response ({})'.format(interior))
     returned_version = interior['version']
     eq_(returned_version, version,
-        'Not the correct version: found({}) expected({})'.format(returned_version, version))
+        '[{}] #VERSION_CONFLICT: found({}) expected({})'.format(comp, returned_version, version))
     __logger__.debug("{} Version: {}".format(comp, returned_version))
 
 
@@ -150,7 +151,7 @@ def step_impl(context, version):
     else:
         returned_version = iota_version.split(" ")[3]
     eq_(returned_version, version,
-        'Not the correct version: found({}) expected({})'.format(returned_version, version))
+        '[{}] Not the correct version: found({}) expected({})'.format(comp, returned_version, version))
     __logger__.debug("{} Version: {}".format(comp, returned_version))
 
 
@@ -171,7 +172,7 @@ def step_impl(context, version):
     else:
         returned_version = iota_version.split(" ")[3]
     eq_(returned_version, version,
-        'Not the correct version: found({}) expected({})'.format(returned_version, version))
+        '[IOTA_LIB] Not the correct version: found({}) expected({})'.format(returned_version, version))
     __logger__.debug("{} Version: {}".format(comp, returned_version))
 
 
@@ -188,7 +189,7 @@ def step_impl(context, version):
     iotm_version = context.r.content
     returned_version = iotm_version.split(" ")[7]
     eq_(returned_version, version,
-        'Not the correct version: found({}) expected({})'.format(returned_version, version))
+        '[{}] Not the correct version: found({}) expected({})'.format(comp, returned_version, version))
     __logger__.debug("{} Version: {}".format(comp, returned_version))
 
 
@@ -201,7 +202,7 @@ def step_impl(context, version):
 
     # compare the version with the expected one
     eq_(returned_version, version,
-        'Not the correct version: found({}) expected({})'.format(returned_version, version))
+        '[{}] Not the correct version: found({}) expected({})'.format(comp, returned_version, version))
 
     __logger__.debug("{} Version: {}".format(comp, returned_version))
 
@@ -215,9 +216,10 @@ def step_impl(context, version):
 
     # compare the version with the expected one
     eq_(returned_version, version,
-        'Not the correct version: found({}) expected({})'.format(returned_version, version))
+        '[{}] Not the correct version: found({}) expected({})'.format(comp, returned_version, version))
 
     __logger__.debug("{} Version: {}".format(comp, returned_version))
+
 
 @then(u'the returned version from "CYGNUS" should match the "(?P<version>.+)"')
 def step_impl(context, version):
@@ -228,9 +230,10 @@ def step_impl(context, version):
 
     # compare the version with the expected one
     eq_(returned_version, version,
-        'Not the correct version: found({}) expected({})'.format(returned_version, version))
+        '[{}] Not the correct version: found({}) expected({})'.format(comp, returned_version, version))
 
     __logger__.debug("{} Version: {}".format(comp, returned_version))
+
 
 @then(u'the returned version from "PEP" should match the "(?P<version>.+)"')
 def step_impl(context, version):
@@ -241,7 +244,7 @@ def step_impl(context, version):
 
     # compare the version with the expected one
     eq_(returned_version, version,
-        'Not the correct version: found({}) expected({})'.format(returned_version, version))
+        '[{}] Not the correct version: found({}) expected({})'.format(comp, returned_version, version))
 
     __logger__.debug("{} Version: {}".format(comp, returned_version))
 
@@ -255,7 +258,7 @@ def step_impl(context, version):
 
     # compare the version with the expected one
     eq_(returned_version, version,
-        'Not the correct version: found({}) expected({})'.format(returned_version, version))
+        '[{}] Not the correct version: found({}) expected({})'.format(comp, returned_version, version))
 
     __logger__.debug("{} Version: {}".format(comp, returned_version))
 
@@ -359,7 +362,7 @@ def step_impl(context, REQUEST, ACTION):
                         break
                     else:
                         __logger__.debug(
-                            "#> Service returned but does not match with headers: {}".format(service["service"]))
+                                "#> Service returned but does not match with headers: {}".format(service["service"]))
 
     elif REQUEST == "PROTOCOLS" and ACTION == "GET":
         # Recover created services (if any)

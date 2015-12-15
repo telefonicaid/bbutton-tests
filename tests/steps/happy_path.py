@@ -428,23 +428,18 @@ def step_impl(context, DEVICE_ID, SECONDS, TIMES, STATUS):
 
     measure = "#{0}#{1}#{2}".format(DEVICE_ID, b_module_1, b_module_0)
     data = {"c": measure}
-    print (iota_url)
-    print (data)
-    print (headers)
+    print ("\nUrl: {},\nData: {}\nHeaders: {}".format(iota_url, data, headers))
 
     for x in xrange(int(TIMES)):
         context.r = requests.post(url=iota_url, data=data, headers=headers)
-        print (context.r.status_code)
-        print (context.r.content)
         eq_(200, context.r.status_code, "ERROR: MEASURE request IOTA failed: {}".format(context.r.status_code))
-
+        print ("\nResponse: {}".format(context.r.content))
         # chop the response:
         iota_answer = context.r.content.split("#")
         context.answer_device_id = iota_answer[1]
         context.answer_mod1 = iota_answer[2]
         context.answer_mod0 = iota_answer[3]
 
-        print (context.answer_mod1.split(","))
         try:
             if context.answer_mod1.split(",")[3].split(":")[1] == STATUS:
                 print ("STATUS CHANGED to {}".format(context.answer_mod1.split(",")[3].split(":")[1]))
@@ -489,8 +484,8 @@ def step_impl(context, THIRDPARTY, OP_RESULT):
     # chop the expected_result:
     expected = OP_RESULT.split("#")
 
-    print ("\n iota resp={} \n".format(iota_answer))
-    print ("\n expected resp={} \n".format(expected))
+    print ("\n IOTA resp={} \n".format(iota_answer))
+    print ("\n Expected resp={} \n".format(expected))
 
     # check device_id
     eq_(iota_answer[1], context.device_id, "Device_id does not match")
@@ -543,9 +538,11 @@ def step_impl(context, DEVICE_ID):
     measure = "#{},{}".format(DEVICE_ID, context.bt_request)
     data = {"c": measure}
 
+    print ("\n >> Push info: {}".format(data))
+
     context.r = requests.post(url=iota_url, data=data, headers=headers)
-    print (context.r.status_code)
-    print (context.r.content)
+    print ("\n << {}".format(context.r.status_code))
+    print ("<< {}".format(context.r.content))
 
     eq_(200, context.r.status_code, "ERROR: MEASURE request IOTA failed: {}".format(context.r.status_code))
 

@@ -93,7 +93,7 @@
         "password": "x",
         "port": 27017,
         "user": "orion",
-        "version": ""
+        "version": "3"
       }
     }
   },
