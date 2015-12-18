@@ -32,12 +32,12 @@ Feature: Black Button Smoke tests
 
     Examples:
       | INSTANCE | REQUEST | URI           | VERSION                                         |
-      | CB       | GET     | /version      | 0.26.0                                          |
+      | CB       | GET     | /version      | 0.26.1                                          |
       | IOTM     | GET     | /iot/about    | 1.2.1                                           |
       | IOTA     | GET     | /iot/about    | 0.5.3                                           |
       | IOTA_LIB | GET     | /iot/about    | 0.8.4                                           |
       | CA       | GET     | /version      | 0.1.4                                           |
-      | ORC      | GET     | /v1.0/version | 0.6.2                                          |
+      | ORC      | GET     | /v1.0/version | 0.6.3                                          |
       | STH      | GET     | /version      | 0.3.1                                           |
       | PEP      | GET     | /version      | 0.7.1                                           |
       | CYGNUS   | GET     | /version      | 0.11.0.2a9c87fb7fd6156225e2eed7fbc9792f1d9c5dfe |

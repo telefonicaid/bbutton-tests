@@ -29,7 +29,7 @@ import time
 from iotqatools.orchestator_utils import Orchestrator
 from iotqatools.iota_utils import Rest_Utils_IoTA
 from common.common import cb_sample_entity_create, cb_sample_entity_recover, ks_get_token, \
-    component_verifyssl_check, orc_get_services, orc_delete_service
+    component_verifyssl_check, orc_get_services, orc_delete_service, orc_delete_subservice
 from common.test_utils import *
 from nose.tools import eq_, assert_in, assert_true, assert_greater_equal, assert_not_in
 from pymongo import MongoClient
@@ -38,7 +38,7 @@ __logger__ = logging.getLogger("happy_path")
 use_step_matcher("re")
 
 
-@given('a Client of "(?P<SERVICE>.+)" and a ThirdParty called "(?P<SERVICEPATH>.+)"')
+@given('a Client of "(?P<SERVICE>.+)" and a Subservice called "(?P<SERVICEPATH>.+)"')
 def step_impl(context, SERVICE, SERVICEPATH):
     """
     :type context behave.runner.Context
@@ -134,12 +134,13 @@ def step_impl(context, INSTANCE, REQUEST, ACTION):
     if INSTANCE == "ORC" and REQUEST == "SERVICE" and ACTION == "DELETE":
         url = str("{0}/v1.0/service".format(context.url_component))
 
-        # Get list of services
+        # Get list of services if needed
+    if "service_id" not in context:
         for service in context.services:
-            if context.service == service["name"]:
-                print ("service retrieved: {} {}".format(service["name"], service["id"]))
-                context.service_id = service["id"]
-                break
+                if context.service == service["name"]:
+                    print ("service retrieved: {} {}".format(service["name"], service["id"]))
+                    context.service_id = service["id"]
+                    break
 
         # Get config env credentials
         context.user_admin = "cloud_admin"
@@ -152,6 +153,37 @@ def step_impl(context, INSTANCE, REQUEST, ACTION):
         else:
             eq_(True, False, "[Error] Service to delete ({}) not found".format(context.service))
 
+    if INSTANCE == "ORC" and REQUEST == "SUBSERVICE" and ACTION == "DELETE":
+
+        # Get service id if needed
+        if "service_id" not in context:
+            for service in context.services:
+                if context.service == service["name"]:
+                    print ("service retrieved: {} {}".format(service["name"], service["id"]))
+                    context.service_id = service["id"]
+                    break
+
+        # check needed params config env credentials
+        assert_in("service_admin", context, "Data missing 1")
+        assert_in("service_password", context, "Data missing 2")
+        assert_in("service_token", context, "Data missing 3")
+
+        if "service_id" and "subservice_id" in context:
+            delete_response = orc_delete_subservice(context, context.service_id, context.subservice_id)
+            eq_(204, delete_response,
+                "[ERROR] Deleting Service {} responsed a HTTP {}".format(context.service_id, delete_response))
+        else:
+            eq_(True, False, "[Error] SUBService to delete ({}) not found".format(context.service))
+
+        """
+        {
+          "SERVICE_NAME": "defaultservice",
+          "SUBSERVICE_NAME": "defaultservice",
+          "SERVICE_ADMIN_USER": "admin",
+          "SERVICE_ADMIN_PASSWORD": "pwd",
+          "SERVICE_ADMIN_TOKEN": "token"
+        }
+        """
 
 @then('subservice "(?P<SERVICEPATH>.+)" under the service is created')
 def step_impl(context, SERVICEPATH):
@@ -276,6 +308,29 @@ def step_impl(context):
     context.service_admin = "admin_domain"
     context.services = orc_get_services(context)
     print ("\n #>> Services availables: {} \n".format(context.services))
+
+    # Get target service_id
+    if "service" in context:
+        for service in context.services:
+            if context.service == service["name"]:
+                    context.service_id = service["id"]
+                    print ("#>> Service info: {} {}".format(service["name"], service["id"]))
+                    break
+
+@step('a list of subservices for service_admin "(?P<SERVICE_ADMIN>.+)" '
+      'and service_pwd "(?P<SERVICE_PWD>.+)" are retrieved')
+def step_impl(context, SERVICE_ADMIN, SERVICE_PWD):
+    """
+    :type context: behave.runner.Context
+    :type SERVICE_ADMIN: str
+    :type SERVICE_PWD: str
+    """
+    pass    # Recover a Token
+    context.service_admin = "cloud_admin"
+    context.service_password = "password"
+    # context.service_path
+    context.subservices = orc_get_subservices(context)
+    print ("\n #>> SUB_Services availables: {} \n".format(context.subservices))
 
 
 @step("the new service should be available in the IOTA")
@@ -674,3 +729,5 @@ def step_impl(context, DEVICE_ID):
     for doc in result:
         delete = devices.remove({"id": DEVICE_ID})
         print ("Deleted device {}, result: {}".format(DEVICE_ID, delete))
+
+
