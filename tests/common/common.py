@@ -30,7 +30,6 @@ import re
 
 __logger__ = logging.getLogger("common")
 
-
 # Sample values for smoke tests
 entity_id = 'Sala01'
 entity_type = 'Sala'
@@ -136,11 +135,20 @@ def cb_sample_entity_recover(cb):
     return r
 
 
-def ks_get_token(context):
-    ks_url = context.config["components"]["KS"]["protocol"] + "://" + \
-             context.config["components"]["KS"]["instance"] + ":" + \
-             context.config["components"]["KS"]["port"] + \
-             "/v3/auth/tokens"
+def ks_get_token(context, service=None, user=None, password=None, subservice=None):
+
+    if service is "":
+        service = context.service
+        user = context.user
+        password = context.password
+
+    protocol = context.config["components"]["KS"]["protocol"]
+    instance = context.config["components"]["KS"]["instance"]
+    port = context.config["components"]["KS"]["port"]
+    uri = "/v3/auth/tokens"
+
+    ks_url = "{}://{}:{}{}".format(protocol, instance, port, uri)
+
     payload = {
         "auth": {
             "identity": {
@@ -150,10 +158,10 @@ def ks_get_token(context):
                 "password": {
                     "user": {
                         "domain": {
-                            "name": context.service
+                            "name": service
                         },
-                        "name": context.user,
-                        "password": context.password
+                        "name": user,
+                        "password": password
                     }
                 }
             }
@@ -165,11 +173,54 @@ def ks_get_token(context):
     headers = {
         'content-type': "application/json",
         'accept': "application/json",
-        'fiware-service': context.service,
-        'fiware-servicepath': context.subservice
+        'fiware-service': service,
+    }
+
+    if subservice is not None:
+        headers.update({'fiware-servicepath': context.subservice})
+
+
+    context.r_ks = requests.request("POST", ks_url, data=payload, headers=headers)
+    ks_headers = context.r_ks.headers
+    return ks_headers["x-subject-token"]
+
+
+def ks_get_token_with_scope(context, token, service_name, subservice_name):
+    protocol = context.config["components"]["KS"]["protocol"]
+    instance = context.config["components"]["KS"]["instance"]
+    port = context.config["components"]["KS"]["port"]
+    uri = "/v3/auth/tokens"
+
+    ks_url = "{}://{}:{}{}".format(protocol, instance, port, uri)
+
+    payload = {
+        "auth": {
+            "identity": {
+                "methods": ["token"],
+                "token": {
+                    "id": token
+                }
+            },
+            "scope": {
+                "domain": {
+                    "name": service_name
+                }
+            }
+        }
+    }
+
+    payload = json.dumps(payload)
+    __logger__.debug(payload)
+
+    headers = {
+        'content-type': "application/json",
+        'accept': "application/json",
+        'fiware-service': service_name,
+        'fiware-servicepath': subservice_name
     }
 
     context.r_ks = requests.request("POST", ks_url, data=payload, headers=headers)
+    print (context.r_ks.text)
     ks_headers = context.r_ks.headers
     return ks_headers["x-subject-token"]
 
@@ -179,7 +230,7 @@ def orc_get_services(context):
               context.config["components"]["ORC"]["instance"] + ":" + \
               context.config["components"]["ORC"]["port"] + \
               "/v1.0/service"
-    
+
     headers = {
         'content-type': "application/json"
     }
@@ -196,43 +247,44 @@ def orc_get_services(context):
 
     try:
         context.r_orc = requests.get(orc_url, data=payload, headers=headers)
-        #print (context.r_orc.text)
+        # print (context.r_orc.text)
         eq_(context.r_orc.status_code, 200, "Response not valid from ORC instance getting services")
         context.r_orc = json.loads(context.r_orc.content)
         __logger__.debug(context.r_orc["domains"])
         return context.r_orc["domains"]
     except:
         return []
+
 
 def orc_get_subservices(context, service_id):
     orc_url = "{}://{}:{}/v1.0/service/{}/subservice".format(
-                    context.config["components"]["ORC"]["protocol"],
-                    context.config["components"]["ORC"]["instance"],
-                    context.config["components"]["ORC"]["port"],
-                    service_id)
+            context.config["components"]["ORC"]["protocol"],
+            context.config["components"]["ORC"]["instance"],
+            context.config["components"]["ORC"]["port"],
+            service_id)
+
+    # get token with scope from previous token
+    context.token_scope = ks_get_token_with_scope(context, context.token, context.service, context.subservice)
+    print ("#>> Token with scope: {}".format(context.token_scope))
 
     headers = {
-        'content-type': "application/json"
+        "content-type": "application/json",
+        "x-auth-token": context.token_scope
     }
-
-    payload = {
-        'DOMAIN_NAME': context.service_admin,
-        'SERVICE_ADMIN_USER': context.user_admin,
-        'SERVICE_ADMIN_PASSWORD': context.password_admin
-    }
-    payload = json.dumps(payload)
 
     __logger__.debug(orc_url)
-    __logger__.debug(payload)
+    __logger__.debug(headers)
 
     try:
-        context.r_orc = requests.get(orc_url, data=payload, headers=headers)
+        context.r_orc = requests.get(orc_url, headers=headers)
         eq_(context.r_orc.status_code, 200, "Response not valid from ORC instance getting services")
         context.r_orc = json.loads(context.r_orc.content)
-        __logger__.debug(context.r_orc["domains"])
-        return context.r_orc["domains"]
+        __logger__.debug(context.r_orc["projects"])
+        return context.r_orc["projects"]
     except:
+        __logger__.debug("No subservices found: []")
         return []
+
 
 def orc_delete_service(context, service_id):
     orc_url = context.config["components"]["ORC"]["protocol"] + "://" + \
@@ -264,23 +316,30 @@ def orc_delete_service(context, service_id):
         return "Error deleting service {}".format(service_id)
 
 
-def orc_delete_subservice(context, service_id, subservice_id):
+def orc_delete_subservice(context, service_id, subservice_id, admin_token):
     orc_url = context.config["components"]["ORC"]["protocol"] + "://" + \
               context.config["components"]["ORC"]["instance"] + ":" + \
               context.config["components"]["ORC"]["port"] + \
-              "/v1.0/service/{}/subservice".format(service_id)
+              "/v1.0/service/{}/subservice/{}".format(service_id, subservice_id)
 
     headers = {
-        'content-type': "application/json"
+        "content-type": "application/json"
     }
 
+
+
     payload = {
-        'SERVICE_ADMIN_USER': context.service_admin,
-        'SERVICE_ADMIN_PASSWORD': context.service_password
+        "SERVICE_NAME": context.service,
+        "SUBSERVICE_NAME": context.subservice,
+        "SERVICE_ADMIN_USER": context.user_admin,
+        "SERVICE_ADMIN_PASSWORD": context.password_admin,
+        "SERVICE_ADMIN_TOKEN": context.admin_token
     }
 
     payload = json.dumps(payload)
 
+    print ("headers: {}".format(headers))
+    print ("payload: {}".format(payload))
     __logger__.debug(orc_url)
     __logger__.debug(payload)
 
@@ -301,6 +360,7 @@ def component_verifyssl_check(context, component):
         verify_ssl = False
 
     return verify_ssl
+
 
 def component_version_check(context, component):
     eq_(context.r.status_code, 200,

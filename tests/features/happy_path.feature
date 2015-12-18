@@ -131,7 +131,9 @@ Feature: Happy path E2E functionality Sync-Async
   Scenario Outline: SC_5 Clean SERVICE data generated in happy path scenarios
     Given a Client of "<SERVICE>" and a Subservice called "<SERVICEPATH>"
     And a list of services for admin_cloud is retrieved
+    And a valid token is retrieved for user "<SERVICE_ADMIN>" and password "<SERVICE_PWD>"
     And a list of subservices for service_admin "<SERVICE_ADMIN>" and service_pwd "<SERVICE_PWD>" are retrieved
+    And an admin_token is retrieved
     When the "ORC" receive the request "SUBSERVICE" and action "DELETE"
     #And the "ORC" receive the request "SERVICE" and action "DELETE"
     #Then the service "<SERVICE>" should not be listed
