@@ -1,8 +1,8 @@
 Feature: Happy path E2E functionality Sync-Async
   In order to check if a blackbutton that can order a product
-  In a Service servicelll and Subservice thinkinthing
-  As a client has SYNC  BlackButtons: SSlll1011 and SAlll1022
-  As a client has ASYNC BlackButtons: ASlll1033 and SSlll1044
+  In a Service servicezzb and Subservice thinkinthing
+  As a client has SYNC  BlackButtons: SSzzb1011 and SAzzb1022
+  As a client has ASYNC BlackButtons: ASzzb1033 and SSzzb1044
   I should validate the lity of the platform to process the buttons requests to a third party
 
 
@@ -76,28 +76,26 @@ Feature: Happy path E2E functionality Sync-Async
       | ORION_PORT             | 10026                  |
 
 
-
-
     Examples:
       | SERVICE     | SERVICEPATH  | SERVICE_ADMIN | SERVICE_PWD | DEVICE_ID | ATT_INTERACTION_TYPE | TP_INTERACTION | TP_URL          |
-      | servicelll1 | thinkinthing | admin_bb      | 4passw0rd   | SSlll1011 | synchronous          | synchronous    | TP/sync/request |
-#      | servicelll2 | thinkinthing | admin_bb      | 4passw0rd   | SAlll1022 | synchronous          | asynchronous   | TP/async/create |
-#      | servicelll3 | thinkinthing | admin_bb      | 4passw0rd   | ASlll1033 | asynchronous         | synchronous    | TP/sync/request |
-#      | servicelll4 | thinkinthing | admin_bb      | 4passw0rd   | AAlll1044 | asynchronous         | asynchronous   | TP/async/create |
-#      | servicelll5 | thinkinthing | admin_bb      | 4passw0rd   | SSlll1055 | synchronous          | synchronous    | TP/sync/request |
+      | servicezzb1 | thinkinthing | admin_bb      | 4passw0rd   | SSzzb1011 | synchronous          | synchronous    | TP/sync/request |
+      | servicezzb2 | thinkinthing | admin_bb      | 4passw0rd   | SAzzb1022 | synchronous          | asynchronous   | TP/async/create |
+      | servicezzb3 | thinkinthing | admin_bb      | 4passw0rd   | ASzzb1033 | asynchronous         | synchronous    | TP/sync/request |
+      | servicezzb4 | thinkinthing | admin_bb      | 4passw0rd   | AAzzb1044 | asynchronous         | asynchronous   | TP/async/create |
+      | servicezzb5 | thinkinthing | admin_bb      | 4passw0rd   | SSzzb1055 | synchronous          | synchronous    | TP/sync/request |
 
   @ft-happypath @hp-provision-check @hp_sc02
   Scenario Outline: SC_2 User check a BlackButton is registered in BB-platform
-    Given a Client of "<SERVICE>" and a ThirdParty called "<SERVICEPATH>"
+    Given a Client of "<SERVICE>" and a Subservice called "<SERVICEPATH>"
     And a valid token is retrieved for user "<SERVICE_ADMIN>" and password "<SERVICE_PWD>"
     Then device "<DEVICE_ID>" should be listed under service and subservice
 
     Examples:
       | SERVICE     | SERVICEPATH  | SERVICE_ADMIN | SERVICE_PWD | DEVICE_ID |
-      | servicelll1 | thinkinthing | admin_bb      | 4passw0rd   | SSlll1011 |
-#      | servicelll2 | thinkinthing | admin_bb      | 4passw0rd   | SAlll1022 |
-#      | servicelll3 | thinkinthing | admin_bb      | 4passw0rd   | ASlll1033 |
-#      | servicelll4 | thinkinthing | admin_bb      | 4passw0rd   | AAlll1044 |
+      | servicezzb1 | thinkinthing | admin_bb      | 4passw0rd   | SSzzb1011 |
+      | servicezzb2 | thinkinthing | admin_bb      | 4passw0rd   | SAzzb1022 |
+      | servicezzb3 | thinkinthing | admin_bb      | 4passw0rd   | ASzzb1033 |
+      | servicezzb4 | thinkinthing | admin_bb      | 4passw0rd   | AAzzb1044 |
 
   @ft-happypath  @hp-button-flows @hp-button-sync @hp_sc03
   Scenario Outline: SC_3 Client push the button in the SYNC mode
@@ -108,13 +106,13 @@ Feature: Happy path E2E functionality Sync-Async
 
     Examples:
       | SERVICE     | SERVICEPATH  | DEVICE_ID | SYNC_MODE   | BT_REQUEST                        | TP_NAME | OP_RESULT                                  |
-      | servicelll1 | thinkinthing | SSlll1011 | synchronous | #3,BT,S,4,5,2000$WakeUp,#0,K1,30$ | TP      | #3,BT,S,1,rt-20;rrgb-00FF00;,0$#0,K1,300$, |
-#      | servicelll2 | thinkinthing | SAlll1022 | synchronous | #1,BT,S,2,1,2000$WakeUp,#0,K1,30$ | TP      | #1,BT,S,1,rt-20;rrgb-00FF00;,0$#0,K1,300$, |
+      | servicezzb1 | thinkinthing | SSzzb1011 | synchronous | #3,BT,S,4,5,2000$WakeUp,#0,K1,30$ | TP      | #3,BT,S,1,rt-20;rrgb-00FF00;,0$#0,K1,300$, |
+      | servicezzb2 | thinkinthing | SAzzb1022 | synchronous | #1,BT,S,2,1,2000$WakeUp,#0,K1,30$ | TP      | #1,BT,S,1,rt-20;rrgb-00FF00;,0$#0,K1,300$, |
 
 
   @ft-happypath @hp-button-flows @hp-button-async @hp_sc04
   Scenario Outline: SC_4 Client push the button in the ASYNC mode
-    Given a Client of "<SERVICE>" and a ThirdParty called "<SERVICEPATH>"
+    Given a Client of "<SERVICE>" and a Subservice called "<SERVICEPATH>"
     And a button_request "<BT_REQUEST>" for mode "<SYNC_MODE>"
     When the button "<DEVICE_ID>" is pressed in mode "<SYNC_MODE>" the IOTA should receive the request
     Then the button "<DEVICE_ID>" is pulling every "1" seconds during "10" times or until the IOTA request returns status "<STATUS>"
@@ -123,8 +121,8 @@ Feature: Happy path E2E functionality Sync-Async
 
     Examples:
       | SERVICE | SERVICEPATH | DEVICE_ID | SYNC_MODE | BT_REQUEST | STATUS | FINAL_STATUS |
-#      | servicelll3 | thinkinthing | ASlll1033 | asynchronous | #1,BT,C,3,2,2000$WakeUp,#0,K1,30$ | C.S    | C.S          |
-#      | servicelll4 | thinkinthing | AAlll1044 | asynchronous | #1,BT,C,1,1,2000$WakeUp,#0,K1,30$ | C.S    | C.S          |
+      | servicezzb3 | thinkinthing | ASzzb1033 | asynchronous | #1,BT,C,3,2,2000$WakeUp,#0,K1,30$ | C.S    | C.S          |
+      | servicezzb4 | thinkinthing | AAzzb1044 | asynchronous | #1,BT,C,1,1,2000$WakeUp,#0,K1,30$ | C.S    | C.S          |
 
 
   @ft-happypath1  @hp-service-clean @hp_sc05  @wip
@@ -133,16 +131,15 @@ Feature: Happy path E2E functionality Sync-Async
     And a list of services for admin_cloud is retrieved
     And a valid token is retrieved for user "<SERVICE_ADMIN>" and password "<SERVICE_PWD>"
     And a list of subservices for service_admin "<SERVICE_ADMIN>" and service_pwd "<SERVICE_PWD>" are retrieved
-    And an admin_token is retrieved
     When the "ORC" receive the request "SUBSERVICE" and action "DELETE"
-    #And the "ORC" receive the request "SERVICE" and action "DELETE"
-    #Then the service "<SERVICE>" should not be listed
+    And the "ORC" receive the request "SERVICE" and action "DELETE"
+    Then the service "<SERVICE>" should not be listed
 
     Examples:
       | SERVICE     | SERVICEPATH  | SERVICE_ADMIN | SERVICE_PWD |
-      | servicelll1 | thinkinthing | admin_bb      | 4passw0rd   |
-#      | servicelll2 | thinkinthing | admin_bb      | 4passw0rd|
-#      | servicelll3 | thinkinthing | admin_bb      | 4passw0rd|
-#      | servicelll4 | thinkinthing | admin_bb      | 4passw0rd|
-#      | servicelll5 | thinkinthing | admin_bb      | 4passw0rd|
+      | servicezzb1 | thinkinthing | admin_bb      | 4passw0rd   |
+      | servicezzb2 | thinkinthing | admin_bb      | 4passw0rd|
+      | servicezzb3 | thinkinthing | admin_bb      | 4passw0rd|
+      | servicezzb4 | thinkinthing | admin_bb      | 4passw0rd|
+      | servicezzb5 | thinkinthing | admin_bb      | 4passw0rd|
 

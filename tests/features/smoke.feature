@@ -34,16 +34,16 @@ Feature: Black Button Smoke tests
       | INSTANCE | REQUEST | URI           | VERSION                                         |
       | CB       | GET     | /version      | 0.26.1                                          |
       | IOTM     | GET     | /iot/about    | 1.2.1                                           |
-      | IOTA     | GET     | /iot/about    | 0.5.3                                           |
-      | IOTA_LIB | GET     | /iot/about    | 0.8.4                                           |
+      | IOTA     | GET     | /iot/about    | 0.5.4                                           |
+      | IOTA_LIB | GET     | /iot/about    | 0.9.0                                           |
       | CA       | GET     | /version      | 0.1.4                                           |
-      | ORC      | GET     | /v1.0/version | 0.6.3                                          |
-      | STH      | GET     | /version      | 0.3.1                                           |
-      | PEP      | GET     | /version      | 0.7.1                                           |
+      | ORC      | GET     | /v1.0/version | 0.6.8                                          |
+      | STH      | GET     | /version      | 0.4.1                                           |
+      | PEP      | GET     | /version      | 0.7.2                                           |
       | CYGNUS   | GET     | /version      | 0.11.0.2a9c87fb7fd6156225e2eed7fbc9792f1d9c5dfe |
 
 
-  @ready @ft-smoke @smoke04 @check_funcionality
+  @ready @ft-smoke-wip @smoke04 @check_funcionality
   Scenario Outline: SM_03 Instances are WORKING
     Given the instance of "<INSTANCE>" is accessible
     And a Client of "blackbutton01" and a ThirdParty called "testpizza"
@@ -53,8 +53,8 @@ Feature: Black Button Smoke tests
 
     Examples:
       | INSTANCE | REQUEST | ACTION | HTTP_RESPONSE |
-      | CB       | ENTITY  | CREATE | 200           |
-      | CB       | ENTITY  | GET    | 200           |
+    #  | CB       | ENTITY  | CREATE | 200           |
+    #  | CB       | ENTITY  | GET    | 200           |
     #  | KS       | TOKEN     | GET    | 201         |
     #  | IOTM     | PROTOCOLS | GET    | 200         |
     #  | IOTA     | SERVICES  | GET    | 200         |

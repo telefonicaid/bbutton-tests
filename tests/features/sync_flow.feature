@@ -7,7 +7,7 @@ Feature: Complete path E2E functionality Sync-Async / Sync-Sync
 
   @ft-syncflow @sf-button-flows @sf-01
   Scenario Outline: SC1 client push the button in the SYNC mode, and third party is SYNC
-    Given a Client of "<SERVICE>" and a ThirdParty called "<SERVICEPATH>"
+    Given a Client of "<SERVICE>" and a Subservice called "<SERVICEPATH>"
     When a service and subservice are created in the "ORC"
       | key                        | value           |
       | DOMAIN_NAME                | admin_domain    |
@@ -56,7 +56,7 @@ Feature: Complete path E2E functionality Sync-Async / Sync-Sync
 
   @ft-syncflow @sf-button-flows @sf-02
   Scenario Outline: SC2 client push the button and device is not registered
-    Given a Client of "<SERVICE>" and a ThirdParty called "<SERVICEPATH>"
+    Given a Client of "<SERVICE>" and a Subservice called "<SERVICEPATH>"
     When a service and subservice are created in the "ORC"
       | key                        | value           |
       | DOMAIN_NAME                | admin_domain    |
@@ -109,7 +109,7 @@ Feature: Complete path E2E functionality Sync-Async / Sync-Sync
 
   @ft-syncflow @sf-button-flows @sf-03
   Scenario Outline: SC3 client push the button and device is registered, but conditions fail
-    Given a Client of "<SERVICE>" and a ThirdParty called "<SERVICEPATH>"
+    Given a Client of "<SERVICE>" and a Subservice called "<SERVICEPATH>"
     When a service and subservice are created in the "ORC"
       | key                        | value           |
       | DOMAIN_NAME                | admin_domain    |

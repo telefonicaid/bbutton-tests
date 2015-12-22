@@ -136,7 +136,6 @@ def cb_sample_entity_recover(cb):
 
 
 def ks_get_token(context, service=None, user=None, password=None, subservice=None):
-
     if service is "":
         service = context.service
         user = context.user
@@ -178,7 +177,6 @@ def ks_get_token(context, service=None, user=None, password=None, subservice=Non
 
     if subservice is not None:
         headers.update({'fiware-servicepath': context.subservice})
-
 
     context.r_ks = requests.request("POST", ks_url, data=payload, headers=headers)
     ks_headers = context.r_ks.headers
@@ -297,8 +295,8 @@ def orc_delete_service(context, service_id):
     }
 
     payload = {
-        'SERVICE_ADMIN_USER': context.user_admin,
-        'SERVICE_ADMIN_PASSWORD': context.password_admin
+        'SERVICE_ADMIN_USER': "cloud_admin",
+        'SERVICE_ADMIN_PASSWORD': "password"
     }
 
     payload = json.dumps(payload)
@@ -308,6 +306,7 @@ def orc_delete_service(context, service_id):
 
     try:
         context.r_orc = requests.delete(orc_url, data=payload, headers=headers)
+        print (context.r_orc.text)
         eq_(context.r_orc.status_code, 204, "Response not valid from ORC instance deleting service")
         __logger__.debug(context.r_orc)
         print ("Service ({}) DELETED".format(service_id))
@@ -316,41 +315,48 @@ def orc_delete_service(context, service_id):
         return "Error deleting service {}".format(service_id)
 
 
-def orc_delete_subservice(context, service_id, subservice_id, admin_token):
+def orc_delete_subservice(context, service_id, subservice_id, admin_token=None):
     orc_url = context.config["components"]["ORC"]["protocol"] + "://" + \
               context.config["components"]["ORC"]["instance"] + ":" + \
               context.config["components"]["ORC"]["port"] + \
               "/v1.0/service/{}/subservice/{}".format(service_id, subservice_id)
 
     headers = {
-        "content-type": "application/json"
+        "content-type": "application/json",
+        "x-auth-token": admin_token
     }
 
-
-
-    payload = {
-        "SERVICE_NAME": context.service,
-        "SUBSERVICE_NAME": context.subservice,
-        "SERVICE_ADMIN_USER": context.user_admin,
-        "SERVICE_ADMIN_PASSWORD": context.password_admin,
-        "SERVICE_ADMIN_TOKEN": context.admin_token
-    }
+    # access with credentials
+    if admin_token is None:
+        payload = {
+            "SERVICE_NAME": context.service,
+            "SUBSERVICE_NAME": "/{}".format(context.subservice),
+            "SERVICE_ADMIN_USER": context.user_admin,
+            "SERVICE_ADMIN_PASSWORD": context.password_admin
+        }
+    # access with token
+    else:
+        payload = {
+            "SUBSERVICE_NAME": context.subservice
+        }
 
     payload = json.dumps(payload)
 
-    print ("headers: {}".format(headers))
-    print ("payload: {}".format(payload))
+    # print ("url: {}".format(orc_url))
+    # print ("headers: {}".format(headers))
+    # print ("payload: {}".format(payload))
     __logger__.debug(orc_url)
     __logger__.debug(payload)
 
     try:
         context.r_orc = requests.delete(orc_url, data=payload, headers=headers)
-        eq_(context.r_orc.status_code, 204, "Response not valid from ORC instance deleting service")
+        eq_(context.r_orc.status_code, 204,
+            "Response not valid from ORC instance deleting service REC: {}".format(context.r_orc.status_code))
         __logger__.debug(context.r_orc)
-        print ("Service ({}) DELETED".format(service_id))
+        print ("#>> SUBSERVICE ({}) DELETED [{}]".format(service_id, context.r_orc.status_code))
         return context.r_orc.status_code
     except:
-        return "Error deleting service {}".format(service_id)
+        return "Error deleting service {}\n{}".format(service_id, context.r_orc.text)
 
 
 def component_verifyssl_check(context, component):

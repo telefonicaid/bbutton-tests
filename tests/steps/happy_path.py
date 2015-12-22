@@ -134,29 +134,29 @@ def step_impl(context, INSTANCE, REQUEST, ACTION):
         print ("TOKEN service: {} \n".format(context.token_service))
 
     if INSTANCE == "ORC" and REQUEST == "SERVICE" and ACTION == "DELETE":
-        url = str("{0}/v1.0/service".format(context.url_component))
-
         # Get list of services if needed
-    if "service_id" not in context:
-        for service in context.services:
-            if context.service == service["name"]:
-                print ("service retrieved: {} {}".format(service["name"], service["id"]))
-                context.service_id = service["id"]
-                break
+        if "service_id" not in context:
+            for service in context.services:
+                if context.service == service["name"]:
+                    print ("#>> Service Targeted: {} {}".format(service["name"], service["id"]))
+                    context.service_id = service["id"]
+                    break
+
 
         # Get config env credentials
         context.user_admin = "cloud_admin"
         context.password_admin = "password"
+        context.domain_admin = "admin_domain"
+        domain_token = ks_get_token(context, service=context.domain_admin, user=context.user_admin, password=context.password_admin)
 
         if "service_id" in context:
             delete_response = orc_delete_service(context, context.service_id)
             eq_(204, delete_response,
-                "[ERROR] Deleting Service {} responsed a HTTP {}".format(context.service_id, delete_response))
+                "[ERROR] Deleting Service {} \n Orch responded: {}".format(context.service_id, delete_response))
         else:
             eq_(True, False, "[Error] Service to delete ({}) not found".format(context.service))
 
     if INSTANCE == "ORC" and REQUEST == "SUBSERVICE" and ACTION == "DELETE":
-
         # Get service id if needed
         if "service_id" not in context:
             for service in context.services:
@@ -167,35 +167,24 @@ def step_impl(context, INSTANCE, REQUEST, ACTION):
 
         # Get subservice id
         for subservice in context.subservices:
-
             if "/" + context.subservice == subservice["name"]:
                 print ("#>> Subservice Targeted: {} {}".format(subservice["name"], subservice["id"]))
                 context.subservice_id = subservice["id"]
                 break
 
-        context.user_admin = "cloud_admin"
-        context.password_admin = "password"
-        context.token_admin = ks_get_token(context,
-                                           service= "admin_domain",
-                                           user= "cloud_admin",
-                                           password= "password")
+        context.user_admin = "admin_bb"
+        context.password_admin = "4passw0rd"
+
+        context.token_scope = ks_get_token_with_scope(context, context.token, context.service, context.subservice)
+        # print ("#>> NEW Token with scope: {}".format(context.token_scope))
 
         delete_response = orc_delete_subservice(context,
                                                 context.service_id,
                                                 context.subservice_id,
-                                                context.token_admin)
+                                                context.token_scope)
+
         eq_(204, delete_response,
             "[ERROR] Deleting Service {} responsed a HTTP {}".format(context.service_id, delete_response))
-
-        """
-        {
-          "SERVICE_NAME": "defaultservice",
-          "SUBSERVICE_NAME": "defaultservice",
-          "SERVICE_ADMIN_USER": "admin",
-          "SERVICE_ADMIN_PASSWORD": "pwd",
-          "SERVICE_ADMIN_TOKEN": "token"
-        }
-        """
 
 
 @then('subservice "(?P<SERVICEPATH>.+)" under the service is created')
@@ -328,14 +317,13 @@ def step_impl(context):
     subservice = None
 
     context.admin_token = ks_get_token(context,
-                               service=service,
-                               user=user,
-                               password=password,
-                               subservice=subservice
-                               )
+                                       service=service,
+                                       user=user,
+                                       password=password,
+                                       subservice=subservice
+                                       )
 
     print ("\n#>> Admin Token to use: {} \n".format(context.admin_token))
-
 
 
 @step('a list of services for admin_cloud is retrieved')
@@ -351,7 +339,7 @@ def step_impl(context):
     context.service_admin = "admin_domain"
 
     context.services = orc_get_services(context)
-    print ("\n #>> Services availables: {} \n".format(context.services))
+    print ("\n#>> Services availables: {} \n".format(context.services))
 
     # Get target service_id
     if "service" in context:
@@ -445,22 +433,25 @@ def step_impl(context, DEVICE_ID):
 
     eq_(200, context.r.status_code, "ERROR: Devices request IOTA failed: {}".format(context.r.status_code))
 
-    devices_array = json.loads(context.r.content)
-    print ("devices {}".format(context.r.content))
-    eq_(DEVICE_ID, devices_array[0]["name"], "ERROR: Device not found")
-    eq_("BlackButton", devices_array[0]["type"], "ERROR: Device type does not match")
+    response = json.loads(context.r.content)
+
+    print ("response".format(context.r.content))
+    devices_array = response["devices"]
+    print ("devices {}".format(devices_array[0]))
+    eq_(DEVICE_ID, devices_array[0]["device_id"], "ERROR: Device not found")
+    eq_("BlackButton", devices_array[0]["entity_type"], "ERROR: Device type does not match")
     eq_(context.service, devices_array[0]["service"], "ERROR: Service does not match")
-    eq_("/{}".format(context.servicepath), devices_array[0]["subservice"], "ERROR: ServicePath does not match")
+    eq_("/{}".format(context.servicepath), devices_array[0]["service_path"], "ERROR: ServicePath does not match")
 
     # show returned response
     __logger__.debug("IOTA (devices_list) returns {} ".format(devices_array))
 
     for device in devices_array:
         __logger__.debug(device)
-        if device["id"] == DEVICE_ID:
+        if device["device_id"] == DEVICE_ID:
             print ("Device found: {}".format(device))
             eq_(context.service, device["service"])
-            eq_("/" + context.subservice, device["subservice"])
+            eq_("/" + context.subservice, device["service_path"])
 
 
 @then('the button "(?P<DEVICE_ID>.+)" is pulling every "(?P<SECONDS>.+)" seconds '

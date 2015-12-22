@@ -104,9 +104,10 @@ def before_scenario(context, scenario):
 
 
 def after_scenario(context, scenario):
-    if "ft-syncflow" in context.tags:
-        if "sf-02" not in context.tags:
-            devices_delete_method(context)
-        bb_delete_method(context)
+    if "tags" in context:
+        if "ft-syncflow" in context.tags:
+            if "sf-02" not in context.tags:
+                devices_delete_method(context)
+            bb_delete_method(context)
 
 
