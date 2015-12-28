@@ -2,7 +2,7 @@
   "environment": {
     "name": "BB-TEST",
     "test_mode": "REMOTE",
-    "version": "v0.9"
+    "version": "v0.9.1"
   },
   "components": {
     "CA": {
@@ -19,11 +19,19 @@
       "protocol": "http",
       "verifyssl": "True"
     },
-    "TP": {
-      "basiccheck": "/version",
-      "path": "/async",
-      "port": "6500",
+    "ORC": {
+      "basiccheck": "/",
+      "heartbeat": "/",
+      "port": "8084",
       "protocol": "http",
+      "version": ""
+    },
+    "KS": {
+      "basiccheck": "/",
+      "heartbeat": "/",
+      "port": "5001",
+      "protocol": "http",
+      "version": "",
       "verifyssl": "True"
     },
     "IOTA": {
@@ -46,13 +54,6 @@
       "version": "",
       "verifyssl": "True"
     },
-    "ORC": {
-      "basiccheck": "/",
-      "heartbeat": "/",
-      "port": "8084",
-      "protocol": "http",
-      "version": ""
-    },
     "STH": {
       "basiccheck": "/",
       "heartbeat": "/",
@@ -60,12 +61,11 @@
       "protocol": "http",
       "version": ""
     },
-    "KS": {
-      "basiccheck": "/",
-      "heartbeat": "/",
-      "port": "5001",
+    "TP": {
+      "basiccheck": "/version",
+      "path": "/async",
+      "port": "6500",
       "protocol": "http",
-      "version": "",
       "verifyssl": "True"
     },
     "CYGNUS": {
@@ -131,5 +131,3 @@
     ]
   }
 }
-
-
