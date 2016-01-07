@@ -1,8 +1,8 @@
 Feature: Happy path E2E functionality Sync-Async
   In order to check if a blackbutton that can order a product
-  In a Service servicezzb and Subservice thinkinthing
-  As a client has SYNC  BlackButtons: SSzzb1011 and SAzzb1022
-  As a client has ASYNC BlackButtons: ASzzb1033 and SSzzb1044
+  In a Service servicezzq and Subservice thinkinthing
+  As a client has SYNC  BlackButtons: SSzzq1011 and SAzzq1022
+  As a client has ASYNC BlackButtons: ASzzq1033 and SSzzq1044
   I should validate the lity of the platform to process the buttons requests to a third party
 
 
@@ -78,11 +78,11 @@ Feature: Happy path E2E functionality Sync-Async
 
     Examples:
       | SERVICE     | SERVICEPATH  | SERVICE_ADMIN | SERVICE_PWD | DEVICE_ID | ATT_INTERACTION_TYPE | TP_INTERACTION | TP_URL          |
-      | servicezzb1 | thinkinthing | admin_bb      | 4passw0rd   | SSzzb1011 | synchronous          | synchronous    | TP/sync/request |
-      | servicezzb2 | thinkinthing | admin_bb      | 4passw0rd   | SAzzb1022 | synchronous          | asynchronous   | TP/async/create |
-      | servicezzb3 | thinkinthing | admin_bb      | 4passw0rd   | ASzzb1033 | asynchronous         | synchronous    | TP/sync/request |
-      | servicezzb4 | thinkinthing | admin_bb      | 4passw0rd   | AAzzb1044 | asynchronous         | asynchronous   | TP/async/create |
-      | servicezzb5 | thinkinthing | admin_bb      | 4passw0rd   | SSzzb1055 | synchronous          | synchronous    | TP/sync/request |
+      | servicezzq1 | thinkinthing | admin_bb      | 4passw0rd   | SSzzq1011 | synchronous          | synchronous    | TP/sync/request |
+      | servicezzq2 | thinkinthing | admin_bb      | 4passw0rd   | SAzzq1022 | synchronous          | asynchronous   | TP/async/create |
+      | servicezzq3 | thinkinthing | admin_bb      | 4passw0rd   | ASzzq1033 | asynchronous         | synchronous    | TP/sync/request |
+      | servicezzq4 | thinkinthing | admin_bb      | 4passw0rd   | AAzzq1044 | asynchronous         | asynchronous   | TP/async/create |
+      | servicezzq5 | thinkinthing | admin_bb      | 4passw0rd   | SSzzq1055 | synchronous          | synchronous    | TP/sync/request |
 
   @ft-happypath @hp-provision-check @hp_sc02
   Scenario Outline: SC_2 User check a BlackButton is registered in BB-platform
@@ -92,10 +92,10 @@ Feature: Happy path E2E functionality Sync-Async
 
     Examples:
       | SERVICE     | SERVICEPATH  | SERVICE_ADMIN | SERVICE_PWD | DEVICE_ID |
-      | servicezzb1 | thinkinthing | admin_bb      | 4passw0rd   | SSzzb1011 |
-      | servicezzb2 | thinkinthing | admin_bb      | 4passw0rd   | SAzzb1022 |
-      | servicezzb3 | thinkinthing | admin_bb      | 4passw0rd   | ASzzb1033 |
-      | servicezzb4 | thinkinthing | admin_bb      | 4passw0rd   | AAzzb1044 |
+      | servicezzq1 | thinkinthing | admin_bb      | 4passw0rd   | SSzzq1011 |
+      | servicezzq2 | thinkinthing | admin_bb      | 4passw0rd   | SAzzq1022 |
+      | servicezzq3 | thinkinthing | admin_bb      | 4passw0rd   | ASzzq1033 |
+      | servicezzq4 | thinkinthing | admin_bb      | 4passw0rd   | AAzzq1044 |
 
   @ft-happypath  @hp-button-flows @hp-button-sync @hp_sc03
   Scenario Outline: SC_3 Client push the button in the SYNC mode
@@ -106,8 +106,8 @@ Feature: Happy path E2E functionality Sync-Async
 
     Examples:
       | SERVICE     | SERVICEPATH  | DEVICE_ID | SYNC_MODE   | BT_REQUEST                        | TP_NAME | OP_RESULT                                  |
-      | servicezzb1 | thinkinthing | SSzzb1011 | synchronous | #3,BT,S,4,5,2000$WakeUp,#0,K1,30$ | TP      | #3,BT,S,1,rt-20;rrgb-00FF00;,0$#0,K1,300$, |
-      | servicezzb2 | thinkinthing | SAzzb1022 | synchronous | #1,BT,S,2,1,2000$WakeUp,#0,K1,30$ | TP      | #1,BT,S,1,rt-20;rrgb-00FF00;,0$#0,K1,300$, |
+      | servicezzq1 | thinkinthing | SSzzq1011 | synchronous | #3,BT,S,4,5,2000$WakeUp,#0,K1,30$ | TP      | #3,BT,S,1,rt-20;rrgb-00FF00;,0$#0,K1,300$, |
+      | servicezzq2 | thinkinthing | SAzzq1022 | synchronous | #1,BT,S,2,1,2000$WakeUp,#0,K1,30$ | TP      | #1,BT,S,1,rt-20;rrgb-00FF00;,0$#0,K1,300$, |
 
 
   @ft-happypath @hp-button-flows @hp-button-async @hp_sc04
@@ -121,8 +121,8 @@ Feature: Happy path E2E functionality Sync-Async
 
     Examples:
       | SERVICE | SERVICEPATH | DEVICE_ID | SYNC_MODE | BT_REQUEST | STATUS | FINAL_STATUS |
-      | servicezzb3 | thinkinthing | ASzzb1033 | asynchronous | #1,BT,C,3,2,2000$WakeUp,#0,K1,30$ | C.S    | C.S          |
-      | servicezzb4 | thinkinthing | AAzzb1044 | asynchronous | #1,BT,C,1,1,2000$WakeUp,#0,K1,30$ | C.S    | C.S          |
+      | servicezzq3 | thinkinthing | ASzzq1033 | asynchronous | #1,BT,C,3,2,2000$WakeUp,#0,K1,30$ | C.S    | C.S          |
+      | servicezzq4 | thinkinthing | AAzzq1044 | asynchronous | #1,BT,C,1,1,2000$WakeUp,#0,K1,30$ | C.S    | C.S          |
 
 
   @ft-happypath  @hp-service-clean @hp_sc05
@@ -137,9 +137,9 @@ Feature: Happy path E2E functionality Sync-Async
 
     Examples:
       | SERVICE     | SERVICEPATH  | SERVICE_ADMIN | SERVICE_PWD |
-      | servicezzb1 | thinkinthing | admin_bb      | 4passw0rd   |
-      | servicezzb2 | thinkinthing | admin_bb      | 4passw0rd|
-      | servicezzb3 | thinkinthing | admin_bb      | 4passw0rd|
-      | servicezzb4 | thinkinthing | admin_bb      | 4passw0rd|
-      | servicezzb5 | thinkinthing | admin_bb      | 4passw0rd|
+      | servicezzq1 | thinkinthing | admin_bb      | 4passw0rd   |
+      | servicezzq2 | thinkinthing | admin_bb      | 4passw0rd|
+      | servicezzq3 | thinkinthing | admin_bb      | 4passw0rd|
+      | servicezzq4 | thinkinthing | admin_bb      | 4passw0rd|
+      | servicezzq5 | thinkinthing | admin_bb      | 4passw0rd|
 

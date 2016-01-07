@@ -21,6 +21,7 @@ __author__ = 'xvc'
 
 import logging
 import json
+import time
 
 from nose.tools import assert_true
 from common.test_utils import bb_delete_method, devices_delete_method
@@ -95,7 +96,8 @@ def before_feature(context, feature):
     context.remember = {}
     context.o = {}
     context.feature_data = {}
-
+    # Jenkins needed time between features
+    time.sleep(1)
 
 def before_scenario(context, scenario):
     context.feature_data["tags"] = context.tags
