@@ -44,7 +44,7 @@ def merge(a, b, path=None):
             elif a[key] == b[key]:
                 pass  # same leaf value
             else:
-                raise Exception('Conflict at %s' % '.'.join(path + [str(key)]))
+                raise Exception('Conflict at {} with {} and {} / {}'.format(path, (key), a[key], b[key]))
         else:
             a[key] = b[key]
     return a
@@ -104,9 +104,8 @@ def before_scenario(context, scenario):
 
 
 def after_scenario(context, scenario):
-    if "ft-syncflow" in context.tags:
-        if "sf-02" not in context.tags:
-            devices_delete_method(context)
-        bb_delete_method(context)
-
-
+    if "tags" in context:
+        if "ft-syncflow" in context.tags:
+            if "sf-02" not in context.tags:
+                devices_delete_method(context)
+            bb_delete_method(context)

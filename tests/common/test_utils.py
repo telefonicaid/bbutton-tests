@@ -398,8 +398,9 @@ def bb_delete_method(context):
 
 
 def devices_delete_method(context):
-    if "Fiware-Service" not in context.headers:
-        context.headers.update({"Fiware-Service": context.service, "Fiware-ServicePath": context.servicepath})
+    if "headers" in context:
+        if "Fiware-Service" not in context.headers:
+            context.headers.update({"Fiware-Service": context.service, "Fiware-ServicePath": context.servicepath})
 
 
     context.url_component = get_endpoint(context.instance_protocol,
