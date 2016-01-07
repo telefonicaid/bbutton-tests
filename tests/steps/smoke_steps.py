@@ -28,7 +28,7 @@ from iotqatools.cb_utils import CbNgsi10Utils, EntitiesConsults, PayloadUtils, N
     AttributesCreation, MetadatasCreation
 from iotqatools.iota_utils import Rest_Utils_IoTA
 from common.common import cb_sample_entity_create, cb_sample_entity_recover, ks_get_token, component_verifyssl_check, \
-    component_version_check
+    component_version_check, node_version_checker
 import logging
 import ast
 import json
@@ -196,71 +196,31 @@ def step_impl(context, version):
 @then(u'the returned version from "CA" should match the "(?P<version>.+)"')
 def step_impl(context, version):
     comp = "CA"
-
-    # Cast version returned (if any)
-    returned_version = component_version_check(context, component=comp)
-
-    # compare the version with the expected one
-    eq_(returned_version, version,
-        '[{}] Not the correct version: found({}) expected({})'.format(comp, returned_version, version))
-
-    __logger__.debug("{} Version: {}".format(comp, returned_version))
+    node_version_checker(context, component=comp, version=version)
 
 
 @then(u'the returned version from "STH" should match the "(?P<version>.+)"')
 def step_impl(context, version):
     comp = "STH"
-
-    # Cast version returned (if any)
-    returned_version = component_version_check(context, component=comp)
-
-    # compare the version with the expected one
-    eq_(returned_version, version,
-        '[{}] Not the correct version: found({}) expected({})'.format(comp, returned_version, version))
-
-    __logger__.debug("{} Version: {}".format(comp, returned_version))
+    node_version_checker(context, component=comp, version=version)
 
 
 @then(u'the returned version from "CYGNUS" should match the "(?P<version>.+)"')
 def step_impl(context, version):
     comp = "CYGNUS"
-
-    # Cast version returned (if any)
-    returned_version = component_version_check(context, component=comp)
-
-    # compare the version with the expected one
-    eq_(returned_version, version,
-        '[{}] Not the correct version: found({}) expected({})'.format(comp, returned_version, version))
-
-    __logger__.debug("{} Version: {}".format(comp, returned_version))
+    node_version_checker(context, component=comp, version=version)
 
 
 @then(u'the returned version from "PEP" should match the "(?P<version>.+)"')
 def step_impl(context, version):
     comp = "PEP"
-
-    # Cast version returned (if any)
-    returned_version = component_version_check(context, component=comp)
-
-    # compare the version with the expected one
-    eq_(returned_version, version,
-        '[{}] Not the correct version: found({}) expected({})'.format(comp, returned_version, version))
-
-    __logger__.debug("{} Version: {}".format(comp, returned_version))
+    node_version_checker(context, component=comp, version=version)
 
 
 @then(u'the returned version from "ORC" should match the "(?P<version>.+)"')
 def step_impl(context, version):
     comp = "ORC"
-
-    # Cast version returned (if any)
-    returned_version = component_version_check(context, component=comp)
-
-    # compare the version with the expected one
-    eq_(returned_version, version,
-        '[{}] Not the correct version: found({}) expected({})'.format(comp, returned_version, version))
-
-    __logger__.debug("{} Version: {}".format(comp, returned_version))
+    node_version_checker(context, component=comp, version=version)
 
 
 @when('I send a request type "(?P<REQUEST>.+)" and action "(?P<ACTION>.+)"')

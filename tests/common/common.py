@@ -381,3 +381,14 @@ def component_version_check(context, component):
     returned_version = json.loads(version)["version"]
 
     return returned_version
+
+
+def node_version_checker(context, component, version):
+    # Cast version returned (if any)
+    returned_version = component_version_check(context, component=component)
+
+    # compare the version with the expected one
+    eq_(returned_version, version,
+        '[{}] Not the correct version: found({}) expected({})'.format(component, returned_version, version))
+
+    __logger__.debug("{} Version: {}".format(component, returned_version))
