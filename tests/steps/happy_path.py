@@ -25,6 +25,7 @@ import requests
 import logging
 import json
 import time
+import datetime
 
 from iotqatools.orchestator_utils import Orchestrator
 from iotqatools.iota_utils import Rest_Utils_IoTA
@@ -523,7 +524,7 @@ def step_impl(context, DEVICE_ID, SECONDS, TIMES, STATUS):
     for x in xrange(int(TIMES)):
         context.r = requests.post(url=iota_url, data=data, headers=headers)
         eq_(200, context.r.status_code, "ERROR: MEASURE request IOTA failed: {}".format(context.r.status_code))
-        print ("\nResponse: {}".format(context.r.content))
+        print ("\nResponse: {} #{}-{} ".format(context.r.content, x, datetime.datetime.now()))
         # chop the response:
         iota_answer = context.r.content.split("#")
         context.answer_device_id = iota_answer[1]
@@ -550,14 +551,13 @@ def step_impl(context, DEVICE_ID, FINAL_STATUS):
     :type FINAL_STATUS str
     """
 
-    if context.final_state is not None:
+    if "final_state" in context:
         eq_(FINAL_STATUS,
             context.final_state,
             "# Error final status ({}) does not match the expected result ({})".format(
                     FINAL_STATUS,
                     context.final_state))
 
-        # TODO: Close the request to TP
 
 
 @step('the ThirdParty "(?P<THIRDPARTY>.+)" changed the status to "(?P<OP_RESULT>.+)"')
