@@ -125,7 +125,7 @@ Feature: Happy path E2E functionality Sync-Async
       | servicezzb4 | thinkinthing | AAzzb1044 | asynchronous | #1,BT,C,1,1,2000$WakeUp,#0,K1,30$ | C.S    | C.S          |
 
 
-  @ft-happypath1  @hp-service-clean @hp_sc05  @wip
+  @ft-happypath  @hp-service-clean @hp_sc05  @wip
   Scenario Outline: SC_5 Clean SERVICE data generated in happy path scenarios
     Given a Client of "<SERVICE>" and a Subservice called "<SERVICEPATH>"
     And a list of services for admin_cloud is retrieved
