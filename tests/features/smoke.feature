@@ -36,7 +36,7 @@ Feature: Black Button Smoke tests
       | IOTM     | GET     | /iot/about    | 1.2.1                                           |
       | IOTA     | GET     | /iot/about    | 0.5.4                                           |
       | IOTA_LIB | GET     | /iot/about    | 0.9.0                                           |
-      | CA       | GET     | /version      | 0.1.4                                           |
+      | CA       | GET     | /version      | 0.2.1                                           |
       | ORC      | GET     | /v1.0/version | 0.6.8                                          |
       | STH      | GET     | /version      | 0.4.1                                           |
       | PEP      | GET     | /version      | 0.7.2                                           |

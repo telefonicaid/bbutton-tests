@@ -2,7 +2,7 @@
   "environment": {
     "name": "BB-TEST",
     "test_mode": "REMOTE",
-    "version": "v0.9.1"
+    "version": "v0.9.2"
   },
   "components": {
     "CA": {
@@ -34,7 +34,7 @@
       "pep": "127.0.0.1"
     },
     "TP": {
-      "instance": "52.24.15.222"
+      "instance": "127.0.0.1"
     },
     "CYGNUS": {
       "instance": "127.0.0.1"
