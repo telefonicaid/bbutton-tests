@@ -364,7 +364,6 @@ def step_impl(context, SERVICE_ADMIN, SERVICE_PWD):
     context.service_password = SERVICE_PWD
 
     context.subservices = orc_get_subservices(context, context.service_id)
-    # print ("\n #>> SUB_Services availables: {} \n".format(context.subservices))
 
 
 @step("the new service should be available in the IOTA")
