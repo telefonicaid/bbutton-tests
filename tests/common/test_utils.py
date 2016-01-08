@@ -368,14 +368,13 @@ def get_endpoint(protocol, instance, port, path=None):
         return "{}://{}:{}{}".format(protocol, instance, port, path)
 
 
-
 def bb_delete_method(context):
     context.url_component = get_endpoint(context.instance_protocol,
                                          context.instance_ip,
                                          context.instance_port)
     url = str("{}/v1.0/service".format(context.url_component))
 
-    #Get list of services
+    # Get list of services
     context.service_admin = "admin_domain"
     context.user_admin = "cloud_admin"
     context.password_admin = "password"
@@ -402,10 +401,9 @@ def devices_delete_method(context):
         if "Fiware-Service" not in context.headers:
             context.headers.update({"Fiware-Service": context.service, "Fiware-ServicePath": context.servicepath})
 
-
-    context.url_component = get_endpoint(context.instance_protocol,
-                                         "localhost",
-                                         "4041")
+    context.url_component = get_endpoint(context.config["components"]["IOTA"]["protocol"],
+                                         context.config["components"]["IOTA"]["instance"],
+                                         context.config["components"]["IOTA"]["port"])
 
     url = str("{}/iot/devices/{}".format(context.url_component, context.device_id))
 
@@ -414,4 +412,3 @@ def devices_delete_method(context):
         __logger__.info("DEVICE ({}) deleted".format(context.device_id))
     except ValueError:
         __logger__.error("[Error] Device to delete ({}) not found".format(context.device_id))
-
