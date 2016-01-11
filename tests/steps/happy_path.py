@@ -25,11 +25,14 @@ import requests
 import logging
 import json
 import time
+import datetime
 
 from iotqatools.orchestator_utils import Orchestrator
 from iotqatools.iota_utils import Rest_Utils_IoTA
-from common.common import cb_sample_entity_create, cb_sample_entity_recover, ks_get_token, \
-    component_verifyssl_check, orc_get_services, orc_delete_service
+from common.common import cb_sample_entity_create, cb_sample_entity_recover, \
+    ks_get_token, ks_get_token_with_scope, \
+    component_verifyssl_check, \
+    orc_get_services, orc_get_subservices, orc_delete_service, orc_delete_subservice
 from common.test_utils import *
 from nose.tools import eq_, assert_in, assert_true, assert_greater_equal, assert_not_in
 from pymongo import MongoClient
@@ -38,7 +41,7 @@ __logger__ = logging.getLogger("happy_path")
 use_step_matcher("re")
 
 
-@given('a Client of "(?P<SERVICE>.+)" and a ThirdParty called "(?P<SERVICEPATH>.+)"')
+@given('a Client of "(?P<SERVICE>.+)" and a Subservice called "(?P<SERVICEPATH>.+)"')
 def step_impl(context, SERVICE, SERVICEPATH):
     """
     :type context behave.runner.Context
@@ -132,25 +135,57 @@ def step_impl(context, INSTANCE, REQUEST, ACTION):
         print ("TOKEN service: {} \n".format(context.token_service))
 
     if INSTANCE == "ORC" and REQUEST == "SERVICE" and ACTION == "DELETE":
-        url = str("{0}/v1.0/service".format(context.url_component))
+        # Get list of services if needed
+        if "service_id" not in context:
+            for service in context.services:
+                if context.service == service["name"]:
+                    print ("#>> Service Targeted: {} {}".format(service["name"], service["id"]))
+                    context.service_id = service["id"]
+                    break
 
-        # Get list of services
-        for service in context.services:
-            if context.service == service["name"]:
-                print ("service retrieved: {} {}".format(service["name"], service["id"]))
-                context.service_id = service["id"]
-                break
 
         # Get config env credentials
         context.user_admin = "cloud_admin"
         context.password_admin = "password"
+        context.domain_admin = "admin_domain"
+        domain_token = ks_get_token(context, service=context.domain_admin, user=context.user_admin, password=context.password_admin)
 
         if "service_id" in context:
             delete_response = orc_delete_service(context, context.service_id)
             eq_(204, delete_response,
-                "[ERROR] Deleting Service {} responsed a HTTP {}".format(context.service_id, delete_response))
+                "[ERROR] Deleting Service {} \n Orch responded: {}".format(context.service_id, delete_response))
         else:
             eq_(True, False, "[Error] Service to delete ({}) not found".format(context.service))
+
+    if INSTANCE == "ORC" and REQUEST == "SUBSERVICE" and ACTION == "DELETE":
+        # Get service id if needed
+        if "service_id" not in context:
+            for service in context.services:
+                if context.service == service["name"]:
+                    print ("service retrieved: {} {}".format(service["name"], service["id"]))
+                    context.service_id = service["id"]
+                    break
+
+        # Get subservice id
+        for subservice in context.subservices:
+            if "/" + context.subservice == subservice["name"]:
+                print ("#>> Subservice Targeted: {} {}".format(subservice["name"], subservice["id"]))
+                context.subservice_id = subservice["id"]
+                break
+
+        context.user_admin = "admin_bb"
+        context.password_admin = "4passw0rd"
+
+        context.token_scope = ks_get_token_with_scope(context, context.token, context.service, context.subservice)
+        # print ("#>> NEW Token with scope: {}".format(context.token_scope))
+
+        delete_response = orc_delete_subservice(context,
+                                                context.service_id,
+                                                context.subservice_id,
+                                                context.token_scope)
+
+        eq_(204, delete_response,
+            "[ERROR] Deleting Service {} responsed a HTTP {}".format(context.service_id, delete_response))
 
 
 @then('subservice "(?P<SERVICEPATH>.+)" under the service is created')
@@ -170,11 +205,11 @@ def step_impl(context, SERVICEPATH):
     context.instance_port = context.config['components'][context.instance]['port']
     context.instance_protocol = context.config['components'][context.instance]['protocol']
 
-    context.url_component = context.instance_protocol + "://" + \
-                            context.instance_ip + ":" + \
-                            context.instance_port
+    context.url_component = "{}://{}:{}".format(context.instance_protocol,
+                                                context.instance_ip,
+                                                context.instance_port)
 
-    url = context.url_component + '/v1.0/service/' + context.service_id + '/subservice'
+    url = "{}/v1.0/service/{}/subservice".format(context.url_component, context.service_id)
     json_payload = json.dumps(dict(context.table))
 
     # print (json_payload)
@@ -195,7 +230,6 @@ def step_impl(context, SERVICEPATH):
 
 @step("device should get registered under service and subservice")
 def step_impl(context):
-
     """
     :type context behave.runner.Context
     """
@@ -210,13 +244,14 @@ def step_impl(context):
     context.instance_port = context.config['components'][context.instance]['port']
     context.instance_protocol = context.config['components'][context.instance]['protocol']
 
-    context.url_component = context.instance_protocol + "://" + \
-                            context.instance_ip + ":" + \
-                            context.instance_port
+    context.url_component = "{}://{}:{}".format(context.instance_protocol,
+                                                context.instance_ip,
+                                                context.instance_port)
 
-    url = context.url_component + '/v1.0/service/' + \
-          context.service_id + '/subservice/' + \
-          context.subservice_id + '/register_device'
+    url = "{}/v1.0/service/{}/subservice/{}/register_device".format(context.url_component,
+                                                                    context.service_id,
+                                                                    context.subservice_id)
+
     print(url)
 
     json_payload = json.dumps(dict(context.table))
@@ -228,13 +263,14 @@ def step_impl(context):
                               data=json_payload)
     print(json_payload)
     print(context.r)
-    # print(context.r.content)
+    print(context.r.content)
     __logger__.debug(context.r.content)
     __logger__.debug(context.r.status_code)
     eq_(context.r.status_code, 201,
         "[ERROR] when calling {} responsed a HTTP {}".format(url, context.r.status_code))
     context.add_device = context.r.content
     print ("ID registration: {}".format(context.add_device))
+
 
 @step('with a service id "(?P<SERVICE_ID>.+)" and subservice id "(?P<SUBSERVICE_ID>.+)"')
 def step_impl(context, SERVICE_ID, SUBSERVICE_ID):
@@ -259,8 +295,36 @@ def step_impl(context, SERVICE_ADMIN, SERVICE_PWD):
     context.password = SERVICE_PWD
     # context.service = context.service
     context.subservice = context.servicepath
-    context.token = ks_get_token(context)
+    context.token = ks_get_token(context,
+                                 service=context.service,
+                                 user=context.user,
+                                 password=context.password)
+
     print ("\n #>> Token to use: {} \n".format(context.token))
+
+
+@step('an admin_token is retrieved')
+def step_impl(context):
+    """
+    :type context behave.runner.Context
+    :type SERVICE_ADMIN str
+    :type SERVICE_PWD str
+    """
+
+    # Recover a Token
+    user = "cloud_admin"
+    password = "password"
+    service = "admin_domain"
+    subservice = None
+
+    context.admin_token = ks_get_token(context,
+                                       service=service,
+                                       user=user,
+                                       password=password,
+                                       subservice=subservice
+                                       )
+
+    print ("\n#>> Admin Token to use: {} \n".format(context.admin_token))
 
 
 @step('a list of services for admin_cloud is retrieved')
@@ -274,8 +338,33 @@ def step_impl(context):
     context.user_admin = "cloud_admin"
     context.password_admin = "password"
     context.service_admin = "admin_domain"
+
     context.services = orc_get_services(context)
-    print ("\n #>> Services availables: {} \n".format(context.services))
+    print ("\n#>> Services availables: {} \n".format(context.services))
+
+    # Get target service_id
+    if "service" in context:
+        for service in context.services:
+            if context.service == service["name"]:
+                context.service_id = service["id"]
+                print ("#>> Service info: {} {}".format(service["name"], service["id"]))
+                break
+
+
+@step('a list of subservices for service_admin "(?P<SERVICE_ADMIN>.+)" '
+      'and service_pwd "(?P<SERVICE_PWD>.+)" are retrieved')
+def step_impl(context, SERVICE_ADMIN, SERVICE_PWD):
+    """
+    :type context: behave.runner.Context
+    :type SERVICE_ADMIN: str
+    :type SERVICE_PWD: str
+    """
+    pass
+
+    context.service_admin = SERVICE_ADMIN
+    context.service_password = SERVICE_PWD
+
+    context.subservices = orc_get_subservices(context, context.service_id)
 
 
 @step("the new service should be available in the IOTA")
@@ -335,7 +424,7 @@ def step_impl(context, DEVICE_ID):
         'fiware-servicepath': "/{}".format(context.servicepath)
     }
 
-    iota_url = iota_url + "/devices?detailed=on"
+    iota_url = "{}/devices?detailed=on".format(iota_url)
 
     # Add the token to the headers
     headers.update({'X-Auth-Token': context.token})
@@ -344,23 +433,25 @@ def step_impl(context, DEVICE_ID):
 
     eq_(200, context.r.status_code, "ERROR: Devices request IOTA failed: {}".format(context.r.status_code))
 
-    devices_array = json.loads(context.r.content)
-    print ("devices {}".format(context.r.content))
-    eq_(DEVICE_ID, devices_array[0]["name"], "ERROR: Device not found")
-    eq_("BlackButton", devices_array[0]["type"], "ERROR: Device type does not match")
-    eq_(context.service, devices_array[0]["service"], "ERROR: Service does not match")
-    eq_("/{}".format(context.servicepath), devices_array[0]["subservice"], "ERROR: ServicePath does not match")
+    response = json.loads(context.r.content)
 
+    print ("response".format(context.r.content))
+    devices_array = response["devices"]
+    print ("devices {}".format(devices_array[0]))
+    eq_(DEVICE_ID, devices_array[0]["device_id"], "ERROR: Device not found")
+    eq_("BlackButton", devices_array[0]["entity_type"], "ERROR: Device type does not match")
+    eq_(context.service, devices_array[0]["service"], "ERROR: Service does not match")
+    eq_("/{}".format(context.servicepath), devices_array[0]["service_path"], "ERROR: ServicePath does not match")
 
     # show returned response
     __logger__.debug("IOTA (devices_list) returns {} ".format(devices_array))
 
     for device in devices_array:
         __logger__.debug(device)
-        if device["id"] == DEVICE_ID:
+        if device["device_id"] == DEVICE_ID:
             print ("Device found: {}".format(device))
             eq_(context.service, device["service"])
-            eq_("/" + context.subservice, device["subservice"])
+            eq_("/" + context.subservice, device["service_path"])
 
 
 @then('the button "(?P<DEVICE_ID>.+)" is pulling every "(?P<SECONDS>.+)" seconds '
@@ -428,23 +519,18 @@ def step_impl(context, DEVICE_ID, SECONDS, TIMES, STATUS):
 
     measure = "#{0}#{1}#{2}".format(DEVICE_ID, b_module_1, b_module_0)
     data = {"c": measure}
-    print (iota_url)
-    print (data)
-    print (headers)
+    print ("\nUrl: {},\nData: {}\nHeaders: {}".format(iota_url, data, headers))
 
     for x in xrange(int(TIMES)):
         context.r = requests.post(url=iota_url, data=data, headers=headers)
-        print (context.r.status_code)
-        print (context.r.content)
         eq_(200, context.r.status_code, "ERROR: MEASURE request IOTA failed: {}".format(context.r.status_code))
-
+        print ("\nResponse: {} #{}-{} ".format(context.r.content, x, datetime.datetime.now()))
         # chop the response:
         iota_answer = context.r.content.split("#")
         context.answer_device_id = iota_answer[1]
         context.answer_mod1 = iota_answer[2]
         context.answer_mod0 = iota_answer[3]
 
-        print (context.answer_mod1.split(","))
         try:
             if context.answer_mod1.split(",")[3].split(":")[1] == STATUS:
                 print ("STATUS CHANGED to {}".format(context.answer_mod1.split(",")[3].split(":")[1]))
@@ -465,14 +551,13 @@ def step_impl(context, DEVICE_ID, FINAL_STATUS):
     :type FINAL_STATUS str
     """
 
-    if context.final_state is not None:
+    if "final_state" in context:
         eq_(FINAL_STATUS,
             context.final_state,
             "# Error final status ({}) does not match the expected result ({})".format(
-                FINAL_STATUS,
-                context.final_state))
+                    FINAL_STATUS,
+                    context.final_state))
 
-        # TODO: Close the request to TP
 
 
 @step('the ThirdParty "(?P<THIRDPARTY>.+)" changed the status to "(?P<OP_RESULT>.+)"')
@@ -489,10 +574,8 @@ def step_impl(context, THIRDPARTY, OP_RESULT):
     # chop the expected_result:
     expected = OP_RESULT.split("#")
 
-    c_sent = context.bt_request.split("#")
-
-    print ("\n iota resp={} \n".format(iota_answer))
-    print ("\n expected resp={} \n".format(expected))
+    print ("\n IOTA resp={} \n".format(iota_answer))
+    print ("\n Expected resp={} \n".format(expected))
 
     # check device_id
     eq_(iota_answer[1], context.device_id, "Device_id does not match")
@@ -503,7 +586,7 @@ def step_impl(context, THIRDPARTY, OP_RESULT):
     eq_(rec_mod1, mod1,
         "Expected result mod1 does not match \n "
         "Received: {} \n Expected: {}".format(
-            rec_mod1, mod1))
+                rec_mod1, mod1))
 
     # check mod2
     mod0 = expected[2]
@@ -511,7 +594,7 @@ def step_impl(context, THIRDPARTY, OP_RESULT):
     eq_(rec_mod0, mod0,
         "Expected result mod0 does not match \n "
         "Received: {} \n Expected: {}".format(
-            rec_mod0, mod0))
+                rec_mod0, mod0))
 
     print ("\n iota resp={} \n".format(iota_answer))
 
@@ -545,9 +628,11 @@ def step_impl(context, DEVICE_ID):
     measure = "#{},{}".format(DEVICE_ID, context.bt_request)
     data = {"c": measure}
 
+    print ("\n >> Push info: {}".format(data))
+
     context.r = requests.post(url=iota_url, data=data, headers=headers)
-    print (context.r.status_code)
-    print (context.r.content)
+    print ("\n << {}".format(context.r.status_code))
+    print ("<< {}".format(context.r.content))
 
     eq_(200, context.r.status_code, "ERROR: MEASURE request IOTA failed: {}".format(context.r.status_code))
 

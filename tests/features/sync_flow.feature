@@ -1,13 +1,13 @@
 Feature: Complete path E2E functionality Sync-Async / Sync-Sync
   In order to check if a blackbutton that can order a product
-  In a Service service2sy and Subservice testpizza
+  In a Service servsyncaa and Subservice testpizza
   As a client has SYNC BlackButtons: device1, device2, ...
   I should validate the ability of the platform to process the buttons requests to a Sync or Async third party
 
 
   @ft-syncflow @sf-button-flows @sf-01
   Scenario Outline: SC1 client push the button in the SYNC mode, and third party is SYNC
-    Given a Client of "<SERVICE>" and a ThirdParty called "<SERVICEPATH>"
+    Given a Client of "<SERVICE>" and a Subservice called "<SERVICEPATH>"
     When a service and subservice are created in the "ORC"
       | key                        | value           |
       | DOMAIN_NAME                | admin_domain    |
@@ -45,19 +45,18 @@ Feature: Complete path E2E functionality Sync-Async / Sync-Sync
     Then device "<DEVICE_ID>" should be listed under service and subservice
     And the button "<DEVICE_ID>" pressed in mode "synchronous" the IOTA should receive the request "<BT_REQUEST>"
     And the ThirdParty "TP" changed the status to "<OP_RESULT>"
-    #And a close request is sent to finish the operation
 
     Examples:
-      | SERVICE    | SERVICEPATH | SERVICE_ADMIN | SERVICE_PWD | DEVICE_ID | ENTITY_TYPE | TOKEN | ATT_LOCATION | BT_REQUEST                        | TP_URL          | OP_RESULT           |
-      | service2sy | testpizza   | admin_bb      | 4passw0rd   | device1   | BlackButton | no    | 33,-122      | #1,BT,S,1,1,2000$WakeUp,#0,K1,30$ | TP/sync/request | rgb-66CCDD%3Bt-2%3B |
-      | service2sy | testpizza   | admin_bb      | 4passw0rd   | device2   | BlackButton | no    | 15,-2        | #1,BT,S,1,0,#0,K1,0$              | TP/sync/request | rgb-66CCDD%3Bt-2%3B |
-      | service2sy | testpizza   | admin_bb      | 4passw0rd   | device3   | BlackButton | no    | 16,21        | #1,BT,S,0,0,512WakeUp#0,K1,0$,    | TP/sync/request | rgb-66CCDD%3Bt-2%3B |
-      | service2sy | testpizza   | admin_bb      | 4passw0rd   | device4   | BlackButton | yes   | 31,-40       | #1,BT,S,1,1,2000$WakeUp,#0,K1,30$ | TP/sync/request | rgb-66CCDD%3Bt-2%3B |
+      | SERVICE    | SERVICEPATH | SERVICE_ADMIN | SERVICE_PWD | DEVICE_ID | ENTITY_TYPE | TOKEN | ATT_LOCATION | BT_REQUEST                         | TP_URL          | OP_RESULT                                  |
+      | servsyncaa | testpizza   | admin_bb      | 4passw0rd   | device1   | BlackButton | no    | 33,-122      | #1,BT,S,1,1,2000$WakeUp,#0,K1,30$  | TP/sync/request | #1,BT,S,1,rt-20;rrgb-00FF00;,0$#0,K1,300$, |
+      | servsyncaa | testpizza   | admin_bb      | 4passw0rd   | device2   | BlackButton | no    | 15,-2        | #2,BT,S,3,0,#0,K1,0$               | TP/sync/request | #2,BT,S,1,rt-20;rrgb-00FF00;,0$#0,K1,300$, |
+      | servsyncaa | testpizza   | admin_bb      | 4passw0rd   | device3   | BlackButton | no    | 16,21        | #3,BT,S,0,0,512WakeUp#0,K1,0$,     | TP/sync/request | #3,BT,S,1,rt-20;rrgb-00FF00;,0$#0,K1,300$, |
+      | servsyncaa | testpizza   | admin_bb      | 4passw0rd   | device4   | BlackButton | yes   | 31,-40       | #4,BT,S,9,10,2000$WakeUp,#0,K1,30$ | TP/sync/request | #4,BT,S,1,rt-20;rrgb-00FF00;,0$#0,K1,300$, |
 
 
   @ft-syncflow @sf-button-flows @sf-02
   Scenario Outline: SC2 client push the button and device is not registered
-    Given a Client of "<SERVICE>" and a ThirdParty called "<SERVICEPATH>"
+    Given a Client of "<SERVICE>" and a Subservice called "<SERVICEPATH>"
     When a service and subservice are created in the "ORC"
       | key                        | value           |
       | DOMAIN_NAME                | admin_domain    |
@@ -97,20 +96,20 @@ Feature: Complete path E2E functionality Sync-Async / Sync-Sync
       | SERVICE_USER_NAME     | <SERVICE_USER_NAME>     |
       | SERVICE_USER_PASSWORD | <SERVICE_USER_PASSWORD> |
       | TOKEN                 | <TOKEN>                 |
-    Then registration is not sucessful and device "<DEVICE_ID>" is not listened under the service and subservice
+    Then registration is not successful and device "<DEVICE_ID>" is not listened under the service and subservice
 
     Examples:
       | PROTOCOL       | DEVICE_ID | ENTITY_TYPE | SERVICE_NAME | SUBSERVICE_NAME | SERVICE_USER_NAME | SERVICE_USER_PASSWORD | TOKEN | SERVICE    | SERVICEPATH | SERVICE_ADMIN | SERVICE_PWD | TP_URL          |
-      | TT_BLACKBUTTON | device_f  | BlackButton | NaN          | NaN             | NaN               | NaN                   | no    | service2sy | testpizza   | admin_bb      | 4passw0rd   | TP/sync/request |
-      | TT_BLACKBUTTON | device_f  | BlackButton | service2sy   | testpizza       | NaN               | NaN                   | no    | service2sy | testpizza   | admin_bb      | 4passw0rd   | TP/sync/request |
-      | TT_BLACKBUTTON | device_f  | BlackButton | NaN          | testpizza       | admin_bb          | 4passw0rd             | no    | service2sy | testpizza   | admin_bb      | 4passw0rd   | TP/sync/request |
-      | TT_BLACKBUTTON | device_f  | BlackButton | service2sy   | NaN             | admin_bb          | 4passw0rd             | no    | service2sy | testpizza   | admin_bb      | 4passw0rd   | TP/sync/request |
-      | TT_BLACKBUTTON | device_f  | BlackButton | service2sy   | testpizza       | NaN               | 4passw0rd             | no    | service2sy | testpizza   | admin_bb      | 4passw0rd   | TP/sync/request |
+      | TT_BLACKBUTTON | device_f  | BlackButton | NaN          | NaN             | NaN               | NaN                   | no    | servsyncaa | testpizza   | admin_bb      | 4passw0rd   | TP/sync/request |
+      | TT_BLACKBUTTON | device_f  | BlackButton | servsyncaa   | testpizza       | NaN               | NaN                   | no    | servsyncaa | testpizza   | admin_bb      | 4passw0rd   | TP/sync/request |
+#      | TT_BLACKBUTTON | device_f  | BlackButton | NaN          | testpizza       | admin_bb          | 4passw0rd             | no    | servsyncaa | testpizza   | admin_bb      | 4passw0rd   | TP/sync/request |
+#      | TT_BLACKBUTTON | device_f  | BlackButton | servsyncaa   | NaN             | admin_bb          | 4passw0rd             | no    | servsyncaa | testpizza   | admin_bb      | 4passw0rd   | TP/sync/request |
+      | TT_BLACKBUTTON | device_f  | BlackButton | servsyncaa   | testpizza       | NaN               | 4passw0rd             | no    | servsyncaa | testpizza   | admin_bb      | 4passw0rd   | TP/sync/request |
 
 
   @ft-syncflow @sf-button-flows @sf-03
   Scenario Outline: SC3 client push the button and device is registered, but conditions fail
-    Given a Client of "<SERVICE>" and a ThirdParty called "<SERVICEPATH>"
+    Given a Client of "<SERVICE>" and a Subservice called "<SERVICEPATH>"
     When a service and subservice are created in the "ORC"
       | key                        | value           |
       | DOMAIN_NAME                | admin_domain    |
@@ -151,9 +150,8 @@ Feature: Complete path E2E functionality Sync-Async / Sync-Sync
       | SERVICE_USER_PASSWORD | <SERVICE_PWD>   |
       | TOKEN                 | <TOKEN>         |
     Then device "<DEVICE_ID>" should be listed under service and subservice
-    #And the button "<DEVICE_ID>" pressed in mode "synchronous" the IOTA should not receive the request "<BT_REQUEST>"
 
 
     Examples:
-      | DEVICE_ID | ENTITY_TYPE | TOKEN | SERVICE    | SERVICEPATH | SERVICE_ADMIN | SERVICE_PWD | TP_URL          | BT_REQUEST                         |
-      | deviceA   | BlackButton | no    | service2sy | testpizza   | admin_bb      | 4passw0rd   | TP/sync/request | #1,BT,S,1,1,2000$WakeUp,#0,K1,30$  |
+      | DEVICE_ID | ENTITY_TYPE | TOKEN | SERVICE    | SERVICEPATH | SERVICE_ADMIN | SERVICE_PWD | TP_URL          | BT_REQUEST                        |
+      | deviceA   | BlackButton | no    | servsyncaa | testpizza   | admin_bb      | 4passw0rd   | TP/sync/request | #1,BT,S,1,1,2000$WakeUp,#0,K1,30$ |

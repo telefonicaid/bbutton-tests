@@ -21,6 +21,7 @@ __author__ = 'xvc'
 
 import logging
 import json
+import time
 from nose.tools import assert_true
 from iotqatools.cb_utils import CbNgsi10Utils
 from common.test_utils import remove_mysql_databases
@@ -45,7 +46,7 @@ def merge(a, b, path=None):
             elif a[key] == b[key]:
                 pass  # same leaf value
             else:
-                raise Exception('Conflict at %s' % '.'.join(path + [str(key)]))
+                raise Exception('Conflict at {} with {} and {} / {}'.format(path, (key), a[key], b[key]))
         else:
             a[key] = b[key]
     return a
@@ -98,9 +99,11 @@ def before_feature(context, feature):
     context.remember = {}
     context.o = {}
     context.feature_data = {}
+    context.feature
     context.arrays = {}
     context.o['db2remove'] = []
-
+    # Jenkins needed time between features
+    time.sleep(1)
 
 def before_scenario(context, scenario):
     context.feature_data["tags"] = context.tags
@@ -109,10 +112,11 @@ def before_scenario(context, scenario):
 
 
 def after_scenario(context, scenario):
-    if "ft-syncflow" in context.tags:
-        if "sf-02" not in context.tags:
-            devices_delete_method(context)
-        bb_delete_method(context)
+    if "tags" in context:
+        if "ft-syncflow" in context.tags:
+            if "sf-02" not in context.tags:
+                devices_delete_method(context)
+            bb_delete_method(context)
 
     if "ft-cb2mysql" in context.tags:
         if context.o and "CB" in context.o:
@@ -125,7 +129,6 @@ def after_feature(context, feature):
     if 'ft-cb2mysql1' in context.feature_data["tags"]:
         __logger__.info("***********Cleaning DB {} --->>>>>>>>".format(context.o["db2remove"]))
         remove_mysql_databases(context)
-
     context.remember = {}
     context.o = {}
     context.feature_data = {}

@@ -1,14 +1,14 @@
 Feature: Happy path E2E functionality Sync-Async
   In order to check if a blackbutton that can order a product
-  In a Service servicetta1 and Subservice thinkinthing
-  As a client has SYNC  BlackButtons: SStta1011 and SAtta1022
-  As a client has ASYNC BlackButtons: AStta1033 and SStta1044
-  I should validate the ability of the platform to process the buttons requests to a third party
+  In a Service serviceqqw and Subservice thinkinthing
+  As a client has SYNC  BlackButtons: SSqqw1011 and SAqqw1022
+  As a client has ASYNC BlackButtons: ASqqw1033 and SSqqw1044
+  I should validate the lity of the platform to process the buttons requests to a third party
 
 
   @ft-happypath @hp-provision @hp_sc01
   Scenario Outline: SC_1 Service and BlackButton get provisioned in BB-platform
-    Given a Client of "<SERVICE>" and a ThirdParty called "<SERVICEPATH>"
+    Given a Client of "<SERVICE>" and a Subservice called "<SERVICEPATH>"
     When the "ORC" receive the request "SERVICE" and action "CREATE"
       | KEYSTONE_PROTOCOL          | http            |
       | KEYSTONE_HOST              | localhost       |
@@ -32,6 +32,23 @@ Feature: Happy path E2E functionality Sync-Async
       | SERVICE_ADMIN_PASSWORD     | <SERVICE_PWD>   |
       | NEW_SUBSERVICE_NAME        | <SERVICEPATH>   |
       | NEW_SUBSERVICE_DESCRIPTION | <SERVICEPATH>   |
+    And the "ORC" receive the request "SERVICE_ENTITY" and action "CREATE"
+      | SERVICE_NAME          | <SERVICE>         |
+      | SERVICE_USER_NAME     | admin_bb          |
+      | SERVICE_USER_PASSWORD | 4passw0rd         |
+      | SUBSERVICE_NAME       | <SERVICEPATH>     |
+      | ENTITY_TYPE           | service           |
+      | ENTITY_ID             | <SERVICE>         |
+      | SERVICE_NAME          | <SERVICE>         |
+      | ATT_NAME              | <SERVICEPATH>     |
+      | ATT_PROVIDER          | QA Testpizza CORP |
+      | PROTOCOL              | TT_BLACKBUTTON    |
+      | ATT_ENDPOINT          | <TP_URL>          |
+      | ATT_METHOD            | POST              |
+      | ATT_AUTHENTICATION    | context-adapter   |
+      | ATT_MAPPING           | []                |
+      | ATT_INTERACTION_TYPE  | <TP_INTERACTION>  |
+      | ATT_TIMEOUT           | 120               |
     And device should get registered under service and subservice
       | KEYSTONE_PROTOCOL      | http                   |
       | KEYSTONE_HOST          | localhost              |
@@ -57,62 +74,45 @@ Feature: Happy path E2E functionality Sync-Async
       | ORION_PROTOCOL         | http                   |
       | ORION_HOST             | localhost              |
       | ORION_PORT             | 10026                  |
-    And the "ORC" receive the request "SERVICE_ENTITY" and action "CREATE"
-      | SERVICE_NAME          | <SERVICE>         |
-      | SERVICE_USER_NAME     | admin_bb          |
-      | SERVICE_USER_PASSWORD | 4passw0rd         |
-      | SUBSERVICE_NAME       | <SERVICEPATH>     |
-      | ENTITY_TYPE           | service           |
-      | ENTITY_ID             | <SERVICE>         |
-      | SERVICE_NAME          | <SERVICE>         |
-      | ATT_NAME              | <SERVICEPATH>     |
-      | ATT_PROVIDER          | QA Testpizza CORP |
-      | PROTOCOL              | TT_BLACKBUTTON    |
-      | ATT_ENDPOINT          | <TP_URL>          |
-      | ATT_METHOD            | POST              |
-      | ATT_AUTHENTICATION    | context-adapter   |
-      | ATT_MAPPING           | []                |
-      | ATT_INTERACTION_TYPE  | <TP_INTERACTION>  |
-      | ATT_TIMEOUT           | 120               |
 
 
     Examples:
       | SERVICE     | SERVICEPATH  | SERVICE_ADMIN | SERVICE_PWD | DEVICE_ID | ATT_INTERACTION_TYPE | TP_INTERACTION | TP_URL          |
-      | servicetta1 | thinkinthing | admin_bb      | 4passw0rd   | SStta1011 | synchronous          | synchronous    | TP/sync/request |
-      | servicetta2 | thinkinthing | admin_bb      | 4passw0rd   | SAtta1022 | synchronous          | asynchronous   | TP/async/create |
-      | servicetta3 | thinkinthing | admin_bb      | 4passw0rd   | AStta1033 | asynchronous         | synchronous    | TP/sync/request |
-      | servicetta4 | thinkinthing | admin_bb      | 4passw0rd   | AAtta1044 | asynchronous         | asynchronous   | TP/async/create |
-      | servicetta5 | thinkinthing | admin_bb      | 4passw0rd   | SStta1055 | synchronous          | synchronous    | TP/sync/request |
+      | serviceqqw1 | thinkinthing | admin_bb      | 4passw0rd   | SSqqw1011 | synchronous          | synchronous    | TP/sync/request |
+      | serviceqqw2 | thinkinthing | admin_bb      | 4passw0rd   | SAqqw1022 | synchronous          | asynchronous   | TP/async/create |
+      | serviceqqw3 | thinkinthing | admin_bb      | 4passw0rd   | ASqqw1033 | asynchronous         | synchronous    | TP/sync/request |
+      | serviceqqw4 | thinkinthing | admin_bb      | 4passw0rd   | AAqqw1044 | asynchronous         | asynchronous   | TP/async/create |
+      | serviceqqw5 | thinkinthing | admin_bb      | 4passw0rd   | SSqqw1055 | synchronous          | synchronous    | TP/sync/request |
 
   @ft-happypath @hp-provision-check @hp_sc02
   Scenario Outline: SC_2 User check a BlackButton is registered in BB-platform
-    Given a Client of "<SERVICE>" and a ThirdParty called "<SERVICEPATH>"
+    Given a Client of "<SERVICE>" and a Subservice called "<SERVICEPATH>"
     And a valid token is retrieved for user "<SERVICE_ADMIN>" and password "<SERVICE_PWD>"
     Then device "<DEVICE_ID>" should be listed under service and subservice
 
     Examples:
       | SERVICE     | SERVICEPATH  | SERVICE_ADMIN | SERVICE_PWD | DEVICE_ID |
-      | servicetta1 | thinkinthing | admin_bb      | 4passw0rd   | SStta1011 |
-      | servicetta2 | thinkinthing | admin_bb      | 4passw0rd   | SAtta1022 |
-      | servicetta3 | thinkinthing | admin_bb      | 4passw0rd   | AStta1033 |
-      | servicetta4 | thinkinthing | admin_bb      | 4passw0rd   | AAtta1044 |
+      | serviceqqw1 | thinkinthing | admin_bb      | 4passw0rd   | SSqqw1011 |
+      | serviceqqw2 | thinkinthing | admin_bb      | 4passw0rd   | SAqqw1022 |
+      | serviceqqw3 | thinkinthing | admin_bb      | 4passw0rd   | ASqqw1033 |
+      | serviceqqw4 | thinkinthing | admin_bb      | 4passw0rd   | AAqqw1044 |
 
   @ft-happypath  @hp-button-flows @hp-button-sync @hp_sc03
-  Scenario Outline: SC_4 Client push the button in the SYNC mode
-    Given a Client of "<SERVICE>" and a ThirdParty called "<SERVICEPATH>"
+  Scenario Outline: SC_3 Client push the button in the SYNC mode
+    Given a Client of "<SERVICE>" and a Subservice called "<SERVICEPATH>"
     And a button_request "<BT_REQUEST>" for mode "<SYNC_MODE>"
     When the button "<DEVICE_ID>" is pressed in mode "<SYNC_MODE>" the IOTA should receive the request
     And the ThirdParty "<TP_NAME>" changed the status to "<OP_RESULT>"
 
     Examples:
       | SERVICE     | SERVICEPATH  | DEVICE_ID | SYNC_MODE   | BT_REQUEST                        | TP_NAME | OP_RESULT                                  |
-      | servicetta1 | thinkinthing | SStta1011 | synchronous | #3,BT,S,4,5,2000$WakeUp,#0,K1,30$ | TP      | #3,BT,S,1,rt-20;rrgb-00FF00;,0$#0,K1,300$, |
-      | servicetta2 | thinkinthing | SAtta1022 | synchronous | #1,BT,S,2,1,2000$WakeUp,#0,K1,30$ | TP      | #1,BT,S,1,rt-20;rrgb-00FF00;,0$#0,K1,300$, |
+      | serviceqqw1 | thinkinthing | SSqqw1011 | synchronous | #3,BT,S,4,5,2000$WakeUp,#0,K1,30$ | TP      | #3,BT,S,1,rt-20;rrgb-00FF00;,0$#0,K1,300$, |
+      | serviceqqw2 | thinkinthing | SAqqw1022 | synchronous | #1,BT,S,2,1,2000$WakeUp,#0,K1,30$ | TP      | #1,BT,S,1,rt-20;rrgb-00FF00;,0$#0,K1,300$, |
 
 
   @ft-happypath @hp-button-flows @hp-button-async @hp_sc04
-  Scenario Outline: SC_3 Client push the button in the ASYNC mode
-    Given a Client of "<SERVICE>" and a ThirdParty called "<SERVICEPATH>"
+  Scenario Outline: SC_4 Client push the button in the ASYNC mode
+    Given a Client of "<SERVICE>" and a Subservice called "<SERVICEPATH>"
     And a button_request "<BT_REQUEST>" for mode "<SYNC_MODE>"
     When the button "<DEVICE_ID>" is pressed in mode "<SYNC_MODE>" the IOTA should receive the request
     Then the button "<DEVICE_ID>" is pulling every "1" seconds during "10" times or until the IOTA request returns status "<STATUS>"
@@ -120,23 +120,26 @@ Feature: Happy path E2E functionality Sync-Async
 
 
     Examples:
-      | SERVICE     | SERVICEPATH  | DEVICE_ID | SYNC_MODE    | BT_REQUEST                        | STATUS | FINAL_STATUS |
-      | servicetta3 | thinkinthing | AStta1033 | asynchronous | #1,BT,C,3,2,2000$WakeUp,#0,K1,30$ | C.S    | C.S          |
-      | servicetta4 | thinkinthing | AAtta1044 | asynchronous | #1,BT,C,1,1,2000$WakeUp,#0,K1,30$ | C.S    | C.S          |
+      | SERVICE | SERVICEPATH | DEVICE_ID | SYNC_MODE | BT_REQUEST | STATUS | FINAL_STATUS |
+      | serviceqqw3 | thinkinthing | ASqqw1033 | asynchronous | #1,BT,C,3,2,2000$WakeUp,#0,K1,30$ | C.S    | C.S          |
+      | serviceqqw4 | thinkinthing | AAqqw1044 | asynchronous | #1,BT,C,1,1,2000$WakeUp,#0,K1,30$ | C.S    | C.S          |
 
 
-  @ft-happypath  @hp-service-clean @hp_sc05  @wip
+  @ft-happypath  @hp-service-clean @hp_sc05
   Scenario Outline: SC_5 Clean SERVICE data generated in happy path scenarios
-    Given a Client of "<SERVICE>" and a ThirdParty called "<SERVICEPATH>"
+    Given a Client of "<SERVICE>" and a Subservice called "<SERVICEPATH>"
     And a list of services for admin_cloud is retrieved
-    When the "ORC" receive the request "SERVICE" and action "DELETE"
+    And a valid token is retrieved for user "<SERVICE_ADMIN>" and password "<SERVICE_PWD>"
+    And a list of subservices for service_admin "<SERVICE_ADMIN>" and service_pwd "<SERVICE_PWD>" are retrieved
+    When the "ORC" receive the request "SUBSERVICE" and action "DELETE"
+    And the "ORC" receive the request "SERVICE" and action "DELETE"
     Then the service "<SERVICE>" should not be listed
 
     Examples:
-      | SERVICE     | SERVICEPATH  |
-      | servicetta1 | thinkinthing |
-      | servicetta2 | thinkinthing |
-      | servicetta3 | thinkinthing |
-      | servicetta4 | thinkinthing |
-      | servicetta5 | thinkinthing |
+      | SERVICE     | SERVICEPATH  | SERVICE_ADMIN | SERVICE_PWD |
+      | serviceqqw1 | thinkinthing | admin_bb      | 4passw0rd   |
+      | serviceqqw2 | thinkinthing | admin_bb      | 4passw0rd|
+      | serviceqqw3 | thinkinthing | admin_bb      | 4passw0rd|
+      | serviceqqw4 | thinkinthing | admin_bb      | 4passw0rd|
+      | serviceqqw5 | thinkinthing | admin_bb      | 4passw0rd|
 

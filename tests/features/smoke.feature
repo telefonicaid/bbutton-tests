@@ -16,10 +16,12 @@ Feature: Black Button Smoke tests
       | CA       | GET     | /version      | 200           |
       | IOTA     | PING    | /iot/about    | 200           |
       | IOTM     | PING    | /iot/about    | 200           |
-      | ORC      | PING    | /             | 404           |
+      | ORC      | PING    | /v1.0/version | 200           |
       | KS       | GET     | /version      | 404           |
       | TP       | GET     | /sync/request | 405           |
-    # | STH      | GET     | /version      | Nan             |
+      | STH      | GET     | /version      | 200           |
+      | CYGNUS   | GET     | /version      | 200           |
+      | PEP      | GET     | /version      | 200           |
 
 
   @ready @ft-smoke @smoke02 @check_version
@@ -29,12 +31,16 @@ Feature: Black Button Smoke tests
     Then the returned version from "<INSTANCE>" should match the "<VERSION>"
 
     Examples:
-      | INSTANCE | REQUEST | URI        | VERSION |
-      | CB       | GET     | /version   | 0.24.0  |
-      | IOTM     | GET     | /iot/about | 1.2.1   |
-      | IOTA     | GET     | /iot/about | 0.8.2   |
-      | CA       | GET     | /version   | 0.1.2   |
-    # | ORC      | GET     | /version   | Nan     |
+      | INSTANCE | REQUEST | URI           | VERSION                                         |
+      | CB       | GET     | /version      | 0.26.1                                          |
+      | IOTM     | GET     | /iot/about    | 1.2.1                                           |
+      | IOTA     | GET     | /iot/about    | 0.5.4                                           |
+      | IOTA_LIB | GET     | /iot/about    | 0.9.0                                           |
+      | CA       | GET     | /version      | 0.2.1                                           |
+      | ORC      | GET     | /v1.0/version | 0.6.8                                          |
+      | STH      | GET     | /version      | 0.4.1                                           |
+      | PEP      | GET     | /version      | 0.7.2                                           |
+      | CYGNUS   | GET     | /version      | 0.11.0.2a9c87fb7fd6156225e2eed7fbc9792f1d9c5dfe |
 
 
   @ready @ft-smoke @smoke04 @check_funcionality
@@ -47,12 +53,14 @@ Feature: Black Button Smoke tests
 
     Examples:
       | INSTANCE | REQUEST | ACTION | HTTP_RESPONSE |
-      | CB       | ENTITY  | CREATE | 200           |
-      | CB       | ENTITY  | GET    | 200           |
-    #  | KS       | TOKEN     | GET    | 201         |
+    #  | CB       | ENTITY  | CREATE | 200           |
+    #  | CB       | ENTITY  | GET    | 200           |
+      | KS       | TOKEN     | GET    | 201         |
     #  | IOTM     | PROTOCOLS | GET    | 200         |
     #  | IOTA     | SERVICES  | GET    | 200         |
     #  | ORC      | USER      | GET    | 200         |
     #  | CA       | NOTIFY    | GET    | 200         |
+    #  | STH       | STHQUERY    | GET    | 200         |
+
 
 

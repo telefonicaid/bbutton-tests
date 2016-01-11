@@ -27,8 +27,8 @@ from tests.common.test_utils import *
 from iotqatools.cb_utils import CbNgsi10Utils, EntitiesConsults, PayloadUtils, NotifyConditions, ContextElements, \
     AttributesCreation, MetadatasCreation
 from iotqatools.iota_utils import Rest_Utils_IoTA
-from common.common import cb_sample_entity_create, cb_sample_entity_recover, ks_get_token, component_verifyssl_check
-
+from common.common import cb_sample_entity_create, cb_sample_entity_recover, ks_get_token, component_verifyssl_check, \
+    component_version_check, node_version_checker
 import logging
 import ast
 import json
@@ -62,17 +62,19 @@ def step_impl(context, INSTANCE):
     :type context behave.runner.Context
     :type INSTANCE str
     """
+    if INSTANCE == "IOTA_LIB":
+        context.instance = "IOTA"
+    else:
+        context.instance = INSTANCE
 
-    context.instance = INSTANCE
-    context.instance_ip = context.config['components'][INSTANCE]['instance']
-    context.instance_port = context.config['components'][INSTANCE]['port']
-    context.url_component = context.config['components'][INSTANCE]['protocol'] + "://" + \
-                            context.instance_ip + ":" + \
-                            context.instance_port
+    context.instance_ip = context.config['components'][context.instance]['instance']
+    context.instance_port = context.config['components'][context.instance]['port']
+    context.url_component = "{}://{}:{}".format(context.config['components'][context.instance]['protocol'],
+                                                context.instance_ip,
+                                                context.instance_port)
 
-    context.verify_ssl = component_verifyssl_check(context, INSTANCE)
+    context.verify_ssl = component_verifyssl_check(context, context.instance)
 
-    # context.headers=headers
     # default headers
     context.headers = {}
     context.headers = {'Accept': 'application/json'}
@@ -80,20 +82,25 @@ def step_impl(context, INSTANCE):
 
 @when(u'I send a request "(?P<request>.+)" to URI "(?P<uri>.+)"')
 def step_impl(context, request, uri):
-    context.url_component = context.url_component + uri
+    context.url_component = "{}{}".format(context.url_component, uri)
     context.kind_request = request
+    context.verbose = False
 
     if uri != "None":
         try:
-            print (context.url_component)
-            print (context.headers)
-            print (context.verify_ssl)
+            print ("Url: {} \n".format(context.url_component))
+
+            if context.verbose:
+                print ("Headers: {} \n".format(context.headers))
+                print ("Verify ssl: {} \n".format(context.verify_ssl))
+
             context.r = requests.get(url=context.url_component, headers=context.headers, verify=context.verify_ssl)
         except requests.exceptions.RequestException, e:
-            print (e)
             context.r = 'ERROR'
-            __logger__.debug('[ERROR] ', e)
-            assert_true(False, msg='[NETWORK ERROR]')
+            __logger__.debug('[ERROR] {}', e)
+            assert_true(False, msg='[{}] #NETWORK_ERROR at {} \n{}'.format( context.instance,
+                                                                            context.url_component,
+                                                                            e))
     else:
         context.r = 'ERROR'
 
@@ -123,7 +130,7 @@ def step_impl(context, version):
     assert_in('version', interior, 'Not version in response ({})'.format(interior))
     returned_version = interior['version']
     eq_(returned_version, version,
-        'Not the correct version: found({}) expected({})'.format(returned_version, version))
+        '[{}] #VERSION_CONFLICT: found({}) expected({})'.format(comp, returned_version, version))
     __logger__.debug("{} Version: {}".format(comp, returned_version))
 
 
@@ -144,7 +151,28 @@ def step_impl(context, version):
     else:
         returned_version = iota_version.split(" ")[3]
     eq_(returned_version, version,
-        'Not the correct version: found({}) expected({})'.format(returned_version, version))
+        '[{}] Not the correct version: found({}) expected({})'.format(comp, returned_version, version))
+    __logger__.debug("{} Version: {}".format(comp, returned_version))
+
+
+@then(u'the returned version from "IOTA_LIB" should match the "(?P<version>.+)"')
+def step_impl(context, version):
+    comp = "IOTA"
+
+    eq_(context.r.status_code, 200,
+        "[ERROR] when calling {} responsed a HTTP {}".format(context.url_component, context.r.status_code))
+    "<INSTANCE>"
+
+    assert_in('r', context, 'Not response found for component {}'.format(context.instance))
+
+    iota_version = context.r.content
+    if context.config['components']["IOTA"]['iota_type'] == "node":
+        __logger__.debug(iota_version)
+        returned_version = json.loads(iota_version)["libVersion"]
+    else:
+        returned_version = iota_version.split(" ")[3]
+    eq_(returned_version, version,
+        '[IOTA_LIB] Not the correct version: found({}) expected({})'.format(returned_version, version))
     __logger__.debug("{} Version: {}".format(comp, returned_version))
 
 
@@ -161,26 +189,38 @@ def step_impl(context, version):
     iotm_version = context.r.content
     returned_version = iotm_version.split(" ")[7]
     eq_(returned_version, version,
-        'Not the correct version: found({}) expected({})'.format(returned_version, version))
+        '[{}] Not the correct version: found({}) expected({})'.format(comp, returned_version, version))
     __logger__.debug("{} Version: {}".format(comp, returned_version))
+
 
 @then(u'the returned version from "CA" should match the "(?P<version>.+)"')
 def step_impl(context, version):
     comp = "CA"
+    node_version_checker(context, component=comp, version=version)
 
-    eq_(context.r.status_code, 200,
-        "[ERROR] when calling {} responsed a HTTP {}".format(context.url_component, context.r.status_code))
-    "<INSTANCE>"
 
-    assert_in('r', context, 'Not response found for component {}'.format(context.instance))
+@then(u'the returned version from "STH" should match the "(?P<version>.+)"')
+def step_impl(context, version):
+    comp = "STH"
+    node_version_checker(context, component=comp, version=version)
 
-    ca_version = context.r.content
-    __logger__.debug(ca_version)
 
-    returned_version = json.loads(ca_version)["version"]
-    eq_(returned_version, version,
-        'Not the correct version: found({}) expected({})'.format(returned_version, version))
-    __logger__.debug("{} Version: {}".format(comp, returned_version))
+@then(u'the returned version from "CYGNUS" should match the "(?P<version>.+)"')
+def step_impl(context, version):
+    comp = "CYGNUS"
+    node_version_checker(context, component=comp, version=version)
+
+
+@then(u'the returned version from "PEP" should match the "(?P<version>.+)"')
+def step_impl(context, version):
+    comp = "PEP"
+    node_version_checker(context, component=comp, version=version)
+
+
+@then(u'the returned version from "ORC" should match the "(?P<version>.+)"')
+def step_impl(context, version):
+    comp = "ORC"
+    node_version_checker(context, component=comp, version=version)
 
 
 @when('I send a request type "(?P<REQUEST>.+)" and action "(?P<ACTION>.+)"')
@@ -282,7 +322,7 @@ def step_impl(context, REQUEST, ACTION):
                         break
                     else:
                         __logger__.debug(
-                            "#> Service returned but does not match with headers: {}".format(service["service"]))
+                                "#> Service returned but does not match with headers: {}".format(service["service"]))
 
     elif REQUEST == "PROTOCOLS" and ACTION == "GET":
         # Recover created services (if any)
