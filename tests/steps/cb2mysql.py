@@ -35,7 +35,7 @@ __logger__ = logging.getLogger("cb2mysql")
 
 
 @step(
-    u'I set a MySQL database under name "{service}" and a table under name given by "{servicepath}" and "{entity_id}"')
+        u'I set a MySQL database under name "{service}" and a table under name given by "{servicepath}" and "{entity_id}"')
 def db_table_creation(context, service, servicepath, entity_id):
     context.service = str(service)
     context.servicepath = str(servicepath)
@@ -61,9 +61,10 @@ def db_table_creation(context, service, servicepath, entity_id):
     # To be deleted after
     context.o["MYSQL"] = context.mysql_init
     if service not in context.o['db2remove']:
-        context.o['db2remove'].append(service) \
+        context.o['db2remove'].append(service)
 
-@ step(u'I launch a cygnus connection with "{component}"')
+
+@step(u'I launch a cygnus connection with "{component}"')
 def step_impl(context, component):
     __logger__.info("--> INITIALIZE CYGNUS2{} CONNECTION -->".format(component))
     initialize_cygnus2comp(context, component)
@@ -88,28 +89,27 @@ def step_impl(context, attvalue, attname, servicepath):
         context.mysql_init.table_pretty_output(database_name=context.service, table_name=table_name)
         eq_(str(attvalue), str(returned_value), "ASSERT ERROR --> Value in MYSQL table was not updated")
     else:
-        eq_(True,False, "#Error, No response from MYSQL")
+        eq_(True, False, "#Error, No response from MYSQL")
 
 
 @then('I check values "{values}" in column names "{att_names}" of "{servicepath}" table in MySQL')
 def step_impl(context, values, att_names, servicepath):
     servicepath = servicepath[1:]
     att_names = att_names.split(';')
-    rows = str(len(att_names))
-    print(rows)
     values = values.split(';')
-    count = 0
-    table_name = "{}_{}_{}".format(servicepath, context.remember['entity_id'], context.remember['entity_type'])
 
-    # table = context.mysql_init.table_search_columns_in_several_rows(database_name=context.service, table_name=table_name,rows=rows, columns='*')
-    table = context.mysql_init.table_search_columns_last_row(database_name=context.service, table_name=table_name,
+    # Retrieve data from mysql
+    table_name = "{}_{}_{}".format(servicepath, context.remember['entity_id'], context.remember['entity_type'])
+    table = context.mysql_init.table_search_columns_last_row(database_name=context.service,
+                                                             table_name=table_name,
                                                              columns="*")
 
-    # table = table[0]
-    # Sketch the attributes sent from CB and check their values
-    for name in att_names:
-        pass
-    print(table)
+    # TODO ALLOW IN MYSQL LIB - SET LIMIT OF COLUMNS RETRIEVED IN "table_search_columns_last_row"
 
-    # context.mysql_init.table_pretty_output(database_name=context.databasename, table_name=servicepath)
-    eq_(count, len(values), "ASSERT ERROR --> Some of the attributes were not passed to the table")
+    # Check amount of values
+    eq_(len(att_names), len(values), "ASSERT ERROR --> Amount of attributes were not passed to the table {} vs {}".format(
+            len(att_names), len(values)))
+
+    # Check values retreived vs sent
+    eq_(table[7], values[0], "ASSERT ERROR --> Attribute value were not passed to the table {} vs {}".format(
+            table[7], values[0]))

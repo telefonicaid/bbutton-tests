@@ -38,7 +38,7 @@
       "defaultservice": "test",
       "heartbeat": "/",
       "path": "/iot",
-      "port": "14041",
+      "port": "4041",
       "south_port": "8885",
       "protocol": "http",
       "iota_type": "node",
