@@ -55,7 +55,7 @@ Feature: Black Button Smoke tests
       | INSTANCE | REQUEST | ACTION | HTTP_RESPONSE |
     #  | CB       | ENTITY  | CREATE | 200           |
     #  | CB       | ENTITY  | GET    | 200           |
-      | KS       | TOKEN     | GET    | 201         |
+    #  | KS       | TOKEN     | GET    | 201         |
     #  | IOTM     | PROTOCOLS | GET    | 200         |
     #  | IOTA     | SERVICES  | GET    | 200         |
     #  | ORC      | USER      | GET    | 200         |
