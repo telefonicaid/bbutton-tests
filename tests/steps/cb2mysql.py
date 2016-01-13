@@ -48,6 +48,11 @@ def db_table_creation(context, service, servicepath, entity_id):
     database = context.config["components"]["MYSQL"]["defaultservice"]
     version = context.config["components"]["MYSQL"]["version"]
 
+    print ("host = {}".format(context.config["components"]["MYSQL"]["instance"]))
+    print ("port = {}".format(context.config["components"]["MYSQL"]["port"]))
+    print ("user = {}".format(context.config["components"]["MYSQL"]["user"]))
+    print ("password = {}".format(context.config["components"]["MYSQL"]["password"]))
+
     context.mysql_init = Mysql(host=host,
                                port=port,
                                user=user,
