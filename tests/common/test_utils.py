@@ -43,7 +43,6 @@ def initialize_log(log_level='INFO'):
     # eval(__logger__+".log_level"+"("+"#>> Test_utils: [LOG] Initialized"+")", log_level)
 
 
-#@staticmethod
 def initialize_cb(context):
     """
     Configuring the CB Utility lib
@@ -61,7 +60,6 @@ def initialize_cb(context):
     __logger__.info("#>> Test_utils: [CB] Initialized")
 
 
-#@staticmethod
 def initialize_cygnus2comp(context, comp):
     """
     Configuring the cyguns2mysql Utility lib
@@ -327,7 +325,6 @@ def set_user_service_and_subservice(context, user, service, subservice):
     context.o['CB'].set_subservice(context.remember["subservice"])
 
 
-#@staticmethod
 def remove_cb_entities(context):
     if context.o['entities2remove']:
         try:
@@ -343,7 +340,6 @@ def remove_cb_entities(context):
         __logger__.info(" -> Nothing to delete ")
 
 
-#@staticmethod
 def remove_mysql_databases(context):
     if context.o['db2remove']:
         try:
@@ -357,7 +353,6 @@ def remove_mysql_databases(context):
         __logger__.info(" -> Nothing to delete ")
 
 
-#@staticmethod
 def remember(context, key, value):
     """Add the value to context remember dict"""
     context.remember[key] = value
