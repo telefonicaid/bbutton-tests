@@ -22,9 +22,10 @@ __author__ = 'xvc'
 import logging
 import json
 import time
-
 from nose.tools import assert_true
-from common.test_utils import bb_delete_method, devices_delete_method
+from iotqatools.cb_utils import CbNgsi10Utils
+from common.test_utils import remove_mysql_databases
+from common.test_utils import bb_delete_method, devices_delete_method, remove_cb_entities
 
 logging.basicConfig(filename="./tests/logs/behave.log", level=logging.DEBUG)
 __logger__ = logging.getLogger("qa")
@@ -90,12 +91,17 @@ def before_all(context):
 
 def before_feature(context, feature):
     # model.init(environment='test')
+
     if 'specialtag' in feature.tags:
         __logger__.info("***********SPECIAL TAG BEFORE FEATURE --->>>>>>>>")
 
+    print(feature.tags)
     context.remember = {}
     context.o = {}
     context.feature_data = {}
+    context.feature
+    context.arrays = {}
+    context.o['db2remove'] = []
     # Jenkins needed time between features
     time.sleep(1)
 
@@ -111,3 +117,19 @@ def after_scenario(context, scenario):
             if "sf-02" not in context.tags:
                 devices_delete_method(context)
             bb_delete_method(context)
+
+    if "ft-cb2mysql" in context.tags:
+        if context.o and "CB" in context.o:
+            print (context.o["CB"])
+            context.o['CB'].convenience_entity_delete_url_method(entity_id=context.remember["entity_id"],
+                                                             entity_type=context.remember["entity_type"])
+
+
+def after_feature(context, feature):
+    if 'ft-cb2mysql1' in context.feature_data["tags"]:
+        __logger__.info("***********Cleaning DB {} --->>>>>>>>".format(context.o["db2remove"]))
+        remove_mysql_databases(context)
+    context.remember = {}
+    context.o = {}
+    context.feature_data = {}
+    context.arrays = {}

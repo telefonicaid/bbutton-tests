@@ -57,7 +57,7 @@
     "STH": {
       "basiccheck": "/",
       "heartbeat": "/",
-      "port": "18666",
+      "port": "8666",
       "protocol": "http",
       "version": ""
     },
@@ -85,6 +85,21 @@
       "version": "",
       "verifyssl": "True"
     },
+    "MYSQL": {
+      "cygnus_path": "/notify",
+      "cygnus_port": "5050",
+      "cygnus_protocol": "http",
+      "cygnus_version_port": "8081",
+      "cygnus_version_path": "/version",
+      "defaultservice": "testservice",
+      "password": "",
+      "path": "/",
+      "port": "3306",
+      "protocol": "http",
+      "user": "root",
+      "version": "5.1.73"
+    },
+
     "backend": {
       "mongodb": {
         "_id": "_id",

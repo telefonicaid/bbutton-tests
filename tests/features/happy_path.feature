@@ -142,4 +142,3 @@ Feature: Happy path E2E functionality Sync-Async
       | servicezzq3 | thinkinthing | admin_bb      | 4passw0rd|
       | servicezzq4 | thinkinthing | admin_bb      | 4passw0rd|
       | servicezzq5 | thinkinthing | admin_bb      | 4passw0rd|
-

@@ -43,7 +43,7 @@ Feature: Black Button Smoke tests
       | CYGNUS   | GET     | /version      | 0.11.0.2a9c87fb7fd6156225e2eed7fbc9792f1d9c5dfe |
 
 
-  @ready @ft-smoke-wip @smoke04 @check_funcionality
+  @ready @ft-smoke @smoke04 @check_funcionality
   Scenario Outline: SM_03 Instances are WORKING
     Given the instance of "<INSTANCE>" is accessible
     And a Client of "blackbutton01" and a ThirdParty called "testpizza"
