@@ -16,7 +16,7 @@ import logging
 from behave import *
 from nose.tools import eq_, assert_in
 from common.test_utils import *
-from iotqautils.cb_utils import EntitiesConsults, PayloadUtils, NotifyConditions, ContextElements, AttributesCreation, \
+from iotqatools.cb_utils import EntitiesConsults, PayloadUtils, NotifyConditions, ContextElements, AttributesCreation, \
     MetadatasCreation
 
 __logger__ = logging.getLogger("cb_utils")
