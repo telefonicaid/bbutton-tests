@@ -92,11 +92,11 @@
       "cygnus_version_port": "8081",
       "cygnus_version_path": "/version",
       "defaultservice": "testservice",
-      "password": "",
+      "password": "cygnus",
       "path": "/",
       "port": "3306",
       "protocol": "http",
-      "user": "root",
+      "user": "cygnus",
       "version": "5.1.73"
     },
 
