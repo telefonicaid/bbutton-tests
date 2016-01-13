@@ -57,7 +57,7 @@
     "STH": {
       "basiccheck": "/",
       "heartbeat": "/",
-      "port": "8666",
+      "port": "18666",
       "protocol": "http",
       "version": ""
     },
