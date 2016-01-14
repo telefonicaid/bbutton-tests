@@ -45,6 +45,10 @@
     "MYSQL": {
       "cygnus": "127.0.0.1",
       "instance": "127.0.0.1"
+    },
+    "IOTA_MQTT": {
+      "instance": "127.0.0.1",
+      "pep": "127.0.0.1"
     }
   },
   "backend": {

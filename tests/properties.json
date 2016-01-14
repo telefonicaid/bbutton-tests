@@ -54,6 +54,17 @@
       "version": "",
       "verifyssl": "True"
     },
+    "IOTA_MQTT": {
+      "defaultservice": "test",
+      "heartbeat": "/",
+      "path": "/iot",
+      "port": "4052",
+      "south_port": "1883",
+      "protocol": "http",
+      "iota_type": "mqtt",
+      "version": "",
+      "verifyssl": "True"
+    },
     "STH": {
       "basiccheck": "/",
       "heartbeat": "/",

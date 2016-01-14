@@ -154,6 +154,27 @@ def step_impl(context, version):
         '[{}] Not the correct version: found({}) expected({})'.format(comp, returned_version, version))
     __logger__.debug("{} Version: {}".format(comp, returned_version))
 
+@then(u'the returned version from "IOTA_MQTT" should match the "(?P<version>.+)"')
+def step_impl(context, version):
+    comp = "IOTA_MQTT"
+
+    eq_(context.r.status_code, 200,
+        "[ERROR] when calling {} responsed a HTTP {}".format(context.url_component, context.r.status_code))
+    "<INSTANCE>"
+
+    assert_in('r', context, 'Not response found for component {}'.format(context.instance))
+
+    iota_version = context.r.content
+    if context.config['components']["IOTA_MQTT"]['iota_type'] == "mqtt":
+        __logger__.debug(iota_version)
+        returned_version = json.loads(iota_version)["version"]
+    else:
+        returned_version = iota_version.split(" ")[3]
+    eq_(returned_version, version,
+        '[{}] Not the correct version: found({}) expected({})'.format(comp, returned_version, version))
+    __logger__.debug("{} Version: {}".format(comp, returned_version))
+
+
 
 @then(u'the returned version from "IOTA_LIB" should match the "(?P<version>.+)"')
 def step_impl(context, version):
