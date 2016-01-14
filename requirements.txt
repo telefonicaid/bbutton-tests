@@ -7,19 +7,3 @@ git+https://github.com/telefonicaid/iot-qa-tools
 
 
 
-curl http://localhost:4052/iot/devices -X POST -H "Fiware-Service: servicezzw1" -H "fiware-servicepath: /thinkingthing"  -d '{ "devices": [ 
-        { 
-            "device_id": "xav", 
-            "entity_name": "namex", 
-            "entity_type": "gdl", 
-            "attributes": [
-                  { "id": "t", "name": "temperature", "type": "float" },
-                  { "id": "h", "name": "humidity", "type": "float" }
-            ],
-            "lazy":[
-            ],
-            "commands": [
-            ]
-        }
-    ]
-}'
