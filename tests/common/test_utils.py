@@ -23,11 +23,13 @@ __author__ = 'xvc'
 import re
 import requests
 import logging
+import json
 from iotqatools.cb_utils import CbNgsi10Utils, PayloadUtils, ContextElements
 from iotqatools.ks_utils import KeystoneCrud
 from iotqatools.iota_utils import Rest_Utils_IoTA
 from iotqatools.mysql_utils import Mysql
 from common import orc_delete_service, orc_get_services
+
 
 __logger__ = logging.getLogger("test utils")
 
@@ -409,3 +411,31 @@ def devices_delete_method(context):
         __logger__.info("DEVICE ({}) deleted".format(context.device_id))
     except ValueError:
         __logger__.error("[Error] Device to delete ({}) not found".format(context.device_id))
+
+
+def mqtt_create_device(context, url, headers, data):
+
+    print("{}\n{}\n{}\n".format(url, headers, data))
+
+    try:
+        r = requests.post(url=url,
+                                  headers=headers,
+                                  data=data)
+    except ValueError, e:
+        __logger__.info(e)
+        print(["Error in mqtt_create_device: {}".format(e)])
+        return False
+
+
+    print (r.content)
+    __logger__.debug(r.content)
+    __logger__.debug(r.status_code)
+
+    return r
+
+
+def replace_value_with_definition(dictionary, key_to_find, value):
+    for key in dictionary.keys():
+        if key == key_to_find:
+            dictionary[key] = value
+    return dictionary

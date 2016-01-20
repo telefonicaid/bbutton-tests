@@ -120,7 +120,7 @@ Feature: Happy path E2E functionality Sync-Async
 
 
     Examples:
-      | SERVICE | SERVICEPATH | DEVICE_ID | SYNC_MODE | BT_REQUEST | STATUS | FINAL_STATUS |
+      | SERVICE     | SERVICEPATH  | DEVICE_ID | SYNC_MODE    | BT_REQUEST                        | STATUS | FINAL_STATUS |
       | servicezzq3 | thinkinthing | ASzzq1033 | asynchronous | #1,BT,C,3,2,2000$WakeUp,#0,K1,30$ | C.S    | C.S          |
       | servicezzq4 | thinkinthing | AAzzq1044 | asynchronous | #1,BT,C,1,1,2000$WakeUp,#0,K1,30$ | C.S    | C.S          |
 
@@ -138,7 +138,7 @@ Feature: Happy path E2E functionality Sync-Async
     Examples:
       | SERVICE     | SERVICEPATH  | SERVICE_ADMIN | SERVICE_PWD |
       | servicezzq1 | thinkinthing | admin_bb      | 4passw0rd   |
-      | servicezzq2 | thinkinthing | admin_bb      | 4passw0rd|
-      | servicezzq3 | thinkinthing | admin_bb      | 4passw0rd|
-      | servicezzq4 | thinkinthing | admin_bb      | 4passw0rd|
-      | servicezzq5 | thinkinthing | admin_bb      | 4passw0rd|
+      | servicezzq2 | thinkinthing | admin_bb      | 4passw0rd   |
+      | servicezzq3 | thinkinthing | admin_bb      | 4passw0rd   |
+      | servicezzq4 | thinkinthing | admin_bb      | 4passw0rd   |
+      | servicezzq5 | thinkinthing | admin_bb      | 4passw0rd   |

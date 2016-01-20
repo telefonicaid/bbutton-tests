@@ -143,12 +143,12 @@ def step_impl(context, INSTANCE, REQUEST, ACTION):
                     context.service_id = service["id"]
                     break
 
-
         # Get config env credentials
         context.user_admin = "cloud_admin"
         context.password_admin = "password"
         context.domain_admin = "admin_domain"
-        domain_token = ks_get_token(context, service=context.domain_admin, user=context.user_admin, password=context.password_admin)
+        domain_token = ks_get_token(context, service=context.domain_admin, user=context.user_admin,
+                                    password=context.password_admin)
 
         if "service_id" in context:
             delete_response = orc_delete_service(context, context.service_id)
@@ -186,6 +186,26 @@ def step_impl(context, INSTANCE, REQUEST, ACTION):
 
         eq_(204, delete_response,
             "[ERROR] Deleting Service {} responsed a HTTP {}".format(context.service_id, delete_response))
+
+    if INSTANCE == "IOTA_MQTT" and REQUEST == "DEVICE" and ACTION == "CREATE":
+        url = str("{0}/iot/devices".format(context.url_component))
+
+        dictio = dict(context.table)
+        print ("\n{}\n".format(dictio))
+
+        p = dict({})
+        p["devices"] = [dictio]
+        print (p['devices'])
+
+        # json_payload = json.dumps(dictio, ensure_ascii=True)
+
+        context.headers.update({"Fiware-Service": "{}".format(context.service)})
+        context.headers.update({"Fiware-ServicePath": "/{}".format(context.servicepath)})
+
+        __logger__.debug("[MQTT] Create Device request: {}, \n url: {}".format(p, url))
+        context.mqtt_create_request = p
+        context.mqtt_create_url = url
+
 
 
 @then('subservice "(?P<SERVICEPATH>.+)" under the service is created')
@@ -557,7 +577,6 @@ def step_impl(context, DEVICE_ID, FINAL_STATUS):
             "# Error final status ({}) does not match the expected result ({})".format(
                     FINAL_STATUS,
                     context.final_state))
-
 
 
 @step('the ThirdParty "(?P<THIRDPARTY>.+)" changed the status to "(?P<OP_RESULT>.+)"')

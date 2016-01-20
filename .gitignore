@@ -70,5 +70,4 @@ target/
 .DS_Store
 
 # IDE files
-/tests/steps/happy_path.py
 .idea/
