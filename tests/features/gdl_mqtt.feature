@@ -27,7 +27,10 @@ Feature: IotAgent for MQTT
     And the "STATIC_ATTS" key contains these values
       | name     | type     |
       | serialID | 02598347 |
+    When a simple measure is sent to IOTA_MQTT
 
     Examples:
       | SERVICE     | SERVICEPATH  | DEVICE_ID |
-      | servicezzq1 | thinkinthing | aaa111    |
+      | servicezzw1 | thinkinthing | xxx00111    |
+
+

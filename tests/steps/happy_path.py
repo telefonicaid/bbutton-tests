@@ -193,11 +193,9 @@ def step_impl(context, INSTANCE, REQUEST, ACTION):
         dictio = dict(context.table)
         print ("\n{}\n".format(dictio))
 
+        # create dict to contain the payload
         p = dict({})
         p["devices"] = [dictio]
-        print (p['devices'])
-
-        # json_payload = json.dumps(dictio, ensure_ascii=True)
 
         context.headers.update({"Fiware-Service": "{}".format(context.service)})
         context.headers.update({"Fiware-ServicePath": "/{}".format(context.servicepath)})

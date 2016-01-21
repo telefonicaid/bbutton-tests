@@ -18,6 +18,7 @@ from nose.tools import eq_, assert_in
 from common.test_utils import *
 from iotqatools.cb_utils import EntitiesConsults, PayloadUtils, NotifyConditions, ContextElements, AttributesCreation, \
     MetadatasCreation
+import paho.mqtt.client as mqtt
 
 __logger__ = logging.getLogger("mqtt_steps")
 
@@ -25,6 +26,7 @@ __logger__ = logging.getLogger("mqtt_steps")
 @given(u'the "{KEY}" key contains these values')
 def step_impl(context, KEY):
     """
+    Updates the rest of values and send the request to iotaMQTT
     :type context: behave.runner.Context
     """
     table = context.table
@@ -58,5 +60,13 @@ def step_impl(context, KEY):
                                              headers=context.headers,
                                              data=updated_payload)
         eq_(201, create_response.status_code)
+        print ("# [MQTT] Creation device: {}".format(create_response.status_code))
 
-        print ("\n END \n")
+
+@when("a simple measure is sent to IOTA_MQTT")
+def step_impl(context):
+    """
+    :type context: behave.runner.Context
+    """
+    pass
+#{"tt":"20160119T223001Z","L":3,"T": 22.8,"H":24,"G":0,"M":3835,"V":"L","C1":"00D600070af90d04"}

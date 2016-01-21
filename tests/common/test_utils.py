@@ -414,7 +414,14 @@ def devices_delete_method(context):
 
 
 def mqtt_create_device(context, url, headers, data):
-
+    """
+    Send the request to IOTA_MQTT
+    :param context:
+    :param url:
+    :param headers:
+    :param data:
+    :return: response of request
+    """
     print("{}\n{}\n{}\n".format(url, headers, data))
 
     try:
