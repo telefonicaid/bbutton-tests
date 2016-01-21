@@ -27,6 +27,7 @@ from iotqatools.cb_utils import CbNgsi10Utils, PayloadUtils, ContextElements
 from iotqatools.ks_utils import KeystoneCrud
 from iotqatools.iota_utils import Rest_Utils_IoTA
 from iotqatools.mysql_utils import Mysql
+from iotqatools.sth_utils import SthUtils
 from common import orc_delete_service, orc_get_services
 
 __logger__ = logging.getLogger("test utils")
@@ -133,6 +134,24 @@ def initialize_iota(context):
     context.o['IOTM'] = Rest_Utils_IoTA(server_root=context.remember['iotam_url'],
                                         server_root_secure=context.remember['iotam_url'])
 
+
+def initialize_sth(context):
+    """
+    Config the sth Utility lib
+    """
+    context.o['STH'] = SthUtils(protocol=context.config["components"]["STH"]['protocol'],
+                                instance=context.config["components"]["STH"]['instance'],
+                                port=context.config["components"]["STH"]['port'])
+
+    endpoint = get_endpoint(instance=context.config["components"]["STH"]["instance"],
+                            protocol=context.config["components"]["STH"]["protocol"],
+                            port=context.config["components"]["STH"]["port"],
+                            path="")
+    notify_endpoint = endpoint + context.config["components"]["STH"]["notify_path"]
+
+    remember(context, "sth_url", endpoint)
+    remember(context, "cb2sth_url", notify_endpoint)
+    __logger__.info("#>> Test_utils: [STH] Initialized")
 
 @staticmethod
 def set_service_and_subservice(context, service, subservice):

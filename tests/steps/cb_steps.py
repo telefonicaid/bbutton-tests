@@ -59,7 +59,7 @@ def create_subscription(context):
 
     notify_cond = NotifyConditions()
     cond_values = context.table[0]['notif_cond_values'].split(";")
-    eval("notify_cond.add_notify_condition_" + context.table[0]['notify_type'].lower() + "(cond_values)")
+    getattr(notify_cond, "add_notify_condition_" + context.table[0]['notify_type'].lower())(cond_values)
 
     entities = EntitiesConsults()
     entities.add_entity(entity_id=context.table[0]['entity_id'],
@@ -78,8 +78,10 @@ def create_subscription(context):
                                                                             notify_conditions=notify_cond,
                                                                             throttling=throttling)
     # resp = cb.standard_subscribe_context_onchange(subscription_pl)
-    resp = eval("cb.standard_subscribe_context_" + context.table[0]['notify_type'].lower() + "(subscription_pl)")
+    resp = getattr(cb, "standard_subscribe_context_" + context.table[0]['notify_type'].lower())(subscription_pl)
     eq_(200, resp.status_code)
+    subs_id = json.loads(resp.content)['subscribeResponse']['subscriptionId']
+    remember(context, 'subscription_id', subs_id)
 
 
 @step(

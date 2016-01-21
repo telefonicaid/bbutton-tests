@@ -57,6 +57,7 @@
     "STH": {
       "basiccheck": "/",
       "heartbeat": "/",
+      "notify_path": "/notify",
       "port": "18666",
       "protocol": "http",
       "version": ""

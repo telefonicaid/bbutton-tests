@@ -23,6 +23,7 @@ import logging
 import json
 import time
 from nose.tools import assert_true
+from pymongo import MongoClient
 from iotqatools.cb_utils import CbNgsi10Utils
 from common.test_utils import remove_mysql_databases
 from common.test_utils import bb_delete_method, devices_delete_method, remove_cb_entities
@@ -118,11 +119,22 @@ def after_scenario(context, scenario):
                 devices_delete_method(context)
             bb_delete_method(context)
 
-    if "ft-cb2mysql" in context.tags:
-        if context.o and "CB" in context.o:
-            print (context.o["CB"])
-            context.o['CB'].convenience_entity_delete_url_method(entity_id=context.remember["entity_id"],
-                                                             entity_type=context.remember["entity_type"])
+        if "ft-cb2mysql" in context.tags or "rm-entity" in context.tags:
+            if context.o and "CB" in context.o:
+                print (context.o["CB"])
+                context.o['CB'].convenience_entity_delete_url_method(entity_id=context.remember["entity_id"],
+                                                                     entity_type=context.remember["entity_type"])
+
+        if "rm-subs" in context.tags:
+            if context.o and "CB" in context.o:
+                context.o['CB'].convenience_unsubscribe_context(context.remember["subscription_id"])
+
+        if "rm-sth" in context.tags:
+            mongo_instance = context.config["backend"]["mongodb"]["instance"]
+            mongo_port = context.config["components"]["backend"]["mongodb"]["port"]
+
+            client = MongoClient(mongo_instance, mongo_port)
+            client.drop_database('sth_' + context.service)
 
 
 def after_feature(context, feature):
