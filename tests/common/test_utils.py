@@ -24,6 +24,7 @@ import re
 import requests
 import logging
 import json
+import paho.mqtt.client as mqtt
 from iotqatools.cb_utils import CbNgsi10Utils, PayloadUtils, ContextElements
 from iotqatools.ks_utils import KeystoneCrud
 from iotqatools.iota_utils import Rest_Utils_IoTA
@@ -446,3 +447,15 @@ def replace_value_with_definition(dictionary, key_to_find, value):
         if key == key_to_find:
             dictionary[key] = value
     return dictionary
+
+
+def on_connect(client, userdata, rc):
+    print("Connected with result code "+str(rc))
+    # Subscribing in on_connect() means that if we lose the connection and
+    # reconnect then subscriptions will be renewed.
+    client.subscribe("$SYS/#")
+
+
+def on_message(client, userdata, msg):
+    print(msg.topic+" "+str(msg.payload))
+
