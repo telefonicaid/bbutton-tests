@@ -14,7 +14,7 @@ import json
 import logging
 
 from behave import *
-from nose.tools import eq_, assert_in
+from nose.tools import eq_, assert_in, assert_greater_equal
 from common.test_utils import *
 from iotqatools.cb_utils import EntitiesConsults, PayloadUtils, NotifyConditions, ContextElements, AttributesCreation, \
     MetadatasCreation
@@ -171,3 +171,83 @@ def update_entity(context, service, subservice, entity_id, entity_type, entity_p
 
     # TestUtils.
     remember(context, "cb_response", resp)
+
+
+@step(
+        'CB should have received the entity update in the entity_id "{entity_id}" and entity_type "{entity_type}" with values from "{msg}"')
+def cb_check_mqtt_data(context, entity_id, entity_type, msg):
+    """
+    :type context: behave.runner.Context
+    :type ENT_NAME: str
+    :type ENT_TYPE: str
+    """
+
+    if "service" and "subservice" in context:
+        service = context.service
+        subservice = context.subservice
+    else:
+        service = None
+        subservice = None
+
+    # Compose the payload
+    __logger__.debug('Entity_id: {}'.format(entity_id))
+    entity = EntitiesConsults()
+    entity.add_entity(entity_id, entity_type, is_pattern='false')
+    payload = PayloadUtils.build_standard_query_context_payload(entity)
+    __logger__.debug('Payload is: {}'.format(payload))
+
+    # Make request to CB and retrieve the result
+    try:
+        initialize_cb(context)
+        context.o['CB'].set_service(service)
+        context.o['CB'].set_subservice(subservice)
+        if 'token' in context.remember:
+            context.o['CB'].set_auth_token(context.remember['token'])
+        response = context.o['CB'].standard_query_context(payload)
+        __logger__.info('Response to query is: {}'.format(response.json()))
+
+        # Add response to the context
+        context.remember['cb_response'] = response
+
+        __logger__.debug(response.json()['contextResponses'][0]['statusCode'])
+        if 'contextResponses' in response.json():
+            assert str(response.json()['contextResponses'][0]['statusCode'][
+                           'code']) == '200', 'Incorrect QueryContext response {}'.format(
+                    str(response.json()['contextResponses'][0]['statusCode']['code']))
+        else:
+            raise Exception('The response has no statusCode field')
+    except Exception, e:
+        __logger__.error('ERROR, cannot retrieve entity data: {}'.format(e))
+        print ("error {}".format(e))
+
+    atts_retrieved = context.remember['cb_response'].json()['contextResponses'][0]["contextElement"]["attributes"]
+
+    # Check values
+    if not "check_measure" in context:
+        context.check_measure = 1
+
+    checks = mqtt_check_multi_measure(sent=msg,
+                                      atts_retrieved=atts_retrieved)
+
+    if "special_key" in context and context.special_key is not None:
+        checks = checks + mqtt_check_special_measure(keyword=context.special_key,
+                                                     sent=msg,
+                                                     atts_retrieved=atts_retrieved)
+
+    eq_(checks, context.check_measure, "> No matches from Values or Names retrieved \n#{} vs #{}\n{}".format(checks, context.check_measure, atts_retrieved))
+
+
+@step('CB should have received the entity update in the entity_id "{entity_id}" and entity_type "{entity_type}" with multiple values from "{msg}"')
+def cb_check_mqtt_multi_data(context, entity_id, entity_type, msg):
+    context.check_measure = len(dict(json.loads(msg)))
+    cb_check_mqtt_data(context, entity_id, entity_type, msg)
+
+
+@step('CB should have received the "{expected}" entity update with multiple values from "{msg}"')
+def cb_check_mqtt_special_data(context, expected, msg):
+    context.entity_id = "mqttname"
+    context.entity_type = "mqtttype"
+    context.check_measure = len(dict(json.loads(msg)))
+    context.special_key = mqtt_convenience_atts(dict(json.loads(msg)).keys())
+
+    cb_check_mqtt_data(context, context.entity_id, context.entity_type, msg)

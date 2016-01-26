@@ -30,7 +30,7 @@ from iotqatools.ks_utils import KeystoneCrud
 from iotqatools.iota_utils import Rest_Utils_IoTA
 from iotqatools.mysql_utils import Mysql
 from common import orc_delete_service, orc_get_services
-
+from nose.tools import eq_
 
 __logger__ = logging.getLogger("test utils")
 
@@ -347,7 +347,6 @@ def remove_mysql_databases(context):
     if context.o['db2remove']:
         try:
             for db in context.o['db2remove']:
-
                 context.o["MYSQL"].drop_database(db)
                 __logger__.info(" -> DELETED database: {}".format(db))
         except AssertionError, e:
@@ -426,20 +425,44 @@ def mqtt_create_device(context, url, headers, data):
     print("{}\n{}\n{}\n".format(url, headers, data))
 
     try:
-        r = requests.post(url=url,
-                                  headers=headers,
-                                  data=data)
+        response = requests.post(url=url,
+                                 headers=headers,
+                                 data=data)
     except ValueError, e:
         __logger__.info(e)
         print(["Error in mqtt_create_device: {}".format(e)])
         return False
 
+    print (response.content)
+    __logger__.debug(response.content)
+    __logger__.debug(response.status_code)
 
-    print (r.content)
-    __logger__.debug(r.content)
-    __logger__.debug(r.status_code)
+    return response
 
-    return r
+
+def mqtt_delete_device(context, url, headers):
+    """
+    Send the request to IOTA_MQTT
+    :param context:
+    :param url:
+    :param headers:
+    :return: response of request
+    """
+    print("{}\n{}\n".format(url, headers))
+
+    try:
+        response = requests.delete(url=url,
+                                   headers=headers)
+    except ValueError, e:
+        __logger__.info(e)
+        print(["Error in mqtt_delete_device: {}".format(e)])
+        return False
+
+    print (response.content)
+    __logger__.debug(response.content)
+    __logger__.debug(response.status_code)
+
+    return response
 
 
 def replace_value_with_definition(dictionary, key_to_find, value):
@@ -449,13 +472,119 @@ def replace_value_with_definition(dictionary, key_to_find, value):
     return dictionary
 
 
-def on_connect(client, userdata, rc):
-    print("Connected with result code "+str(rc))
-    # Subscribing in on_connect() means that if we lose the connection and
-    # reconnect then subscriptions will be renewed.
-    client.subscribe("$SYS/#")
+def mqtt_check_single_measure(sent, atts_retrieved):
+    # extract and compare the result vs expected:
+    exp_att, exp_value = dict(json.loads(sent)).popitem()
+    checked_value = 0
+
+    for att in atts_retrieved:
+        if att["name"] == exp_att and att["type"] != "compound":
+            eq_(str(att["value"]), str(exp_value),
+                "> Name ({}) matchs but values R({}) does not ({})".format(exp_att, str(att["value"]), str(exp_value)))
+            checked_value += 1
+            print ("> MATCH @ {}:{}".format(att["name"], att["value"]))
+
+    return (checked_value)
 
 
-def on_message(client, userdata, msg):
-    print(msg.topic+" "+str(msg.payload))
+def mqtt_check_multi_measure(sent, atts_retrieved):
+    checked_value = 0
+    data = dict(json.loads(sent))
+
+    for keys in range(len(data)):
+        key, value = data.popitem()
+        for att in atts_retrieved:
+            if att["name"] == key:
+                eq_(str(att["value"]), str(value),
+                    "> Name ({}) matchs but values ({}) does not ({})".format(key, str(att["value"]), str(value)))
+                checked_value += 1
+                print ("> MATCH @ {}:{}".format(att["name"], att["value"]))
+
+    return (checked_value)
+
+
+def mqtt_check_special_measure(keyword, sent, atts_retrieved):
+    checked_value = 0
+    data = dict(json.loads(sent))
+    if keyword is not "B":
+        convenience_att = "P1"
+    else:
+        convenience_att = keyword
+
+    for att in atts_retrieved:
+        # if it is a special key
+        if att["name"] == convenience_att and att["type"] == "compound":
+            if check_compound_key(keyword, att, data[keyword]):
+                checked_value += 1
+                print ("> Special MATCH @ {}:{}".format(att["name"], att["value"]))
+    return checked_value
+
+
+def mqtt_convenience_atts(keys):
+    """
+    Return if it is a convenience values for special params
+    :param keys: list
+    :return: convenience data
+    """
+    special_params = ["P1", "C1", "B"]
+
+    for key in keys:
+        if key in special_params:
+            print ("#> SPECIAL KEY FOUND: {} ".format(key, special_params))
+            return key
+    return None
+
+
+def check_compound_key(keyword, att, measure):
+    if keyword is not "B":
+        data_expected = """{
+            "name" : "P1",
+            "type" : "compound",
+            "value" : [
+              {
+                "name" : "mcc",
+                "type" : "string",
+                "value" : "MCC_VALUE"
+              },
+              {
+                "name" : "mnc",
+                "type" : "string",
+                "value" : "MNC_VALUE"
+              },
+              {
+                "name" : "lac",
+                "type" : "string",
+                "value" : "LAC_VALUE"
+              },
+              {
+                "name" : "cell-id",
+                "type" : "string",
+                "value" : "CELLID_VALUE"
+              }
+            ]
+          }"""
+        mcc = measure[:4]
+        mnc = measure[4:8]
+        lac = measure[8:12]
+        cellid = measure[12:16]
+        
+        # Replace values with measure sent
+        data_expected = data_expected.replace("MCC_VALUE", mcc)
+        data_expected = data_expected.replace("MNC_VALUE", mnc)
+        data_expected = data_expected.replace("LAC_VALUE", lac)
+        data_expected = data_expected.replace("CELLID_VALUE", cellid)
+        expected_dict = dict(json.loads(data_expected))
+
+        if expected_dict == att:
+            return True
+        else:
+            print ("[ERROR] Dictionaries are not equals: {}\n {}\n".format(expected_dict, att))
+            return False
+
+    else:
+        data_expected = """{
+                        }"""
+
+
+
 

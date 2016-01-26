@@ -22,14 +22,6 @@ from common.mqtt_utils import MqttUtils
 from iotqatools.cb_utils import EntitiesConsults, PayloadUtils, NotifyConditions, ContextElements, AttributesCreation, \
     MetadatasCreation
 
-# import paho.mqtt.client as mqtt
-
-MQTT_BROKER_HOSTNAME = "localhost"
-MQTT_BROKER_PORT = 4052
-CBROKER_URL = "127.0.0.1:10026"
-MQTT_APIKEY = "1234"
-
-#mqttl = Gw_MQTT_Utils(mqtt_host="127.0.0.1", mqtt_port="1883")
 mqttl = MqttUtils(host="127.0.0.1", port="1883", user="iota", pwd="iota")
 __logger__ = logging.getLogger("mqtt_steps")
 
@@ -106,19 +98,9 @@ def step_impl(context, device_id, att, msg, apikey):
     context.st = st
     context.ts = ts
 
+    context.device_id = device_id
     topic = '/{}/{}/{}'.format(apikey, device_id, att)
     print ("\n| Topic {} | MSG {}|".format(topic, msg))
 
    # format required /apikey/devId/attributes
-
     mqttl.publish_message(topic=str(topic), payload=str(msg), user="iota", pwd="iota")
-
-
-@step('I Wait some time')
-def wait(context):
-    time.sleep(1)
-
-
-@step('the measure of asset "([^"]*)" with measures "([^"]*)" is received by context broker')
-def check_measure_cbroker(context, asset_name, measures):
-    functions.check_measure(asset_name, measures)

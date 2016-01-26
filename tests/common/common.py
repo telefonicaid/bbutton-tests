@@ -180,6 +180,7 @@ def ks_get_token(context, service=None, user=None, password=None, subservice=Non
 
     context.r_ks = requests.request("POST", ks_url, data=payload, headers=headers)
     ks_headers = context.r_ks.headers
+    print (context.r_ks.headers)
     return ks_headers["x-subject-token"]
 
 

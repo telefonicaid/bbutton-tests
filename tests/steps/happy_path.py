@@ -54,7 +54,7 @@ def step_impl(context, SERVICE, SERVICEPATH):
 
 
 @step('the "(?P<INSTANCE>.+)" receive the request "(?P<REQUEST>.+)" and action "(?P<ACTION>.+)"')
-def step_impl(context, INSTANCE, REQUEST, ACTION):
+def happy_path_request_collector(context, INSTANCE, REQUEST, ACTION):
     """
     :type context behave.runner.Context
     :type INSTANCE str
@@ -83,7 +83,7 @@ def step_impl(context, INSTANCE, REQUEST, ACTION):
 
         context.headers.update({"Fiware-Service": "{}".format(context.service)})
         context.headers.update({"Fiware-ServicePath": "/{}".format(context.servicepath)})
-        print (context.headers)
+
         payload_table = dict(context.table)
         payload_table['ATT_TIMEOUT'] = int(payload_table['ATT_TIMEOUT'])
 
@@ -114,9 +114,12 @@ def step_impl(context, INSTANCE, REQUEST, ACTION):
 
     if INSTANCE == "ORC" and REQUEST == "SERVICE" and ACTION == "CREATE":
         url = str("{0}/v1.0/service".format(context.url_component))
-        json_payload = json.dumps(dict(context.table))
+        if context.table:
+            json_payload = json.dumps(dict(context.table))
+        else:
+            json_payload = json.dumps(context.table_create_service)
 
-        # print (json_payload)
+        print ("\n JSON TABLE SERVICE: \n {}\n".format(json_payload))
         __logger__.debug("Create service: {}, \n url: {}".format(json_payload, url))
         context.r = requests.post(url=url,
                                   headers=context.headers,
@@ -143,7 +146,7 @@ def step_impl(context, INSTANCE, REQUEST, ACTION):
                     context.service_id = service["id"]
                     break
 
-        # Get config env credentials
+        # Get config test env credentials
         context.user_admin = "cloud_admin"
         context.password_admin = "password"
         context.domain_admin = "admin_domain"
@@ -177,7 +180,6 @@ def step_impl(context, INSTANCE, REQUEST, ACTION):
         context.password_admin = "4passw0rd"
 
         context.token_scope = ks_get_token_with_scope(context, context.token, context.service, context.subservice)
-        # print ("#>> NEW Token with scope: {}".format(context.token_scope))
 
         delete_response = orc_delete_subservice(context,
                                                 context.service_id,
@@ -194,20 +196,19 @@ def step_impl(context, INSTANCE, REQUEST, ACTION):
         print ("\n{}\n".format(dictio))
 
         # create dict to contain the payload
-        p = dict({})
-        p["devices"] = [dictio]
+        payload = dict({})
+        payload["devices"] = [dictio]
 
         context.headers.update({"Fiware-Service": "{}".format(context.service)})
         context.headers.update({"Fiware-ServicePath": "/{}".format(context.servicepath)})
 
-        __logger__.debug("[MQTT] Create Device request: {}, \n url: {}".format(p, url))
-        context.mqtt_create_request = p
+        __logger__.debug("[MQTT] Create Device request: {}, \n url: {}".format(payload, url))
+        context.mqtt_create_request = payload
         context.mqtt_create_url = url
 
 
-
-@then('subservice "(?P<SERVICEPATH>.+)" under the service is created')
-def step_impl(context, SERVICEPATH):
+@step('subservice "(?P<SERVICEPATH>.+)" under the service is created')
+def happy_path_service_creation(context, SERVICEPATH):
     """
     :type context behave.runner.Context
     :type SERVICEPATH str
@@ -228,9 +229,12 @@ def step_impl(context, SERVICEPATH):
                                                 context.instance_port)
 
     url = "{}/v1.0/service/{}/subservice".format(context.url_component, context.service_id)
-    json_payload = json.dumps(dict(context.table))
 
-    # print (json_payload)
+    if context.table:
+        json_payload = json.dumps(dict(context.table))
+    else:
+        json_payload = json.dumps(context.table_create_subservice)
+
     __logger__.debug("Create service: {}, \n url: {}".format(json_payload, url))
     context.r = requests.post(url=url,
                               headers=context.headers,
@@ -270,18 +274,13 @@ def step_impl(context):
                                                                     context.service_id,
                                                                     context.subservice_id)
 
-    print(url)
-
     json_payload = json.dumps(dict(context.table))
 
-    # print (json_payload)
     __logger__.debug("Create service: {}, \n url: {}".format(json_payload, url))
     context.r = requests.post(url=url,
                               headers=context.headers,
                               data=json_payload)
-    print(json_payload)
-    print(context.r)
-    print(context.r.content)
+
     __logger__.debug(context.r.content)
     __logger__.debug(context.r.status_code)
     eq_(context.r.status_code, 201,
@@ -302,17 +301,24 @@ def step_impl(context, SERVICE_ID, SUBSERVICE_ID):
 
 
 @step('a valid token is retrieved for user "(?P<SERVICE_ADMIN>.+)" and password "(?P<SERVICE_PWD>.+)"')
-def step_impl(context, SERVICE_ADMIN, SERVICE_PWD):
+def happy_path_retrieve_token(context, SERVICE_ADMIN, SERVICE_PWD):
     """
     :type context behave.runner.Context
     :type SERVICE_ADMIN str
     :type SERVICE_PWD str
     """
+
     # Recover a Token
     context.user = SERVICE_ADMIN
     context.password = SERVICE_PWD
-    # context.service = context.service
-    context.subservice = context.servicepath
+
+    if "service" in context and "servicepath" in context:
+        # context.service = context.service
+        context.subservice = context.servicepath
+    else:
+        print ("\n #>> Token data needed FAIL: {} \n".format(context.service))
+        return False
+
     context.token = ks_get_token(context,
                                  service=context.service,
                                  user=context.user,
@@ -346,7 +352,7 @@ def step_impl(context):
 
 
 @step('a list of services for admin_cloud is retrieved')
-def step_impl(context):
+def happy_path_list_services(context):
     """
     :type context behave.runner.Context
     :type SERVICE_ADMIN str
@@ -371,7 +377,7 @@ def step_impl(context):
 
 @step('a list of subservices for service_admin "(?P<SERVICE_ADMIN>.+)" '
       'and service_pwd "(?P<SERVICE_PWD>.+)" are retrieved')
-def step_impl(context, SERVICE_ADMIN, SERVICE_PWD):
+def happy_path_list_subservices(context, SERVICE_ADMIN, SERVICE_PWD):
     """
     :type context: behave.runner.Context
     :type SERVICE_ADMIN: str
@@ -740,12 +746,6 @@ def step_impl(context, DEVICE_ID, TP_RETURN):
     result = context.answer_mod1.split(",")[3].split(":")[2]
     eq_(result, TP_RETURN, "Returned result does not match \n {} \n {} \n".format(result, TP_RETURN))
 
-    """
-    print (iota_url)
-    print (headers)
-    print (context.r.status_code)
-    print (context.r.content)
-    """
 
 
 @then('the service "(?P<SERVICE>.+)" should not be listed')
@@ -781,3 +781,59 @@ def step_impl(context, DEVICE_ID):
     for doc in result:
         delete = devices.remove({"id": DEVICE_ID})
         print ("Deleted device {}, result: {}".format(DEVICE_ID, delete))
+
+
+@step("a service and subservice are provisioned")
+def service_subservice_default_provision(context):
+    """
+    :type context: behave.runner.Context
+    """
+    json_data_s = """{
+                                    "DOMAIN_ADMIN_USER": "cloud_admin",
+                                    "NEW_SERVICE_ADMIN_PASSWORD": "4passw0rd",
+                                    "KEYPASS_PORT": "8080",
+                                    "KEYSTONE_PORT": "5000",
+                                    "KEYPASS_HOST": "localhost",
+                                    "DOMAIN_NAME": "admin_domain",
+                                    "DOMAIN_ADMIN_PASSWORD": "password",
+                                    "NEW_SERVICE_NAME": "CHANGE_SERVICE_NAME",
+                                    "NEW_SERVICE_ADMIN_USER": "admin_bb",
+                                    "NEW_SERVICE_DESCRIPTION": "default service description",
+                                    "KEYSTONE_HOST": "localhost",
+                                    "KEYPASS_PROTOCOL": "http"
+                                    }"""
+    payload_service = json.loads(json_data_s)
+    payload_service["NEW_SERVICE_NAME"] = context.service
+    context.table_create_service = payload_service
+
+    json_data_ss = """{
+                    "NEW_SUBSERVICE_DESCRIPTION": "SUBSERVICE NAME DESCRIPTION",
+                    "SERVICE_NAME": "CHANGE_SERVICE_NAME",
+                    "KEYSTONE_PORT": "5000",
+                    "SERVICE_ADMIN_PASSWORD": "4passw0rd",
+                    "KEYSTONE_HOST": "localhost",
+                    "NEW_SUBSERVICE_NAME": "CHANGE_SUBSERVICE_NAME",
+                    "SERVICE_ADMIN_USER": "admin_bb"
+                    }"""
+
+    payload_subservice = json.loads(json_data_ss)
+    payload_subservice["NEW_SUBSERVICE_NAME"] = context.servicepath
+    payload_subservice["SERVICE_NAME"] = context.service
+    context.table_create_subservice = payload_subservice
+
+    # provision using the common steps
+    happy_path_request_collector(context, "ORC", "SERVICE", "CREATE")
+    happy_path_service_creation(context, context.servicepath)
+
+
+@step('service and subservice are deleted with "(?P<ADMIN>.+)" and "(?P<PWD>.+)" credentials')
+def service_subservice_default_delete(context, ADMIN, PWD):
+    """
+    Reused steps in just one step
+
+    """
+    happy_path_list_services(context)
+    happy_path_retrieve_token(context, ADMIN, PWD)
+    happy_path_list_subservices(context, ADMIN, PWD)
+    happy_path_request_collector(context, "ORC", "SUBSERVICE", "DELETE")
+    happy_path_request_collector(context, "ORC", "SERVICE", "DELETE")
