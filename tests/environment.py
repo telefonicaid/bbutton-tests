@@ -25,8 +25,7 @@ import time
 from nose.tools import assert_true
 from pymongo import MongoClient
 from iotqatools.cb_utils import CbNgsi10Utils
-from common.test_utils import remove_mysql_databases
-from common.test_utils import bb_delete_method, devices_delete_method
+from common.test_utils import remove_mysql_databases, bb_delete_method, devices_delete_method
 
 logging.basicConfig(filename="./tests/logs/behave.log", level=logging.DEBUG)
 __logger__ = logging.getLogger("qa")
