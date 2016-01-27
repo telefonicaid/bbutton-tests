@@ -3,7 +3,7 @@ Feature: Context Broker connection with MySQL
   As a Long Tail Platform backend checker
   I should validate the ability of the platform to store historical data in a database
 
-  @ft-cb2sth @c2s-01 @wip @rm-entity @rm-subs @rm-sth
+  @ft-cb2sth @c2s-01 @rm-entity @rm-subs @rm-sth
   Scenario Outline: A new entity attribute should be stored in STH
     Given a Client of "<SERVICE>" and a Subservice called "<SERVICEPATH>"
     And service and subservice are provisioned in ContextBroker and STH
@@ -20,7 +20,7 @@ Feature: Context Broker connection with MySQL
       | testservice | /testpath   | entity1   | bbutton     | op_status   | C.S      |
       | testservice | /testpath   | entity2   | sensor      | temperature | 21       |
 
-  @ft-cb2sth @c2s-02 @wip @rm-entity @rm-subs @rm-sth
+  @ft-cb2sth @c2s-02 @rm-entity @rm-subs @rm-sth
   Scenario Outline: Two consecutive values of an entity attribute should be stored in STH (subscription throttling must be None!)
     Given a Client of "<SERVICE>" and a Subservice called "<SERVICEPATH>"
     And service and subservice are provisioned in ContextBroker and STH
@@ -41,7 +41,7 @@ Feature: Context Broker connection with MySQL
       | testservice | /testpath   | entity2   | sensor      | temperature | 21       | 23        |
 
 
-  @ft-cb2sth @c2s-03 @wip @rm-entity @rm-subs @rm-sth
+  @ft-cb2sth @c2s-03 @rm-entity @rm-subs @rm-sth
   Scenario Outline: Several attributes of the same entity should be stored in STH
     Given a Client of "<SERVICE>" and a Subservice called "<SERVICEPATH>"
     And service and subservice are provisioned in ContextBroker and STH
@@ -61,7 +61,7 @@ Feature: Context Broker connection with MySQL
       | testservice | /testpath   | entity2   | sensor      | temperature | 21       | humidity       | 30        |
 
 
-  @ft-cb2sth @c2s-04 @wip @rm-entity @rm-subs @rm-sth
+  @ft-cb2sth @c2s-04 @rm-entity @rm-subs @rm-sth
   Scenario Outline: Attributes of several entities should be stored in STH (subscription throttling must be None!)
   Given a Client of "<SERVICE>" and a Subservice called "<SERVICEPATH>"
     And service and subservice are provisioned in ContextBroker and STH
