@@ -26,7 +26,7 @@ from nose.tools import assert_true
 from pymongo import MongoClient
 from iotqatools.cb_utils import CbNgsi10Utils
 from common.test_utils import remove_mysql_databases
-from common.test_utils import bb_delete_method, devices_delete_method, remove_cb_entities
+from common.test_utils import bb_delete_method, devices_delete_method
 
 logging.basicConfig(filename="./tests/logs/behave.log", level=logging.DEBUG)
 __logger__ = logging.getLogger("qa")
@@ -106,6 +106,7 @@ def before_feature(context, feature):
     # Jenkins needed time between features
     time.sleep(1)
 
+
 def before_scenario(context, scenario):
     context.feature_data["tags"] = context.tags
     if 'init_db' in context.tags:
@@ -122,8 +123,10 @@ def after_scenario(context, scenario):
         if "ft-cb2mysql" in context.tags or "rm-entity" in context.tags:
             if context.o and "CB" in context.o:
                 print (context.o["CB"])
-                context.o['CB'].convenience_entity_delete_url_method(entity_id=context.remember["entity_id"],
-                                                                     entity_type=context.remember["entity_type"])
+                if 'entity_list' in context:
+                    for entity in context.entity_list:
+                        context.o['CB'].convenience_entity_delete_url_method(entity_id=entity["entity_id"],
+                                                                             entity_type=entity["entity_type"])
 
         if "rm-subs" in context.tags:
             if context.o and "CB" in context.o:
@@ -138,7 +141,7 @@ def after_scenario(context, scenario):
 
 
 def after_feature(context, feature):
-    if 'ft-cb2mysql1' in context.feature_data["tags"]:
+    if 'ft-cb2mysql' in context.feature_data["tags"]:
         __logger__.info("***********Cleaning DB {} --->>>>>>>>".format(context.o["db2remove"]))
         remove_mysql_databases(context)
     context.remember = {}

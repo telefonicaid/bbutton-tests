@@ -343,22 +343,6 @@ def set_user_service_and_subservice(context, user, service, subservice):
     context.o['CB'].set_service(context.remember["service"])
     context.o['CB'].set_subservice(context.remember["subservice"])
 
-
-def remove_cb_entities(context):
-    if context.o['entities2remove']:
-        try:
-            for entity in context.o['entities2remove']:
-                payload = PayloadUtils.build_standard_entity_delete_payload(context_elements=entity['context'])
-                context.o['CB'].set_service(entity['service'])
-                context.o['CB'].set_subservice(entity['subservice'])
-                context.o['CB'].standard_entity_delete(payload)
-                __logger__.info(" -> DELETED entity")
-        except AssertionError, e:
-            __logger__.error("ERROR DELETING -> entity {}".format(e))
-    else:
-        __logger__.info(" -> Nothing to delete ")
-
-
 def remove_mysql_databases(context):
     if context.o['db2remove']:
         try:
