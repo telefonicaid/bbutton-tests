@@ -149,7 +149,7 @@ def initialize_sth(context):
                             path="")
     notify_endpoint = get_endpoint(instance=context.config["components"]["STH"]["notify_instance"],
                                    protocol=context.config["components"]["STH"]["protocol"],
-                                   port=context.config["components"]["STH"]["port"],
+                                   port=context.config["components"]["STH"]["notify_port"],
                                    path=context.config["components"]["STH"]["notify_path"])
 
     remember(context, "sth_url", endpoint)
