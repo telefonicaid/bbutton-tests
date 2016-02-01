@@ -243,8 +243,8 @@ def cb_check_mqtt_multi_data(context, entity_id, entity_type, msg):
     cb_check_mqtt_data(context, entity_id, entity_type, msg)
 
 
-@step('CB should have received the "{expected}" entity update with multiple values from "{msg}"')
-def cb_check_mqtt_special_data(context, expected, msg):
+@step('CB should have received the entity update with multiple values from "{msg}"')
+def cb_check_mqtt_special_data(context, msg):
     context.entity_id = "mqttname"
     context.entity_type = "mqtttype"
     context.check_measure = len(dict(json.loads(msg)))

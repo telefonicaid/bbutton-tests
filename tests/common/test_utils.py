@@ -480,7 +480,7 @@ def mqtt_check_single_measure(sent, atts_retrieved):
     for att in atts_retrieved:
         if att["name"] == exp_att and att["type"] != "compound":
             eq_(str(att["value"]), str(exp_value),
-                "> Name ({}) matchs but values R({}) does not ({})".format(exp_att, str(att["value"]), str(exp_value)))
+                "> Name ({}) matchs but values ({}) does not ({})".format(exp_att, str(att["value"]), str(exp_value)))
             checked_value += 1
             print ("> MATCH @ {}:{}".format(att["name"], att["value"]))
 
@@ -494,7 +494,7 @@ def mqtt_check_multi_measure(sent, atts_retrieved):
     for keys in range(len(data)):
         key, value = data.popitem()
         for att in atts_retrieved:
-            if att["name"] == key:
+            if att["name"] == key and att["type"] != "compound":
                 eq_(str(att["value"]), str(value),
                     "> Name ({}) matchs but values ({}) does not ({})".format(key, str(att["value"]), str(value)))
                 checked_value += 1
@@ -503,16 +503,24 @@ def mqtt_check_multi_measure(sent, atts_retrieved):
     return (checked_value)
 
 
-def mqtt_check_special_measure(keyword, sent, atts_retrieved):
+def mqtt_check_special_measure(keyword, sent, atts_retrieved, expected=None):
+    """
+    Return how many special params matchs with the dict sent
+    :param keyword: str
+    :param sent: dict
+    :param atts_retrieved: dict
+    :return:
+    """
+
     checked_value = 0
     data = dict(json.loads(sent))
-    if keyword is not "B":
+    if keyword == "P1" or keyword == "C1":
         convenience_att = "P1"
     else:
         convenience_att = keyword
 
     for att in atts_retrieved:
-        # if it is a special key
+        # if it is a special key of type compound
         if att["name"] == convenience_att and att["type"] == "compound":
             if check_compound_key(keyword, att, data[keyword]):
                 checked_value += 1
@@ -536,7 +544,29 @@ def mqtt_convenience_atts(keys):
 
 
 def check_compound_key(keyword, att, measure):
-    if keyword is not "B":
+    """
+    Check if the compound key matchs with the measure
+    :param keyword:
+    :param att:
+    :param measure:
+    :param expected:
+    :return:
+    """
+
+    # if it is a special not defined attribute
+    mcc = None
+    mnc = None
+    lac = None
+    cellid = None
+    dbm = None
+
+    if keyword == "C1":
+        mcc = measure[:4]
+        mnc = measure[4:8]
+        lac = measure[8:12]
+        cellid = measure[12:16]
+        dbm = None
+
         data_expected = """{
             "name" : "P1",
             "type" : "compound",
@@ -563,27 +593,119 @@ def check_compound_key(keyword, att, measure):
               }
             ]
           }"""
-        mcc = measure[:4]
-        mnc = measure[4:8]
-        lac = measure[8:12]
-        cellid = measure[12:16]
-        
-        # Replace values with measure sent
-        data_expected = data_expected.replace("MCC_VALUE", mcc)
-        data_expected = data_expected.replace("MNC_VALUE", mnc)
-        data_expected = data_expected.replace("LAC_VALUE", lac)
-        data_expected = data_expected.replace("CELLID_VALUE", cellid)
-        expected_dict = dict(json.loads(data_expected))
 
-        if expected_dict == att:
-            return True
-        else:
-            print ("[ERROR] Dictionaries are not equals: {}\n {}\n".format(expected_dict, att))
-            return False
+    elif keyword == "P1":
+        mcc = measure.split(",")[0]
+        mnc = measure.split(",")[1]
+        lac = measure.split(",")[2]
+        cellid = measure.split(",")[3]
+        dbm = measure.split(",")[4]
+
+        data_expected = """{
+            "name" : "P1",
+            "type" : "compound",
+            "value" : [
+              {
+                "name" : "mcc",
+                "type" : "string",
+                "value" : "MCC_VALUE"
+              },
+              {
+                "name" : "mnc",
+                "type" : "string",
+                "value" : "MNC_VALUE"
+              },
+              {
+                "name" : "lac",
+                "type" : "string",
+                "value" : "LAC_VALUE"
+              },
+              {
+                "name" : "cell-id",
+                "type" : "string",
+                "value" : "CELLID_VALUE"
+              },
+              {
+                "name" : "dbm",
+                "type" : "string",
+                "value" : "DBM_VALUE"
+              }
+            ]
+          }"""
+
+    elif keyword == "B":
+        volt = measure.split(",")[0]
+        state = measure.split(",")[1]
+        charger = measure.split(",")[2]
+        charging = measure.split(",")[3]
+        mode = measure.split(",")[4]
+        disconnected = measure.split(",")[5]
+
+        data_expected = """          {
+            "name" : "B",
+            "type" : "compound",
+            "value" : [
+              {
+                "name" : "voltage",
+                "type" : "string",
+                "value" : "VOLTAGE_VALUE"
+              },
+              {
+                "name" : "state",
+                "type" : "string",
+                "value" : "STATE_VALUE"
+              },
+              {
+                "name" : "charger",
+                "type" : "string",
+                "value" : "CHARGER_VALUE"
+              },
+              {
+                "name" : "charging",
+                "type" : "string",
+                "value" : "CHARGING_VALUE"
+              },
+              {
+                "name" : "mode",
+                "type" : "string",
+                "value" : "MODE_VALUE"
+              },
+              {
+                "name" : "disconnection",
+                "type" : "string",
+                "value" : "DISCONNECTION_VALUE"
+              }
+            ]
+          }"""
+
+
+        data_expected = data_expected.replace("VOLTAGE_VALUE", str(volt))
+        data_expected = data_expected.replace("STATE_VALUE", str(state))
+        data_expected = data_expected.replace("CHARGER_VALUE", str(charger))
+        data_expected = data_expected.replace("CHARGING_VALUE", str(charging))
+        data_expected = data_expected.replace("MODE_VALUE", str(mode))
+        data_expected = data_expected.replace("DISCONNECTION_VALUE", str(disconnected))
 
     else:
-        data_expected = """{
-                        }"""
+        data_expected = """{}"""
+
+    if keyword in ["P1", "C1"]:
+        # Replace values with measure sent
+        data_expected = data_expected.replace("MCC_VALUE", str(mcc))
+        data_expected = data_expected.replace("MNC_VALUE", str(mnc))
+        data_expected = data_expected.replace("LAC_VALUE", str(lac))
+        data_expected = data_expected.replace("CELLID_VALUE", str(cellid))
+        if dbm is not None:
+            data_expected = data_expected.replace("DBM_VALUE", dbm)
+
+    expected_dict = dict(json.loads(data_expected))
+
+    if expected_dict != att:
+        print ("[ERROR] Dictionaries are not equals: \n{}\n {}\n".format(expected_dict, att))
+        return False
+    else:
+        return True
+
 
 
 

@@ -35,9 +35,9 @@ Feature: Black Button Smoke tests
       | INSTANCE  | REQUEST | URI           | VERSION                                         |
       | CB        | GET     | /version      | 0.26.1                                          |
       | IOTM      | GET     | /iot/about    | 1.2.1                                           |
-      | IOTA      | GET     | /iot/about    | 0.5.4                                           |
-      #| IOTA_MQTT | GET     | /iot/about    | 0.1.2  # pending to resolve https://github.com/telefonicaid/iotagent-mqtt/issues/39                                           |
-      | IOTA_LIB  | GET     | /iot/about    | 0.9.3                                           |
+      | IOTA      | GET     | /iot/about    | 0.5.5                                           |
+      | IOTA_MQTT | GET     | /iot/about    | 0.1.5                                           |
+      | IOTA_LIB  | GET     | /iot/about    | 0.9.5                                           |
       | CA        | GET     | /version      | 0.2.1                                           |
       | ORC       | GET     | /v1.0/version | 0.6.8                                           |
       | STH       | GET     | /version      | 0.4.1                                           |
