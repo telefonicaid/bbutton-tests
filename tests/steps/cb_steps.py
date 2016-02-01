@@ -59,7 +59,7 @@ def create_subscription(context):
 
     notify_cond = NotifyConditions()
     cond_values = context.table[0]['notif_cond_values'].split(";")
-    eval("notify_cond.add_notify_condition_" + context.table[0]['notify_type'].lower() + "(cond_values)")
+    getattr(notify_cond, "add_notify_condition_" + context.table[0]['notify_type'].lower())(cond_values)
 
     entities = EntitiesConsults()
     entities.add_entity(entity_id=context.table[0]['entity_id'],
@@ -78,17 +78,25 @@ def create_subscription(context):
                                                                             notify_conditions=notify_cond,
                                                                             throttling=throttling)
     # resp = cb.standard_subscribe_context_onchange(subscription_pl)
-    resp = eval("cb.standard_subscribe_context_" + context.table[0]['notify_type'].lower() + "(subscription_pl)")
+    resp = getattr(cb, "standard_subscribe_context_" + context.table[0]['notify_type'].lower())(subscription_pl)
     eq_(200, resp.status_code)
+    subs_id = json.loads(resp.content)['subscribeResponse']['subscriptionId']
+    remember(context, 'subscription_id', subs_id)
 
 
 @step(
-        u'I send an entity update to context broker with service "{service}", subservice "{subservice}", entity_id "{entity_id}", entity_type "{entity_type}", entity_pattern "{entity_pattern}"')
-def update_entity(context, service, subservice, entity_id, entity_type, entity_pattern):
+    u'I send a context update to context broker with service "{service}", subservice "{subservice}", ' +
+    u'and "{nEntities}" entities with id "{entity_id}" and type "{entity_type}"')
+def update_context(context, service, subservice, nEntities, entity_id, entity_type):
     """
-    General purpose step to create entities
-    When I send an entity update to context broker with service "<SERVICE>", subservice "<SUBSERVICE>",
-    entity_id "<ID>", entity_type "<TYPE>", entity_pattern "false"
+    General purpose step to create entities (1..N)
+    Creates:
+        entity_id,
+        entity_id_1
+        ...
+        entity_id_n-1
+    When I send a context update to context broker with service "<SERVICE>", subservice "<SUBSERVICE>",
+    and "<N>" entities with id "<ID>" and type "<TYPE>"
       | attribute_name | attribute_type | attribute_value | metadata_list                            |
       | temperature    | centigrade     | 23              | nombre1,tipo1,valor1                     |
       | pressure       | mmHG           | 990             | nombre1,tipo1,valor1;nombre2,tipo2,valor2|
@@ -101,67 +109,56 @@ def update_entity(context, service, subservice, entity_id, entity_type, entity_p
         service = ""
     elif "NaN" in subservice:
         subservice = ""
-        # Retrieve the service and subservice real value and give to the CB object
-    # TestUtils.set_service_and_subservice(context, service, subservice)
 
-    # entity id added to world to be used in CBUPDATE rule if applies
-    context.remember['entity_id'] = entity_id
-    context.remember['entity_type'] = entity_type
-    context.remember['attribute_name'] = context.table[0]['attribute_name']
-    # world.g['service'] = service
-    # world.g['subservice'] = subservice
+    if not 'entity_list' in context or context.entity_list is None:
+        context.entity_list = []
 
-    # Go through the step and creates the attributes
-    attributes = AttributesCreation()
-    for attribute in context.table:
-        if attribute['metadata_list'] != "None":
-            md = MetadatasCreation()
-            metadata_list = attribute['metadata_list'].split(";")
-            for metadata in metadata_list:
-                ms = metadata.split(",")
-                md.add_metadata(ms[0], ms[1], ms[2])
+    context_element = ContextElements()
+    for n in range(0, int(nEntities)):
+        curr_entity_id = entity_id if n == 0 else entity_id + "_" + str(n)
+        # Go through the step and creates the attributes
+        attributes = AttributesCreation()
+        for attribute in context.table:
+            if attribute['metadata_list'] != "None":
+                md = MetadatasCreation()
+                metadata_list = attribute['metadata_list'].split(";")
+                for metadata in metadata_list:
+                    ms = metadata.split(",")
+                    md.add_metadata(ms[0], ms[1], ms[2])
 
-            # Search and split for several attributes
-            if ";" in attribute["attribute_type"]:
-                attribute_names = attribute["attribute_name"].split(";")
-                attribute_types = attribute["attribute_type"].split(";")
-                attribute_values = attribute["attribute_value"].split(";")
+                # Search and split for several attributes
+                if ";" in attribute["attribute_type"]:
+                    attribute_names = attribute["attribute_name"].split(";")
+                    attribute_types = attribute["attribute_type"].split(";")
+                    attribute_values = attribute["attribute_value"].split(";")
 
-                for i in range(len(attribute_names)):
-                    attributes.add_attribute(attribute_names[i],
-                                             attribute_types[i],
-                                             attribute_values[i],
+                    for i in range(len(attribute_names)):
+                        attributes.add_attribute(attribute_names[i],
+                                                 attribute_types[i],
+                                                 attribute_values[i],
+                                                 md)
+
+                else:
+                    attributes.add_attribute(attribute['attribute_name'],
+                                             attribute['attribute_type'],
+                                             attribute['attribute_value'],
                                              md)
 
             else:
                 attributes.add_attribute(attribute['attribute_name'],
                                          attribute['attribute_type'],
-                                         attribute['attribute_value'],
-                                         md)
+                                         attribute['attribute_value'])
 
-        else:
-            attributes.add_attribute(attribute['attribute_name'],
-                                     attribute['attribute_type'],
-                                     attribute['attribute_value'])
-        context.remember['entity_attribute_name'] = attribute['attribute_name']
-        context.remember['entity_attribute_type'] = attribute['attribute_type']
-        context.remember['entity_attribute_value'] = attribute['attribute_value']
+        # Compose the payload
+        context_element.add_context_element(curr_entity_id, entity_type, attributes, is_pattern=False)
 
-    # Compose the payload
-    context_element = ContextElements()
-    context_element.add_context_element(entity_id, entity_type, attributes, is_pattern=entity_pattern)
+        # store entity data for following steps
+        if not any(entity['entity_id'] == curr_entity_id
+                   and entity['entity_type'] == entity_type for entity in context.entity_list):
+            context.entity_list.append({'entity_id': curr_entity_id,
+                                        'entity_type': entity_type})
+
     payload = PayloadUtils.build_standard_entity_creation_payload(context_element)
-
-    # Add entity to the list fo contexts to be removed
-    # entity is a dict with the context, service and subservice
-    entity = {'context': context_element, 'service': service, 'subservice': subservice}
-    try:
-        context.o['entities2remove'].append(entity)
-    except KeyError:
-        context.o['entities2remove'] = []
-        context.o['entities2remove'].append(entity)
-
-    __logger__.info('Added entity to the list of entities to be removed')
 
     # Launch the requests to CB
     resp = context.o['CB'].standard_entity_creation(payload)

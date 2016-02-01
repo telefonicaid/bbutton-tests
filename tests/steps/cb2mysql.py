@@ -77,8 +77,11 @@ def step_impl(context, component):
 @step('I check value "{attvalue}" in column name "{attname}" of "{servicepath}" table in MySQL')
 def step_impl(context, attvalue, attname, servicepath):
     # Pick the returned value from DB:
-    table_name = "{}_{}_{}".format(servicepath[1:], context.remember['entity_id'], context.remember['entity_type'])
+    table_name = "{}_{}_{}".format(servicepath[1:],
+                                   context.entity_list[0]['entity_id'],
+                                   context.entity_list[0]['entity_type'])
     print (table_name)
+    time.sleep(2)  # wait 2 seconds for the table to be updated
     resp = context.mysql_init.table_search_columns_last_row(database_name=context.service, table_name=table_name,
                                                             columns=attvalue)
     if resp:
@@ -98,7 +101,11 @@ def step_impl(context, values, att_names, servicepath):
     values = values.split(';')
 
     # Retrieve data from mysql
-    table_name = "{}_{}_{}".format(servicepath, context.remember['entity_id'], context.remember['entity_type'])
+    table_name = "{}_{}_{}".format(servicepath,
+                                   context.entity_list[0]['entity_id'],
+                                   context.entity_list[0]['entity_type'])
+
+    time.sleep(2)  # wait 2 seconds for the table to be updated
     table = context.mysql_init.table_search_columns_last_row(database_name=context.service,
                                                              table_name=table_name,
                                                              columns="*")

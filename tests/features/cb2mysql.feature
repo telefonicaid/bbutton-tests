@@ -10,7 +10,7 @@ Feature: Context Broker connection with MySQL
     And I create a subscription in context broker
       | service   | subservice    | entity_id   | entity_pattern | entity_type   | attributes_name | notify_url  | duration | notify_type | notif_cond_values | throttling |
       | <SERVICE> | <SERVICEPATH> | <ENTITY_ID> | false          | <ENTITY_TYPE> | <ATTNAME>       | CYGNUS2comp | 2        | ONCHANGE    | <ATTNAME>         | PT2S       |
-    When I send an entity update to context broker with service "<SERVICE>", subservice "<SERVICEPATH>", entity_id "<ENTITY_ID>", entity_type "<ENTITY_TYPE>", entity_pattern "false"
+    When I send a context update to context broker with service "<SERVICE>", subservice "<SERVICEPATH>", and "1" entities with id "<ENTITY_ID>" and type "<ENTITY_TYPE>"
       | attribute_name | attribute_type | attribute_value | metadata_list                     |
       | <ATTNAME>      | attrType       | <ATTVALUE>      | <METANAME>,<METATYPE>,<METAVALUE> |
     Then I check value "<ATTVALUE>" in column name "<ATTNAME>" of "<SERVICEPATH>" table in MySQL
@@ -29,7 +29,7 @@ Feature: Context Broker connection with MySQL
     And I create a subscription in context broker
       | service   | subservice    | entity_id   | entity_pattern | entity_type   | attributes_name | notify_url  | duration | notify_type | notif_cond_values | throttling |
       | <SERVICE> | <SERVICEPATH> | <ENTITY_ID> | false          | <ENTITY_TYPE> | <ATTNAMES>      | CYGNUS2comp | 2        | ONCHANGE    | <ATTNAMES>        | PT5S       |
-    When I send an entity update to context broker with service "<SERVICE>", subservice "<SERVICEPATH>", entity_id "<ENTITY_ID>", entity_type "<ENTITY_TYPE>", entity_pattern "false"
+    When I send a context update to context broker with service "<SERVICE>", subservice "<SERVICEPATH>", and "1" entities with id "<ENTITY_ID>" and type "<ENTITY_TYPE>"
       | attribute_name | attribute_type            | attribute_value | metadata_list                     |
       | <ATTNAMES>     | default_type;default_type | <ATTVALUES>     | <METANAME>,<METATYPE>,<METAVALUE> |
     Then I check values "<ATTVALUES>" in column names "<ATTNAMES>" of "<SERVICEPATH>" table in MySQL

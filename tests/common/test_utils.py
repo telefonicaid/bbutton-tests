@@ -29,6 +29,7 @@ from iotqatools.cb_utils import CbNgsi10Utils, PayloadUtils, ContextElements
 from iotqatools.ks_utils import KeystoneCrud
 from iotqatools.iota_utils import Rest_Utils_IoTA
 from iotqatools.mysql_utils import Mysql
+from iotqatools.sth_utils import SthUtils
 from common import orc_delete_service, orc_get_services
 from nose.tools import eq_
 
@@ -136,6 +137,27 @@ def initialize_iota(context):
     context.o['IOTM'] = Rest_Utils_IoTA(server_root=context.remember['iotam_url'],
                                         server_root_secure=context.remember['iotam_url'])
 
+
+def initialize_sth(context):
+    """
+    Config the sth Utility lib
+    """
+    context.o['STH'] = SthUtils(protocol=context.config["components"]["STH"]['protocol'],
+                                instance=context.config["components"]["STH"]['instance'],
+                                port=context.config["components"]["STH"]['port'])
+
+    endpoint = get_endpoint(instance=context.config["components"]["STH"]["instance"],
+                            protocol=context.config["components"]["STH"]["protocol"],
+                            port=context.config["components"]["STH"]["port"],
+                            path="")
+    notify_endpoint = get_endpoint(instance=context.config["components"]["STH"]["notify_instance"],
+                                   protocol=context.config["components"]["STH"]["protocol"],
+                                   port=context.config["components"]["STH"]["notify_port"],
+                                   path=context.config["components"]["STH"]["notify_path"])
+
+    remember(context, "sth_url", endpoint)
+    remember(context, "cb2sth_url", notify_endpoint)
+    __logger__.info("#>> Test_utils: [STH] Initialized")
 
 @staticmethod
 def set_service_and_subservice(context, service, subservice):
@@ -326,22 +348,6 @@ def set_user_service_and_subservice(context, user, service, subservice):
     # set CB object with service and subservice
     context.o['CB'].set_service(context.remember["service"])
     context.o['CB'].set_subservice(context.remember["subservice"])
-
-
-def remove_cb_entities(context):
-    if context.o['entities2remove']:
-        try:
-            for entity in context.o['entities2remove']:
-                payload = PayloadUtils.build_standard_entity_delete_payload(context_elements=entity['context'])
-                context.o['CB'].set_service(entity['service'])
-                context.o['CB'].set_subservice(entity['subservice'])
-                context.o['CB'].standard_entity_delete(payload)
-                __logger__.info(" -> DELETED entity")
-        except AssertionError, e:
-            __logger__.error("ERROR DELETING -> entity {}".format(e))
-    else:
-        __logger__.info(" -> Nothing to delete ")
-
 
 def remove_mysql_databases(context):
     if context.o['db2remove']:
