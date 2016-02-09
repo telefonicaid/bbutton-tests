@@ -277,9 +277,14 @@ def step_impl(context):
     json_payload = json.dumps(dict(context.table))
 
     __logger__.debug("Create service: {}, \n url: {}".format(json_payload, url))
-    context.r = requests.post(url=url,
+    try:
+        context.r = requests.post(url=url,
                               headers=context.headers,
                               data=json_payload)
+    except requests.exceptions.RequestException, e:
+        print ("#Error {} \n Sending the request: {} with \n{} ".format(e, url, json_payload ))
+        eq_(True, False, "ERROR: Exception trying to register the Device in ORC")
+
 
     __logger__.debug(context.r.content)
     __logger__.debug(context.r.status_code)
@@ -791,16 +796,11 @@ def service_subservice_default_provision(context):
     json_data_s = """{
                                     "DOMAIN_ADMIN_USER": "cloud_admin",
                                     "NEW_SERVICE_ADMIN_PASSWORD": "4passw0rd",
-                                    "KEYPASS_PORT": "8080",
-                                    "KEYSTONE_PORT": "5000",
-                                    "KEYPASS_HOST": "localhost",
                                     "DOMAIN_NAME": "admin_domain",
                                     "DOMAIN_ADMIN_PASSWORD": "password",
                                     "NEW_SERVICE_NAME": "CHANGE_SERVICE_NAME",
                                     "NEW_SERVICE_ADMIN_USER": "admin_bb",
-                                    "NEW_SERVICE_DESCRIPTION": "default service description",
-                                    "KEYSTONE_HOST": "localhost",
-                                    "KEYPASS_PROTOCOL": "http"
+                                    "NEW_SERVICE_DESCRIPTION": "default service description"
                                     }"""
     payload_service = json.loads(json_data_s)
     payload_service["NEW_SERVICE_NAME"] = context.service
@@ -809,9 +809,7 @@ def service_subservice_default_provision(context):
     json_data_ss = """{
                     "NEW_SUBSERVICE_DESCRIPTION": "SUBSERVICE NAME DESCRIPTION",
                     "SERVICE_NAME": "CHANGE_SERVICE_NAME",
-                    "KEYSTONE_PORT": "5000",
                     "SERVICE_ADMIN_PASSWORD": "4passw0rd",
-                    "KEYSTONE_HOST": "localhost",
                     "NEW_SUBSERVICE_NAME": "CHANGE_SUBSERVICE_NAME",
                     "SERVICE_ADMIN_USER": "admin_bb"
                     }"""

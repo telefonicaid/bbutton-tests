@@ -111,12 +111,13 @@ class MqttUtils(object):
         print("[MQTT] Subscribe with mid {} received.".format(mid))
 
     def on_disconnect(self, mosq, obj, rc):
-        print("[MQTT] Disconnected successfully.")
+        print("[MQTT] Disconnected or connection failure.")
 
     def publish_message(self, topic, payload, user, pwd):
         mqttc = self.mqtt_connect(self.host, int(self.port), 60, user, pwd)
         mqttc.publish(str(topic), str(payload), 0, False)
         mqttc.loop(10)
+        print '[MQTT] Published: #{} | {}'.format(topic, payload)
 
     def susbcribe(self, topic, qos, user, pwd):
         print '[MQTT] Subscribed'

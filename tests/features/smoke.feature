@@ -11,18 +11,18 @@ Feature: Black Button Smoke tests
     Then the result should be "<HTTP_RESPONSE>"
 
     Examples:
-      | INSTANCE  | REQUEST | URI           | HTTP_RESPONSE |
-      | CB        | PING    | /version      | 200           |
-      | CA        | GET     | /version      | 200           |
-      | IOTA      | PING    | /iot/about    | 200           |
-      | IOTM      | PING    | /iot/about    | 200           |
-      | IOTA_MQTT | PING    | /iot/about    | 200           |
-      | ORC       | PING    | /v1.0/version | 200           |
-      | KS        | GET     | /version      | 404           |
-      | TP        | GET     | /sync/request | 405           |
-      | STH       | GET     | /version      | 200           |
-      | CYGNUS    | GET     | /version      | 200           |
-      | PEP       | GET     | /version      | 200           |
+      | INSTANCE  | REQUEST   | URI           | HTTP_RESPONSE |
+      | CB        | HEARTBEAT | /version      | 200           |
+      | CA        | HEARTBEAT | /version      | 200           |
+      | IOTA      | HEARTBEAT | /iot/about    | 200           |
+      | IOTM      | HEARTBEAT | /iot/about    | 200           |
+      | IOTA_MQTT | HEARTBEAT | /iot/about    | 200           |
+      | ORC       | HEARTBEAT | /v1.0/version | 200           |
+      | KS        | HEARTBEAT | /version      | 404           |
+      | TP        | HEARTBEAT | /sync/request | 405           |
+      | STH       | HEARTBEAT | /version      | 200           |
+      | CYGNUS    | HEARTBEAT | /version      | 200           |
+      | PEP       | HEARTBEAT | /version      | 200           |
 
 
   @ready @ft-smoke @smoke02 @check_version
@@ -33,16 +33,16 @@ Feature: Black Button Smoke tests
 
     Examples:
       | INSTANCE  | REQUEST | URI           | VERSION                                         |
-      | CB        | GET     | /version      | 0.26.1                                          |
-      | IOTM      | GET     | /iot/about    | 1.2.1                                           |
-      | IOTA      | GET     | /iot/about    | 0.5.5                                           |
-      | IOTA_MQTT | GET     | /iot/about    | 0.1.5                                           |
-      | IOTA_LIB  | GET     | /iot/about    | 0.9.5                                           |
-      | CA        | GET     | /version      | 0.2.1                                           |
-      | ORC       | GET     | /v1.0/version | 0.6.8                                           |
-      | STH       | GET     | /version      | 0.4.1                                           |
-      | PEP       | GET     | /version      | 0.7.2                                           |
-      | CYGNUS    | GET     | /version      | 0.11.0.2a9c87fb7fd6156225e2eed7fbc9792f1d9c5dfe |
+      | CB        | VERSION | /version      | 0.26.1                                          |
+      | IOTM      | VERSION | /iot/about    | 1.2.1                                           |
+      | IOTA      | VERSION | /iot/about    | 0.5.5                                           |
+      | IOTA_MQTT | VERSION | /iot/about    | 0.1.5                                           |
+      | IOTA_LIB  | VERSION | /iot/about    | 0.9.5                                           |
+      | CA        | VERSION | /version      | 0.3.0                                           |
+      | ORC       | VERSION | /v1.0/version | 0.6.9                                           |
+      | STH       | VERSION | /version      | 0.6.0                                           |
+      | PEP       | VERSION | /version      | 0.7.2                                           |
+      cul
 
 
   @ready @ft-smoke @smoke03 @check_funcionality

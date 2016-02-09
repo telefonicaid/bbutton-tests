@@ -86,6 +86,7 @@ def step_impl(context, request, uri):
     context.kind_request = request
     context.verbose = False
 
+
     if uri != "None":
         try:
             print ("Url: {} \n".format(context.url_component))

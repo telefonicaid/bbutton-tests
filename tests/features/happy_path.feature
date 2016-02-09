@@ -1,8 +1,8 @@
 Feature: Happy path E2E functionality Sync-Async
   In order to check if a blackbutton that can order a product
-  In a Service serviceqqb and Subservice thinkinthing
-  As a client has SYNC  BlackButtons: SSqqb1011 and SAqqb1022
-  As a client has ASYNC BlackButtons: ASqqb1033 and SSqqb1044
+  In a Service serviceqql and Subservice thinkinthing
+  As a client has SYNC  BlackButtons: SSqql1011 and SAqql1022
+  As a client has ASYNC BlackButtons: ASqql1033 and SSqql1044
   I should validate the lity of the platform to process the buttons requests to a third party
 
 
@@ -10,9 +10,7 @@ Feature: Happy path E2E functionality Sync-Async
   Scenario Outline: SC_1 Service and BlackButton get provisioned in BB-platform
     Given a Client of "<SERVICE>" and a Subservice called "<SERVICEPATH>"
     When the "ORC" receive the request "SERVICE" and action "CREATE"
-      | KEYSTONE_PROTOCOL          | http            |
-      | KEYSTONE_HOST              | localhost       |
-      | KEYSTONE_PORT              | 5000            |
+      | att                        | value           |
       | DOMAIN_NAME                | admin_domain    |
       | DOMAIN_ADMIN_USER          | cloud_admin     |
       | DOMAIN_ADMIN_PASSWORD      | password        |
@@ -20,19 +18,15 @@ Feature: Happy path E2E functionality Sync-Async
       | NEW_SERVICE_DESCRIPTION    | <SERVICE>       |
       | NEW_SERVICE_ADMIN_USER     | <SERVICE_ADMIN> |
       | NEW_SERVICE_ADMIN_PASSWORD | <SERVICE_PWD>   |
-      | KEYPASS_PROTOCOL           | http            |
-      | KEYPASS_HOST               | localhost       |
-      | KEYPASS_PORT               | 8080            |
     Then subservice "<SERVICEPATH>" under the service is created
-      | KEYSTONE_PROTOCOL          | http            |
-      | KEYSTONE_HOST              | localhost       |
-      | KEYSTONE_PORT              | 5000            |
+      | att                        | value           |
       | SERVICE_NAME               | <SERVICE>       |
       | SERVICE_ADMIN_USER         | <SERVICE_ADMIN> |
       | SERVICE_ADMIN_PASSWORD     | <SERVICE_PWD>   |
       | NEW_SUBSERVICE_NAME        | <SERVICEPATH>   |
       | NEW_SUBSERVICE_DESCRIPTION | <SERVICEPATH>   |
     And the "ORC" receive the request "SERVICE_ENTITY" and action "CREATE"
+      | att                   | value             |
       | SERVICE_NAME          | <SERVICE>         |
       | SERVICE_USER_NAME     | admin_bb          |
       | SERVICE_USER_PASSWORD | 4passw0rd         |
@@ -50,9 +44,7 @@ Feature: Happy path E2E functionality Sync-Async
       | ATT_INTERACTION_TYPE  | <TP_INTERACTION>  |
       | ATT_TIMEOUT           | 120               |
     And device should get registered under service and subservice
-      | KEYSTONE_PROTOCOL      | http                   |
-      | KEYSTONE_HOST          | localhost              |
-      | KEYSTONE_PORT          | 5000                   |
+      | att                    | value                  |
       | SERVICE_NAME           | <SERVICE>              |
       | SUBSERVICE_NAME        | <SERVICEPATH>          |
       | SERVICE_ADMIN_USER     | <SERVICE_ADMIN>        |
@@ -68,21 +60,14 @@ Feature: Happy path E2E functionality Sync-Async
       | ATT_INTERACTION_TYPE   | <ATT_INTERACTION_TYPE> |
       | ATT_SERVICE_ID         | <SERVICE>              |
       | ATT_GEOLOCATION        | 40.4188,-3.6919        |
-      | IOTA_PROTOCOL          | http                   |
-      | IOTA_HOST              | localhost              |
-      | IOTA_PORT              | 4041                   |
-      | ORION_PROTOCOL         | http                   |
-      | ORION_HOST             | localhost              |
-      | ORION_PORT             | 10026                  |
-
 
     Examples:
       | SERVICE     | SERVICEPATH  | SERVICE_ADMIN | SERVICE_PWD | DEVICE_ID | ATT_INTERACTION_TYPE | TP_INTERACTION | TP_URL          |
-      | serviceqqb1 | thinkinthing | admin_bb      | 4passw0rd   | SSqqb1011 | synchronous          | synchronous    | TP/sync/request |
-      | serviceqqb2 | thinkinthing | admin_bb      | 4passw0rd   | SAqqb1022 | synchronous          | asynchronous   | TP/async/create |
-      | serviceqqb3 | thinkinthing | admin_bb      | 4passw0rd   | ASqqb1033 | asynchronous         | synchronous    | TP/sync/request |
-      | serviceqqb4 | thinkinthing | admin_bb      | 4passw0rd   | AAqqb1044 | asynchronous         | asynchronous   | TP/async/create |
-      | serviceqqb5 | thinkinthing | admin_bb      | 4passw0rd   | SSqqb1055 | synchronous          | synchronous    | TP/sync/request |
+      | serviceqql1 | thinkinthing | admin_bb      | 4passw0rd   | SSqql1011 | synchronous          | synchronous    | TP/sync/request |
+      | serviceqql2 | thinkinthing | admin_bb      | 4passw0rd   | SAqql1022 | synchronous          | asynchronous   | TP/async/create |
+      | serviceqql3 | thinkinthing | admin_bb      | 4passw0rd   | ASqql1033 | asynchronous         | synchronous    | TP/sync/request |
+      | serviceqql4 | thinkinthing | admin_bb      | 4passw0rd   | AAqql1044 | asynchronous         | asynchronous   | TP/async/create |
+      | serviceqql5 | thinkinthing | admin_bb      | 4passw0rd   | SSqql1055 | synchronous          | synchronous    | TP/sync/request |
 
   @ft-happypath @hp-provision-check @hp_sc02
   Scenario Outline: SC_2 User check a BlackButton is registered in BB-platform
@@ -92,10 +77,10 @@ Feature: Happy path E2E functionality Sync-Async
 
     Examples:
       | SERVICE     | SERVICEPATH  | SERVICE_ADMIN | SERVICE_PWD | DEVICE_ID |
-      | serviceqqb1 | thinkinthing | admin_bb      | 4passw0rd   | SSqqb1011 |
-      | serviceqqb2 | thinkinthing | admin_bb      | 4passw0rd   | SAqqb1022 |
-      | serviceqqb3 | thinkinthing | admin_bb      | 4passw0rd   | ASqqb1033 |
-      | serviceqqb4 | thinkinthing | admin_bb      | 4passw0rd   | AAqqb1044 |
+      | serviceqql1 | thinkinthing | admin_bb      | 4passw0rd   | SSqql1011 |
+      | serviceqql2 | thinkinthing | admin_bb      | 4passw0rd   | SAqql1022 |
+      | serviceqql3 | thinkinthing | admin_bb      | 4passw0rd   | ASqql1033 |
+      | serviceqql4 | thinkinthing | admin_bb      | 4passw0rd   | AAqql1044 |
 
   @ft-happypath  @hp-button-flows @hp-button-sync @hp_sc03
   Scenario Outline: SC_3 Client push the button in the SYNC mode
@@ -106,8 +91,8 @@ Feature: Happy path E2E functionality Sync-Async
 
     Examples:
       | SERVICE     | SERVICEPATH  | DEVICE_ID | SYNC_MODE   | BT_REQUEST                        | TP_NAME | OP_RESULT                                  |
-      | serviceqqb1 | thinkinthing | SSqqb1011 | synchronous | #3,BT,S,4,5,2000$WakeUp,#0,K1,30$ | TP      | #3,BT,S,1,rt-20;rrgb-00FF00;,0$#0,K1,300$, |
-#      | serviceqqb2 | thinkinthing | SAqqb1022 | synchronous | #1,BT,S,2,1,2000$WakeUp,#0,K1,30$ | TP      | #1,BT,S,1,rt-20;rrgb-00FF00;,0$#0,K1,300$, |
+      | serviceqql1 | thinkinthing | SSqql1011 | synchronous | #3,BT,S,4,5,2000$WakeUp,#0,K1,30$ | TP      | #3,BT,S,1,rt-20;rrgb-00FF00;,0$#0,K1,300$, |
+      | serviceqql2 | thinkinthing | SAqql1022 | synchronous | #1,BT,S,2,1,2000$WakeUp,#0,K1,30$ | TP      | #1,BT,S,1,rt-20;rrgb-00FF00;,0$#0,K1,300$, |
 
 
   @ft-happypath @hp-button-flows @hp-button-async @hp_sc04
@@ -121,8 +106,8 @@ Feature: Happy path E2E functionality Sync-Async
 
     Examples:
       | SERVICE     | SERVICEPATH  | DEVICE_ID | SYNC_MODE    | BT_REQUEST                        | STATUS | FINAL_STATUS |
-      | serviceqqb3 | thinkinthing | ASqqb1033 | asynchronous | #1,BT,C,3,2,2000$WakeUp,#0,K1,30$ | C.S    | C.S          |
-      | serviceqqb4 | thinkinthing | AAqqb1044 | asynchronous | #1,BT,C,1,1,2000$WakeUp,#0,K1,30$ | C.S    | C.S          |
+      | serviceqql3 | thinkinthing | ASqql1033 | asynchronous | #1,BT,C,3,2,2000$WakeUp,#0,K1,30$ | C.S    | C.S          |
+      | serviceqql4 | thinkinthing | AAqql1044 | asynchronous | #1,BT,C,1,1,2000$WakeUp,#0,K1,30$ | C.S    | C.S          |
 
 
   @ft-happypath  @hp-service-clean @hp_sc05
@@ -137,8 +122,8 @@ Feature: Happy path E2E functionality Sync-Async
 
     Examples:
       | SERVICE     | SERVICEPATH  | SERVICE_ADMIN | SERVICE_PWD |
-      | serviceqqb1 | thinkinthing | admin_bb      | 4passw0rd   |
-      | serviceqqb2 | thinkinthing | admin_bb      | 4passw0rd   |
-      | serviceqqb3 | thinkinthing | admin_bb      | 4passw0rd   |
-      | serviceqqb4 | thinkinthing | admin_bb      | 4passw0rd   |
-      | serviceqqb5 | thinkinthing | admin_bb      | 4passw0rd   |
+      | serviceqql1 | thinkinthing | admin_bb      | 4passw0rd   |
+      | serviceqql2 | thinkinthing | admin_bb      | 4passw0rd   |
+      | serviceqql3 | thinkinthing | admin_bb      | 4passw0rd   |
+      | serviceqql4 | thinkinthing | admin_bb      | 4passw0rd   |
+      | serviceqql5 | thinkinthing | admin_bb      | 4passw0rd   |

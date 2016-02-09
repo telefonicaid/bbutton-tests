@@ -66,32 +66,14 @@ def step_impl(context, KEY):
         print ("# [MQTT] Creation device: {}".format(create_response.status_code))
 
 
-@when("a simple measure is sent to IOTA_MQTT")
-def step_impl(context):
-    """
-    :type context: behave.runner.Context
-    """
-    client = mqtt.Client()
-    client.on_connect = on_connect
-    client.on_message = on_message
-
-    client.connect("iot.eclipse.org", 1883, 60)
-
-
-# {"tt":"20160119T223001Z","L":3,"T": 22.8,"H":24,"G":0,"M":3835,"V":"L","C1":"00D600070af90d04"}
-
 @step('a Service with name "([^"]*)" and protocol "([^"]*)" created')
 def service_created_precond(context, service_name, protocol):
     if protocol:
         context.protocol = protocol
 
-        # if protocol == 'IoTModbus':
-        #     functions.service_precond(service_name, protocol, {}, {}, CBROKER_URL_TLG)
-        # else:
-        #     functions.service_precond(service_name, protocol)
 
 
-@when('I publish a MQTT message with device_id "{device_id}", attribute "{att}" msg "{msg}" and apikey "{apikey}"')
+@when('I publish a MQTT message with device_id "{device_id}", attribute "{att}", msg "{msg}" and apikey "{apikey}"')
 def step_impl(context, device_id, att, msg, apikey):
     ts = time.time()
     st = datetime.datetime.utcfromtimestamp(ts).strftime('%Y-%m-%dT%H:%M:%S')

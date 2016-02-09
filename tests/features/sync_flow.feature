@@ -16,10 +16,9 @@ Feature: Complete path E2E functionality Sync-Async / Sync-Sync
       | NEW_SERVICE_NAME           | <SERVICE>       |
       | NEW_SERVICE_ADMIN_USER     | <SERVICE_ADMIN> |
       | NEW_SERVICE_ADMIN_PASSWORD | <SERVICE_PWD>   |
-      | KEYPASS_PORT               | 8080            |
-      | KEYSTONE_PORT              | 5001            |
       | NEW_SUBSERVICE_NAME        | <SERVICEPATH>   |
     And the "ORC" receive the request "SERVICE_ENTITY" and action "CREATE"
+            | key                        | value           |
       | SERVICE_NAME          | <SERVICE>         |
       | SERVICE_USER_NAME     | admin_bb          |
       | SERVICE_USER_PASSWORD | 4passw0rd         |
@@ -65,10 +64,9 @@ Feature: Complete path E2E functionality Sync-Async / Sync-Sync
       | NEW_SERVICE_NAME           | <SERVICE>       |
       | NEW_SERVICE_ADMIN_USER     | <SERVICE_ADMIN> |
       | NEW_SERVICE_ADMIN_PASSWORD | <SERVICE_PWD>   |
-      | KEYPASS_PORT               | 8080            |
-      | KEYSTONE_PORT              | 5001            |
       | NEW_SUBSERVICE_NAME        | <SERVICEPATH>   |
     And the "ORC" receive the request "SERVICE_ENTITY" and action "CREATE"
+           | key                        | value           |
       | SERVICE_NAME          | <SERVICE>         |
       | SERVICE_USER_NAME     | admin_bb          |
       | SERVICE_USER_PASSWORD | 4passw0rd         |
@@ -118,8 +116,6 @@ Feature: Complete path E2E functionality Sync-Async / Sync-Sync
       | NEW_SERVICE_NAME           | <SERVICE>       |
       | NEW_SERVICE_ADMIN_USER     | <SERVICE_ADMIN> |
       | NEW_SERVICE_ADMIN_PASSWORD | <SERVICE_PWD>   |
-      | KEYPASS_PORT               | 8080            |
-      | KEYSTONE_PORT              | 5001            |
       | NEW_SUBSERVICE_NAME        | <SERVICEPATH>   |
     And the "ORC" receive the request "SERVICE_ENTITY" and action "CREATE"
       | SERVICE_NAME          | <SERVICE>         |

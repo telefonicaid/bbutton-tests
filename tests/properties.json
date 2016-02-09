@@ -58,11 +58,11 @@
       "defaultservice": "test",
       "heartbeat": "/",
       "path": "/iot",
-      "port": "4052",
+      "port": "14052",
       "south_port": "1883",
       "protocol": "http",
       "iota_type": "mqtt",
-      "version": "",
+      "version_port": "14052",
       "verifyssl": "True"
     },
     "STH": {
