@@ -39,11 +39,10 @@ Feature: Black Button Smoke tests
       | IOTA_MQTT | VERSION | /iot/about    | 0.1.5                                           |
       | IOTA_LIB  | VERSION | /iot/about    | 0.9.5                                           |
       | CA        | VERSION | /version      | 0.3.0                                           |
-      | ORC       | VERSION | /v1.0/version | 0.6.9                                           |
+      | ORC       | VERSION | /v1.0/version | 0.6.10                                           |
       | STH       | VERSION | /version      | 0.6.0                                           |
       | PEP       | VERSION | /version      | 0.7.2                                           |
-      cul
-
+      | CYGNUS    | VERSION | /version      | 0.11.0.2a9c87fb7fd6156225e2eed7fbc9792f1d9c5dfe |
 
   @ready @ft-smoke @smoke03 @check_funcionality
   Scenario Outline: SM_03 Instances are WORKING

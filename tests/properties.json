@@ -2,7 +2,7 @@
   "environment": {
     "name": "BB-TEST",
     "test_mode": "REMOTE",
-    "version": "v0.9.2"
+    "version": "v0.11"
   },
   "components": {
     "CA": {
@@ -109,10 +109,20 @@
       "path": "/",
       "port": "3306",
       "protocol": "http",
-      "user": "cygnus",
-      "version": "5.1.73"
+      "user": "cygnus"
     },
-
+    "KEYPASS": {
+      "defaultservice": "testservice",
+      "password": "cygnus",
+      "path": "/",
+      "port": "9999",
+      "protocol": "http",
+      "user": "cygnus"
+    },
+    "PERSEO": {
+      "instance": "127.0.0.1",
+      "instanceCore": "127.0.0.1"
+    },
     "backend": {
       "mongodb": {
         "_id": "_id",
