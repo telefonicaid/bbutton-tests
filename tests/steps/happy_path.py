@@ -149,8 +149,9 @@ def happy_path_request_collector(context, INSTANCE, REQUEST, ACTION):
                     break
 
         # Get config test env credentials
-        context.user_admin = "cloud_admin"
-        context.password_admin = "4passw0rd"
+        context.user_admin = context.config["env_data"]["users"]["user_1"]["user_name"]
+        context.password_admin = context.config["env_data"]["users"]["user_1"]["user_password"]
+
         context.domain_admin = "admin_domain"
         domain_token = ks_get_token(context, service=context.domain_admin, user=context.user_admin,
                                     password=context.password_admin)
@@ -180,10 +181,8 @@ def happy_path_request_collector(context, INSTANCE, REQUEST, ACTION):
             else:
                 print ("#>> Subservice Targeted: {} {}".format(subservice["name"], subservice["id"]))
 
-        print ("zzzzzzzº\n {}".format(context.subservice_id))
-
-        context.user_admin = "admin_bb"
-        context.password_admin = "password"
+        context.user_admin = context.config["env_data"]["users"]["user_3"]["user_name"]
+        context.password_admin = context.config["env_data"]["users"]["user_3"]["user_password"]
 
         context.token_scope = ks_get_token_with_scope(context, context.token, context.service, context.subservice)
 
@@ -346,9 +345,9 @@ def step_impl(context):
     """
 
     # Recover a Token
-    user = "cloud_admin"
-    password = "password"
-    service = "admin_domain"
+    user = context.config["env_data"]["users"]["user_1"]["user_name"]
+    password = context.config["env_data"]["users"]["user_1"]["user_password"]
+    service = context.config["env_data"]["users"]["user_1"]["user_service"]
     subservice = None
 
     context.admin_token = ks_get_token(context,
@@ -369,9 +368,9 @@ def happy_path_list_services(context):
     :type SERVICE_PWD str
     """
     # Recover a Token for a test default user
-    context.user_admin = "cloud_admin"
-    context.password_admin = "4passw0rd"
-    context.service_admin = "admin_domain"
+    context.user_admin = context.config["env_data"]["users"]["user_1"]["user_name"]
+    context.password_admin = context.config["env_data"]["users"]["user_1"]["user_password"]
+    context.service_admin = context.config["env_data"]["users"]["user_1"]["user_service"]
 
     context.services = orc_get_services(context)
     print ("\n#>> Services availables: {} \n".format(context.services))
@@ -799,21 +798,23 @@ def service_subservice_default_provision(context):
     """
     json_data_s = """{
                                     "DOMAIN_ADMIN_USER": "cloud_admin",
-                                    "NEW_SERVICE_ADMIN_PASSWORD": "4passw0rd",
+                                    "NEW_SERVICE_ADMIN_PASSWORD": "ADMIN_PASS",
                                     "DOMAIN_NAME": "admin_domain",
-                                    "DOMAIN_ADMIN_PASSWORD": "4passw0rd",
+                                    "DOMAIN_ADMIN_PASSWORD": "ADMIN_DOMAIN_PASS",
                                     "NEW_SERVICE_NAME": "CHANGE_SERVICE_NAME",
                                     "NEW_SERVICE_ADMIN_USER": "admin_bb",
                                     "NEW_SERVICE_DESCRIPTION": "default service description"
                                     }"""
     payload_service = json.loads(json_data_s)
     payload_service["NEW_SERVICE_NAME"] = context.service
+    payload_service["NEW_SERVICE_ADMIN_PASSWORD"] = context.config["env_data"]["users"]["user_2"]["user_password"]
+    payload_service["DOMAIN_ADMIN_PASSWORD"] = context.config["env_data"]["users"]["user_1"]["user_password"]
     context.table_create_service = payload_service
 
     json_data_ss = """{
                     "NEW_SUBSERVICE_DESCRIPTION": "SUBSERVICE NAME DESCRIPTION",
                     "SERVICE_NAME": "CHANGE_SERVICE_NAME",
-                    "SERVICE_ADMIN_PASSWORD": "4passw0rd",
+                    "SERVICE_ADMIN_PASSWORD": "SERVICE_ADMIN_PWD",
                     "NEW_SUBSERVICE_NAME": "CHANGE_SUBSERVICE_NAME",
                     "SERVICE_ADMIN_USER": "admin_bb"
                     }"""
@@ -821,6 +822,8 @@ def service_subservice_default_provision(context):
     payload_subservice = json.loads(json_data_ss)
     payload_subservice["NEW_SUBSERVICE_NAME"] = context.servicepath
     payload_subservice["SERVICE_NAME"] = context.service
+    payload_subservice["SERVICE_ADMIN_PASSWORD"] = context.config["env_data"]["users"]["user_1"]["user_password"]
+
     context.table_create_subservice = payload_subservice
 
     # provision using the common steps

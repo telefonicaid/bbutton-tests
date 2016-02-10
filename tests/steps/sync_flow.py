@@ -39,9 +39,10 @@ __logger__ = logging.getLogger("sync_flow")
 @step(u'a service and subservice are created in the "{instance}"')
 def provision_atorchestrator(context, instance):
 
-    context.service_admin = "admin_domain"
-    context.user_admin = "cloud_admin"
-    context.password_admin = "password"
+    context.user_admin = context.config["env_data"]["users"]["user_1"]["user_name"]
+    context.password_admin = context.config["env_data"]["users"]["user_2"]["user_password"]
+    context.service_admin = context.config["env_data"]["users"]["user_1"]["user_service"]
+
     context.services = orc_get_services(context)
     for service in context.services:
         if context.service == service["name"]:
@@ -50,8 +51,8 @@ def provision_atorchestrator(context, instance):
             break
 
     # Get config env credentials
-    context.user_admin = "cloud_admin"
-    context.password_admin = "password"
+    context.user_admin = context.config["env_data"]["users"]["user_1"]["user_name"]
+    context.password_admin = context.config["env_data"]["users"]["user_2"]["user_password"]
 
     try:
         if "service_id" in context:
