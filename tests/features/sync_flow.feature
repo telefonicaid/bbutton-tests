@@ -12,13 +12,13 @@ Feature: Complete path E2E functionality Sync-Async / Sync-Sync
       | key                        | value           |
       | DOMAIN_NAME                | admin_domain    |
       | DOMAIN_ADMIN_USER          | cloud_admin     |
-      | DOMAIN_ADMIN_PASSWORD      | password        |
+      | DOMAIN_ADMIN_PASSWORD      | 4passw0rd        |
       | NEW_SERVICE_NAME           | <SERVICE>       |
       | NEW_SERVICE_ADMIN_USER     | <SERVICE_ADMIN> |
       | NEW_SERVICE_ADMIN_PASSWORD | <SERVICE_PWD>   |
       | NEW_SUBSERVICE_NAME        | <SERVICEPATH>   |
     And the "ORC" receive the request "SERVICE_ENTITY" and action "CREATE"
-            | key                        | value           |
+      | key                   | value             |
       | SERVICE_NAME          | <SERVICE>         |
       | SERVICE_USER_NAME     | admin_bb          |
       | SERVICE_USER_PASSWORD | 4passw0rd         |
@@ -60,13 +60,13 @@ Feature: Complete path E2E functionality Sync-Async / Sync-Sync
       | key                        | value           |
       | DOMAIN_NAME                | admin_domain    |
       | DOMAIN_ADMIN_USER          | cloud_admin     |
-      | DOMAIN_ADMIN_PASSWORD      | password        |
+      | DOMAIN_ADMIN_PASSWORD      | 4passw0rd        |
       | NEW_SERVICE_NAME           | <SERVICE>       |
       | NEW_SERVICE_ADMIN_USER     | <SERVICE_ADMIN> |
       | NEW_SERVICE_ADMIN_PASSWORD | <SERVICE_PWD>   |
       | NEW_SUBSERVICE_NAME        | <SERVICEPATH>   |
     And the "ORC" receive the request "SERVICE_ENTITY" and action "CREATE"
-           | key                        | value           |
+      | key                   | value             |
       | SERVICE_NAME          | <SERVICE>         |
       | SERVICE_USER_NAME     | admin_bb          |
       | SERVICE_USER_PASSWORD | 4passw0rd         |
@@ -112,7 +112,7 @@ Feature: Complete path E2E functionality Sync-Async / Sync-Sync
       | key                        | value           |
       | DOMAIN_NAME                | admin_domain    |
       | DOMAIN_ADMIN_USER          | cloud_admin     |
-      | DOMAIN_ADMIN_PASSWORD      | password        |
+      | DOMAIN_ADMIN_PASSWORD      | 4passw0rd        |
       | NEW_SERVICE_NAME           | <SERVICE>       |
       | NEW_SERVICE_ADMIN_USER     | <SERVICE_ADMIN> |
       | NEW_SERVICE_ADMIN_PASSWORD | <SERVICE_PWD>   |

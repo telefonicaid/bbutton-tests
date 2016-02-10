@@ -109,7 +109,8 @@
       "path": "/",
       "port": "3306",
       "protocol": "http",
-      "user": "cygnus"
+      "user": "cygnus",
+      "version" : "1"
     },
     "KEYPASS": {
       "defaultservice": "testservice",

@@ -27,16 +27,16 @@
       "instance": "127.0.0.1"
     },
     "TP": {
-      "instance": "tphost"
+      "instance": "52.24.15.222"
     },
     "CYGNUS": {
-      "instance": "cygnushost"
+      "instance": "127.0.0.1"
     },
     "PEP": {
       "instance": "127.0.0.1"
     },
     "MYSQL": {
-      "cygnus": "mysqlhost",
+      "cygnus": "127.0.0.1",
       "instance": "127.0.0.1"
     },
     "IOTA_MQTT": {

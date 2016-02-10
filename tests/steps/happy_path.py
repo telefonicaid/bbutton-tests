@@ -85,7 +85,9 @@ def happy_path_request_collector(context, INSTANCE, REQUEST, ACTION):
         context.headers.update({"Fiware-ServicePath": "/{}".format(context.servicepath)})
 
         payload_table = dict(context.table)
-        payload_table['ATT_TIMEOUT'] = int(payload_table['ATT_TIMEOUT'])
+
+        # Depends on Orquestator version, in old version is needed:
+        # payload_table['ATT_TIMEOUT'] = int(payload_table['ATT_TIMEOUT'])
 
         # Properties replacement Var environment
         tp_url = payload_table['ATT_ENDPOINT']
@@ -110,7 +112,7 @@ def happy_path_request_collector(context, INSTANCE, REQUEST, ACTION):
             context.create_service_entity = context.r.content
             print (context.create_service_entity)
         except:
-            print ("# Error Creating SERVICE_ENTITY")
+            eq_(True, False, "# Exception # Error Creating SERVICE_ENTITY")
 
     if INSTANCE == "ORC" and REQUEST == "SERVICE" and ACTION == "CREATE":
         url = str("{0}/v1.0/service".format(context.url_component))
@@ -148,7 +150,7 @@ def happy_path_request_collector(context, INSTANCE, REQUEST, ACTION):
 
         # Get config test env credentials
         context.user_admin = "cloud_admin"
-        context.password_admin = "password"
+        context.password_admin = "4passw0rd"
         context.domain_admin = "admin_domain"
         domain_token = ks_get_token(context, service=context.domain_admin, user=context.user_admin,
                                     password=context.password_admin)
@@ -175,9 +177,13 @@ def happy_path_request_collector(context, INSTANCE, REQUEST, ACTION):
                 print ("#>> Subservice Targeted: {} {}".format(subservice["name"], subservice["id"]))
                 context.subservice_id = subservice["id"]
                 break
+            else:
+                print ("#>> Subservice Targeted: {} {}".format(subservice["name"], subservice["id"]))
+
+        print ("zzzzzzzº\n {}".format(context.subservice_id))
 
         context.user_admin = "admin_bb"
-        context.password_admin = "4passw0rd"
+        context.password_admin = "password"
 
         context.token_scope = ks_get_token_with_scope(context, context.token, context.service, context.subservice)
 
@@ -279,12 +285,11 @@ def step_impl(context):
     __logger__.debug("Create service: {}, \n url: {}".format(json_payload, url))
     try:
         context.r = requests.post(url=url,
-                              headers=context.headers,
-                              data=json_payload)
+                                  headers=context.headers,
+                                  data=json_payload)
     except requests.exceptions.RequestException, e:
-        print ("#Error {} \n Sending the request: {} with \n{} ".format(e, url, json_payload ))
+        print ("#Error {} \n Sending the request: {} with \n{} ".format(e, url, json_payload))
         eq_(True, False, "ERROR: Exception trying to register the Device in ORC")
-
 
     __logger__.debug(context.r.content)
     __logger__.debug(context.r.status_code)
@@ -363,9 +368,9 @@ def happy_path_list_services(context):
     :type SERVICE_ADMIN str
     :type SERVICE_PWD str
     """
-    # Recover a Token
+    # Recover a Token for a test default user
     context.user_admin = "cloud_admin"
-    context.password_admin = "password"
+    context.password_admin = "4passw0rd"
     context.service_admin = "admin_domain"
 
     context.services = orc_get_services(context)
@@ -584,8 +589,8 @@ def step_impl(context, DEVICE_ID, FINAL_STATUS):
         eq_(FINAL_STATUS,
             context.final_state,
             "# Error final status ({}) does not match the expected result ({})".format(
-                    FINAL_STATUS,
-                    context.final_state))
+                FINAL_STATUS,
+                context.final_state))
 
 
 @step('the ThirdParty "(?P<THIRDPARTY>.+)" changed the status to "(?P<OP_RESULT>.+)"')
@@ -614,7 +619,7 @@ def step_impl(context, THIRDPARTY, OP_RESULT):
     eq_(rec_mod1, mod1,
         "Expected result mod1 does not match \n "
         "Received: {} \n Expected: {}".format(
-                rec_mod1, mod1))
+            rec_mod1, mod1))
 
     # check mod2
     mod0 = expected[2]
@@ -622,7 +627,7 @@ def step_impl(context, THIRDPARTY, OP_RESULT):
     eq_(rec_mod0, mod0,
         "Expected result mod0 does not match \n "
         "Received: {} \n Expected: {}".format(
-                rec_mod0, mod0))
+            rec_mod0, mod0))
 
     print ("\n iota resp={} \n".format(iota_answer))
 
@@ -752,7 +757,6 @@ def step_impl(context, DEVICE_ID, TP_RETURN):
     eq_(result, TP_RETURN, "Returned result does not match \n {} \n {} \n".format(result, TP_RETURN))
 
 
-
 @then('the service "(?P<SERVICE>.+)" should not be listed')
 def step_impl(context, SERVICE):
     """
@@ -797,7 +801,7 @@ def service_subservice_default_provision(context):
                                     "DOMAIN_ADMIN_USER": "cloud_admin",
                                     "NEW_SERVICE_ADMIN_PASSWORD": "4passw0rd",
                                     "DOMAIN_NAME": "admin_domain",
-                                    "DOMAIN_ADMIN_PASSWORD": "password",
+                                    "DOMAIN_ADMIN_PASSWORD": "4passw0rd",
                                     "NEW_SERVICE_NAME": "CHANGE_SERVICE_NAME",
                                     "NEW_SERVICE_ADMIN_USER": "admin_bb",
                                     "NEW_SERVICE_DESCRIPTION": "default service description"

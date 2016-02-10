@@ -9,7 +9,7 @@ Feature: IotAgent for MQTT
       | key                        | value        |
       | DOMAIN_NAME                | admin_domain |
       | DOMAIN_ADMIN_USER          | cloud_admin  |
-      | DOMAIN_ADMIN_PASSWORD      | password     |
+      | DOMAIN_ADMIN_PASSWORD      | 4passw0rd     |
       | NEW_SERVICE_NAME           | <SERVICE>    |
       | NEW_SERVICE_DESCRIPTION    | <SERVICE>    |
       | NEW_SERVICE_ADMIN_USER     | admin_bb     |
@@ -54,9 +54,9 @@ Feature: IotAgent for MQTT
 
     Examples:
       | SERVICE     | SERVICEPATH  | DEVICE_ID | ENT_NAME  | ENT_TYPE  | ATT        | MSG         |
-      | servicebbp1 | thinkinthing | devbbp1   | mqttname  | mqtttype  | attributes | {"T": 31.4} |
-      | servicebbp2 | gdl          | devbbp2   | entmqtt   | typemqtt  | attributes | {"H": 200}  |
-      | servicebbp3 | trace123     | devbbp3   | mqtt_name | mqtt_type | attributes | {"a": 31.4} |
+      | servicebbw1 | thinkinthing | devbbw1   | mqttname  | mqtttype  | attributes | {"T": 31.4} |
+      | servicebbw2 | gdl          | devbbw2   | entmqtt   | typemqtt  | attributes | {"H": 200}  |
+      | servicebbw3 | trace123     | devbbw3   | mqtt_name | mqtt_type | attributes | {"a": 31.4} |
 
 
   @ft-mqtt @mqtt-measure @mqtt_sc02 @mqtt_multiplemeasure @rm-mqttdevice
@@ -91,8 +91,8 @@ Feature: IotAgent for MQTT
 
     Examples:
       | SERVICE         | SERVICEPATH  | DEVICE_ID | ENT_NAME  | ENT_TYPE  | ATT        | MSG                                                       |
-      | gdlservicebbp11 | gdltt1       | multibbp1 | mqttname1 | mqtttype1 | attributes | {"T": 31.4, "H":200}                                      |
-      | gdlservicebbp22 | thinkinthing | multibbp2 | mqttname3 | 3mqtttype | attributes | {"NORTH": "3.0", "EAST":9.1,"HIGH":9.000001,"Z":9.999999} |
+      | gdlservicebbw11 | gdltt1       | multibbw1 | mqttname1 | mqtttype1 | attributes | {"T": 31.4, "H":200}                                      |
+      | gdlservicebbw22 | thinkinthing | multibbw2 | mqttname3 | 3mqtttype | attributes | {"NORTH": "3.0", "EAST":9.1,"HIGH":9.000001,"Z":9.999999} |
 
 
   @ft-mqtt @mqtt-measure @mqtt_sc03 @mqtt_special_values @rm-mqttdevice
@@ -127,15 +127,15 @@ Feature: IotAgent for MQTT
 
     Examples: #mcc:mnc:lac:cell-id:dbm or #volt,stat,charger,charging,Mode,Desc
       | SERVICE     | SERVICEPATH | DEVICE_ID   | MSG                                                                                                  |
-      | servespbbp1 | achar1a     | devspecbbp1 | {"tt":"20160122T121208Z","L":4,"T": 30.2,"H":30,"G":0,"M":3784,"V":"L","C1":"00D600070B000D22"}      |
-      | servespbbp2 | char1a      | devspecbbp2 | {"tt":"20160122T121208Z","L":4,"T": 31.2,"H":30,"G":0,"M":3784,"V":"L","C1":"AAAABBBBCCCCDDDD"}      |
-      | servespbbp3 | char2a      | devspepbbp3 | {"tt":"20160122T121208Z","L":4,"T": 33.2,"H":31,"G":0,"M":3784,"V":"L","P1":"214,7,d22,b00,-64,"}    |
-      | servespbbp4 | char2a      | devspepbbp4 | {"tt":"20160122T121208Z","L":4,"T": 34.2,"H":200,"G":0,"M":3784,"V":"L","P1":"999,888,777,666,-55,"} |
-      | servespbbp5 | char3a      | devspebbbp5 | {"tt":"20160122T121208Z","L":4,"T": 35.2,"H":10,"G":0,"M":3784,"V":"L","B":"4.70,1,1,1,1,0,"}        |
-      | servespbbp6 | char3a      | devspebbbp6 | {"tt":"20160122T121208Z","L":4,"T": 36.2,"H":99,"G":0,"M":3784,"V":"L","B":"0.01,0,0,0,0,0,"}        |
+      | servespbbw1 | achar1a     | devspecbbw1 | {"tt":"20160122T121208Z","L":4,"T": 30.2,"H":30,"G":0,"M":3784,"V":"L","C1":"00D600070B000D22"}      |
+      | servespbbw2 | char1a      | devspecbbw2 | {"tt":"20160122T121208Z","L":4,"T": 31.2,"H":30,"G":0,"M":3784,"V":"L","C1":"AAAABBBBCCCCDDDD"}      |
+      | servespbbw3 | char2a      | devspepbbw3 | {"tt":"20160122T121208Z","L":4,"T": 33.2,"H":31,"G":0,"M":3784,"V":"L","P1":"214,7,d22,b00,-64,"}    |
+      | servespbbw4 | char2a      | devspepbbw4 | {"tt":"20160122T121208Z","L":4,"T": 34.2,"H":200,"G":0,"M":3784,"V":"L","P1":"999,888,777,666,-55,"} |
+      | servespbbw5 | char3a      | devspebbbw5 | {"tt":"20160122T121208Z","L":4,"T": 35.2,"H":10,"G":0,"M":3784,"V":"L","B":"4.70,1,1,1,1,0,"}        |
+      | servespbbw6 | char3a      | devspebbbw6 | {"tt":"20160122T121208Z","L":4,"T": 36.2,"H":99,"G":0,"M":3784,"V":"L","B":"0.01,0,0,0,0,0,"}        |
 
   @ft-mqtt @mqtt-measure @mqtt_sc04 @mqtt-permanent-service
-  Scenario Outline: SC_4 Permanent device recieve a meassure
+  Scenario Outline: SC_4 Permanent device receive a measure
     Given a Client of "<SERVICE>" and a Subservice called "<SERVICEPATH>"
 #    And a service and subservice are provisioned
 #    And the "IOTA_MQTT" receive the request "DEVICE" and action "CREATE"
