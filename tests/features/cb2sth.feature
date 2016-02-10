@@ -80,19 +80,20 @@ Feature: Context Broker connection with MySQL
     | testservice | /testpath   | entity_bbutton  | bbutton     | op_status   | C.S      | last_operation | S         | 2 |
     | testservice | /testpath   | entity_sensor   | sensor      | temperature | 21       | humidity       | 30        | 2 |
 
-  @ft-cb2sth @c2s-05 @wip @rm-entity @rm-subs @rm-sth
+  @ft-cb2sth @c2s-05 @rm-entity @rm-subs @rm-sth
   Scenario Outline: Attributes of several entities with same ID but different capitalization should be stored in STH separately (subscription throttling must be None!)
     Given a Client of "<SERVICE>" and a Subservice called "<SERVICEPATH>"
     And service and subservice are provisioned in ContextBroker and STH
     And I create a subscription in context broker
       | service   | subservice    | entity_id   | entity_pattern |  entity_type   | attributes_name | notify_url  | duration | notify_type | notif_cond_values | throttling |
-      | <SERVICE> | <SERVICEPATH> | <ENTITY_ID> | false          | <ENTITY_TYPE>  | <ATTNAME>       | cb2sth      | 2        | ONCHANGE    | <ATTNAME>         | None       |
+      | <SERVICE> | <SERVICEPATH> |     .*      |     true       | <ENTITY_TYPE>  |     None        | cb2sth      |     2    | ONCHANGE    |   <ATTNAME>       | None       |
     When I send a context update to context broker with service "<SERVICE>", subservice "<SERVICEPATH>", and "1" entities with id "<ENTITY_ID>" and type "<ENTITY_TYPE>"
       | attribute_name | attribute_type | attribute_value | metadata_list |
       | <ATTNAME>      | attrType       | <ATTVALUE>      |     None      |
     And I send a context update to context broker with service "<SERVICE>", subservice "<SERVICEPATH>", and "1" entities with id "<ENTITY_ID_2>" and type "<ENTITY_TYPE>"
       | attribute_name | attribute_type | attribute_value | metadata_list |
       | <ATTNAME>      | attrType       | <ATTVALUE>      |     None      |
+      | <ATTNAME_2>    | attrType       | <ATTVALUE_2>    |     None      |
     Then I check entity with "<ENTITY_ID>" and "<ENTITY_TYPE>" has the attribute "<ATTNAME>" registered in STH and has samples for "<ATTVALUE>"
     And I check entity with "<ENTITY_ID_2>" and "<ENTITY_TYPE>" has the attribute "<ATTNAME_2>" registered in STH and has samples for "<ATTVALUE_2>"
 
@@ -101,26 +102,27 @@ Feature: Context Broker connection with MySQL
     | testservice | /testpath   | entity1   | ENTITY1     | bbutton     | op_status   | C.S      | last_operation | S          |
     | testservice | /testpath   | entity2   | ENTITY2     | sensor      | temperature | 21       | humidity       | 30         |
 
-  @ft-cb2sth @c2s-06 @wip @rm-entity @rm-subs @rm-sth
+  @ft-cb2sth @c2s-06 @rm-entity @rm-subs @rm-sth
   Scenario Outline: Attributes of several entities with same ID and type but different capitalization should be stored in STH separately (subscription throttling must be None!)
     Given a Client of "<SERVICE>" and a Subservice called "<SERVICEPATH>"
     And service and subservice are provisioned in ContextBroker and STH
     And I create a subscription in context broker
       | service   | subservice    | entity_id   | entity_pattern |  entity_type   | attributes_name | notify_url  | duration | notify_type | notif_cond_values | throttling |
-      | <SERVICE> | <SERVICEPATH> | <ENTITY_ID> | false          | <ENTITY_TYPE>  | <ATTNAME>       | cb2sth      | 2        | ONCHANGE    | <ATTNAME>         | None       |
+      | <SERVICE> | <SERVICEPATH> | <ENTITY_ID> |      false     |                |      None       | cb2sth      |   2      | ONCHANGE    | <ATTNAME>         | None       |
     When I send a context update to context broker with service "<SERVICE>", subservice "<SERVICEPATH>", and "1" entities with id "<ENTITY_ID>" and type "<ENTITY_TYPE>"
       | attribute_name | attribute_type | attribute_value | metadata_list |
       | <ATTNAME>      | attrType       | <ATTVALUE>      |     None      |
     And I send a context update to context broker with service "<SERVICE>", subservice "<SERVICEPATH>", and "1" entities with id "<ENTITY_ID>" and type "<ENTITY_TYPE_2>"
       | attribute_name | attribute_type | attribute_value | metadata_list |
       | <ATTNAME>      | attrType       | <ATTVALUE>      |     None      |
+      | <ATTNAME_2>    | attrType       | <ATTVALUE_2>    |     None      |
     Then I check entity with "<ENTITY_ID>" and "<ENTITY_TYPE>" has the attribute "<ATTNAME>" registered in STH and has samples for "<ATTVALUE>"
     And I check entity with "<ENTITY_ID>" and "<ENTITY_TYPE_2>" has the attribute "<ATTNAME_2>" registered in STH and has samples for "<ATTVALUE_2>"
 
   Examples:
     | SERVICE     | SERVICEPATH | ENTITY_ID | ENTITY_TYPE | ENTITY_TYPE_2 | ATTNAME     | ATTVALUE | ATTNAME_2      | ATTVALUE_2 |
-    | testservice | /testpath   | entity1   | bbutton     | BBUTTON      | op_status   | C.S      | last_operation | S          |
-    | testservice | /testpath   | entity2   | sensor      | SENSOR       | temperature | 21       | humidity       | 30         |
+    | testservice | /testpath   | entity1   | bbutton     |  BBUTTON      | op_status   | C.S      | last_operation | S          |
+    | testservice | /testpath   | entity2   | sensor      |  SENSOR       | temperature | 21       | humidity       | 30         |
 
 # TODO: define this behavior. Will this be implemented? ISSUE in CB: first notification of suscription cause problems
 #  @ft-cb2sth @c2s-07 @wip @rm-entity @rm-subs @rm-sth
