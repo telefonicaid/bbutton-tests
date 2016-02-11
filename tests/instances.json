@@ -24,10 +24,11 @@
       "instance": "127.0.0.1"
     },
     "STH": {
-      "instance": "127.0.0.1"
+      "instance": "127.0.0.1",
+      "notify_instance": "127.0.0.1"
     },
     "TP": {
-      "instance": "52.24.15.222"
+      "instance": "127.0.0.1"
     },
     "CYGNUS": {
       "instance": "127.0.0.1"

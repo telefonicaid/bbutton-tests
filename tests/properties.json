@@ -157,7 +157,7 @@
         "user_password": "password",
         "user_service": "whatever",
         "user_subservice": "/tt",
-        "user_role": "service_customer"
+        "user_role": "service_admin"
       }
 
     },
