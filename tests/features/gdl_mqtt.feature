@@ -87,7 +87,7 @@ Feature: IotAgent for MQTT
       | serialID | 02598347 |
     When I publish a MQTT message with device_id "<DEVICE_ID>", attribute "<ATT>", msg "<MSG>" and apikey "TEF"
     Then CB should have received the entity update in the entity_id "<ENT_NAME>" and entity_type "<ENT_TYPE>" with multiple values from "<MSG>"
-    And service and subservice are deleted with "admin_bb" and "4passw0rd" credentials
+    And service and subservice are deleted
 
     Examples:
       | SERVICE         | SERVICEPATH  | DEVICE_ID | ENT_NAME  | ENT_TYPE  | ATT        | MSG                                                       |
@@ -123,7 +123,7 @@ Feature: IotAgent for MQTT
       | serialID | 02598347 |
     When I publish a MQTT message with device_id "<DEVICE_ID>", attribute "attributes", msg "<MSG>" and apikey "TEF"
     Then CB should have received the entity update with multiple values from "<MSG>"
-    And service and subservice are deleted with "admin_bb" and "4passw0rd" credentials
+    And service and subservice are deleted
 
     Examples: #mcc:mnc:lac:cell-id:dbm or #volt,stat,charger,charging,Mode,Desc
       | SERVICE     | SERVICEPATH | DEVICE_ID   | MSG                                                                                                  |
