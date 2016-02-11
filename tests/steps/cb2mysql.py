@@ -34,8 +34,7 @@ from common.test_utils import *
 __logger__ = logging.getLogger("cb2mysql")
 
 
-@step(
-        u'I set a MySQL database under name "{service}" and a table under name given by "{servicepath}" and "{entity_id}"')
+@step(u'I set a MySQL database under name "{service}" and a table under name given by "{servicepath}" and "{entity_id}"')
 def db_table_creation(context, service, servicepath, entity_id):
     context.service = str(service)
     context.servicepath = str(servicepath)

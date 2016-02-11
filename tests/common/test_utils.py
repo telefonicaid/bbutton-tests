@@ -23,12 +23,15 @@ __author__ = 'xvc'
 import re
 import requests
 import logging
+import json
+import paho.mqtt.client as mqtt
 from iotqatools.cb_utils import CbNgsi10Utils, PayloadUtils, ContextElements
 from iotqatools.ks_utils import KeystoneCrud
 from iotqatools.iota_utils import Rest_Utils_IoTA
 from iotqatools.mysql_utils import Mysql
 from iotqatools.sth_utils import SthUtils
 from common import orc_delete_service, orc_get_services
+from nose.tools import eq_
 
 __logger__ = logging.getLogger("test utils")
 
@@ -350,7 +353,6 @@ def remove_mysql_databases(context):
     if context.o['db2remove']:
         try:
             for db in context.o['db2remove']:
-
                 context.o["MYSQL"].drop_database(db)
                 __logger__.info(" -> DELETED database: {}".format(db))
         except AssertionError, e:
@@ -415,3 +417,302 @@ def devices_delete_method(context):
         __logger__.info("DEVICE ({}) deleted".format(context.device_id))
     except ValueError:
         __logger__.error("[Error] Device to delete ({}) not found".format(context.device_id))
+
+
+def mqtt_create_device(context, url, headers, data):
+    """
+    Send the request to IOTA_MQTT
+    :param context:
+    :param url:
+    :param headers:
+    :param data:
+    :return: response of request
+    """
+    print("{}\n{}\n{}\n".format(url, headers, data))
+
+    try:
+        response = requests.post(url=url,
+                                 headers=headers,
+                                 data=data)
+    except ValueError, e:
+        __logger__.info(e)
+        print(["Error in mqtt_create_device: {}".format(e)])
+        return False
+
+    print (response.content)
+    __logger__.debug(response.content)
+    __logger__.debug(response.status_code)
+
+    return response
+
+
+def mqtt_delete_device(context, url, headers):
+    """
+    Send the request to IOTA_MQTT
+    :param context:
+    :param url:
+    :param headers:
+    :return: response of request
+    """
+    print("{}\n{}\n".format(url, headers))
+
+    try:
+        response = requests.delete(url=url,
+                                   headers=headers)
+    except ValueError, e:
+        __logger__.info(e)
+        print(["Error in mqtt_delete_device: {}".format(e)])
+        return False
+
+    print (response.content)
+    __logger__.debug(response.content)
+    __logger__.debug(response.status_code)
+
+    return response
+
+
+def replace_value_with_definition(dictionary, key_to_find, value):
+    for key in dictionary.keys():
+        if key == key_to_find:
+            dictionary[key] = value
+    return dictionary
+
+
+def mqtt_check_single_measure(sent, atts_retrieved):
+    # extract and compare the result vs expected:
+    exp_att, exp_value = dict(json.loads(sent)).popitem()
+    checked_value = 0
+
+    for att in atts_retrieved:
+        if att["name"] == exp_att and att["type"] != "compound":
+            eq_(str(att["value"]), str(exp_value),
+                "> Name ({}) matchs but values ({}) does not ({})".format(exp_att, str(att["value"]), str(exp_value)))
+            checked_value += 1
+            print ("> MATCH @ {}:{}".format(att["name"], att["value"]))
+
+    return (checked_value)
+
+
+def mqtt_check_multi_measure(sent, atts_retrieved):
+    checked_value = 0
+    data = dict(json.loads(sent))
+
+    for keys in range(len(data)):
+        key, value = data.popitem()
+        for att in atts_retrieved:
+            if att["name"] == key and att["type"] != "compound":
+                eq_(str(att["value"]), str(value),
+                    "> Name ({}) matchs but values ({}) does not ({})".format(key, str(att["value"]), str(value)))
+                checked_value += 1
+                print ("> MATCH @ {}:{}".format(att["name"], att["value"]))
+
+    return (checked_value)
+
+
+def mqtt_check_special_measure(keyword, sent, atts_retrieved, expected=None):
+    """
+    Return how many special params matchs with the dict sent
+    :param keyword: str
+    :param sent: dict
+    :param atts_retrieved: dict
+    :return:
+    """
+
+    checked_value = 0
+    data = dict(json.loads(sent))
+    if keyword == "P1" or keyword == "C1":
+        convenience_att = "P1"
+    else:
+        convenience_att = keyword
+
+    for att in atts_retrieved:
+        # if it is a special key of type compound
+        if att["name"] == convenience_att and att["type"] == "compound":
+            if check_compound_key(keyword, att, data[keyword]):
+                checked_value += 1
+                print ("> Special MATCH @ {}:{}".format(att["name"], att["value"]))
+    return checked_value
+
+
+def mqtt_convenience_atts(keys):
+    """
+    Return if it is a convenience values for special params
+    :param keys: list
+    :return: convenience data
+    """
+    special_params = ["P1", "C1", "B"]
+
+    for key in keys:
+        if key in special_params:
+            print ("#> SPECIAL KEY FOUND: {} ".format(key, special_params))
+            return key
+    return None
+
+
+def check_compound_key(keyword, att, measure):
+    """
+    Check if the compound key matchs with the measure
+    :param keyword:
+    :param att:
+    :param measure:
+    :param expected:
+    :return:
+    """
+
+    # if it is a special not defined attribute
+    mcc = None
+    mnc = None
+    lac = None
+    cellid = None
+    dbm = None
+
+    if keyword == "C1":
+        mcc = measure[:4]
+        mnc = measure[4:8]
+        lac = measure[8:12]
+        cellid = measure[12:16]
+        dbm = None
+
+        data_expected = """{
+            "name" : "P1",
+            "type" : "compound",
+            "value" : [
+              {
+                "name" : "mcc",
+                "type" : "string",
+                "value" : "MCC_VALUE"
+              },
+              {
+                "name" : "mnc",
+                "type" : "string",
+                "value" : "MNC_VALUE"
+              },
+              {
+                "name" : "lac",
+                "type" : "string",
+                "value" : "LAC_VALUE"
+              },
+              {
+                "name" : "cell-id",
+                "type" : "string",
+                "value" : "CELLID_VALUE"
+              }
+            ]
+          }"""
+
+    elif keyword == "P1":
+        mcc = measure.split(",")[0]
+        mnc = measure.split(",")[1]
+        lac = measure.split(",")[2]
+        cellid = measure.split(",")[3]
+        dbm = measure.split(",")[4]
+
+        data_expected = """{
+            "name" : "P1",
+            "type" : "compound",
+            "value" : [
+              {
+                "name" : "mcc",
+                "type" : "string",
+                "value" : "MCC_VALUE"
+              },
+              {
+                "name" : "mnc",
+                "type" : "string",
+                "value" : "MNC_VALUE"
+              },
+              {
+                "name" : "lac",
+                "type" : "string",
+                "value" : "LAC_VALUE"
+              },
+              {
+                "name" : "cell-id",
+                "type" : "string",
+                "value" : "CELLID_VALUE"
+              },
+              {
+                "name" : "dbm",
+                "type" : "string",
+                "value" : "DBM_VALUE"
+              }
+            ]
+          }"""
+
+    elif keyword == "B":
+        volt = measure.split(",")[0]
+        state = measure.split(",")[1]
+        charger = measure.split(",")[2]
+        charging = measure.split(",")[3]
+        mode = measure.split(",")[4]
+        disconnected = measure.split(",")[5]
+
+        data_expected = """          {
+            "name" : "B",
+            "type" : "compound",
+            "value" : [
+              {
+                "name" : "voltage",
+                "type" : "string",
+                "value" : "VOLTAGE_VALUE"
+              },
+              {
+                "name" : "state",
+                "type" : "string",
+                "value" : "STATE_VALUE"
+              },
+              {
+                "name" : "charger",
+                "type" : "string",
+                "value" : "CHARGER_VALUE"
+              },
+              {
+                "name" : "charging",
+                "type" : "string",
+                "value" : "CHARGING_VALUE"
+              },
+              {
+                "name" : "mode",
+                "type" : "string",
+                "value" : "MODE_VALUE"
+              },
+              {
+                "name" : "disconnection",
+                "type" : "string",
+                "value" : "DISCONNECTION_VALUE"
+              }
+            ]
+          }"""
+
+
+        data_expected = data_expected.replace("VOLTAGE_VALUE", str(volt))
+        data_expected = data_expected.replace("STATE_VALUE", str(state))
+        data_expected = data_expected.replace("CHARGER_VALUE", str(charger))
+        data_expected = data_expected.replace("CHARGING_VALUE", str(charging))
+        data_expected = data_expected.replace("MODE_VALUE", str(mode))
+        data_expected = data_expected.replace("DISCONNECTION_VALUE", str(disconnected))
+
+    else:
+        data_expected = """{}"""
+
+    if keyword in ["P1", "C1"]:
+        # Replace values with measure sent
+        data_expected = data_expected.replace("MCC_VALUE", str(mcc))
+        data_expected = data_expected.replace("MNC_VALUE", str(mnc))
+        data_expected = data_expected.replace("LAC_VALUE", str(lac))
+        data_expected = data_expected.replace("CELLID_VALUE", str(cellid))
+        if dbm is not None:
+            data_expected = data_expected.replace("DBM_VALUE", dbm)
+
+    expected_dict = dict(json.loads(data_expected))
+
+    if expected_dict != att:
+        print ("[ERROR] Dictionaries are not equals: \n{}\n {}\n".format(expected_dict, att))
+        return False
+    else:
+        return True
+
+
+
+
+

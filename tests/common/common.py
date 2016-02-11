@@ -180,6 +180,7 @@ def ks_get_token(context, service=None, user=None, password=None, subservice=Non
 
     context.r_ks = requests.request("POST", ks_url, data=payload, headers=headers)
     ks_headers = context.r_ks.headers
+    print (context.r_ks.headers)
     return ks_headers["x-subject-token"]
 
 
@@ -296,7 +297,7 @@ def orc_delete_service(context, service_id):
 
     payload = {
         'SERVICE_ADMIN_USER': "cloud_admin",
-        'SERVICE_ADMIN_PASSWORD': "password"
+        'SERVICE_ADMIN_PASSWORD': "4passw0rd"
     }
 
     payload = json.dumps(payload)
@@ -325,6 +326,9 @@ def orc_delete_subservice(context, service_id, subservice_id, admin_token=None):
         "content-type": "application/json",
         "x-auth-token": admin_token
     }
+
+    context.user_admin = "admin_bb"
+    context.password_admin = "password"
 
     # access with credentials
     if admin_token is None:

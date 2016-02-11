@@ -25,10 +25,10 @@ import time
 from nose.tools import assert_true
 from pymongo import MongoClient
 from iotqatools.cb_utils import CbNgsi10Utils
-from common.test_utils import remove_mysql_databases, bb_delete_method, devices_delete_method
+from common.test_utils import bb_delete_method, devices_delete_method, remove_mysql_databases, mqtt_delete_device
 
 logging.basicConfig(filename="./tests/logs/behave.log", level=logging.DEBUG)
-__logger__ = logging.getLogger("qa")
+__logger__ = logging.getLogger("Environment")
 
 
 def merge(a, b, path=None):
@@ -139,6 +139,23 @@ def after_scenario(context, scenario):
             client.drop_database('sth_' + context.service)
 
 
+        if "rm-mqttdevice" in context.tags:
+            if "device_id" in context and "mqtt_create_url" in context:
+                print ("[MQTT] DELETE DEVICE")
+                url = "{}/{}".format(context.mqtt_create_url, context.device_id)
+
+                response = mqtt_delete_device(context,
+                                              url=url,
+                                              headers=context.headers)
+
+                __logger__.debug("[MQTT] DELETE Device request: \n url: {}".format(url, response.status_code))
+
+
+            context.headers.update({"Fiware-Service": "{}".format(context.service)})
+            context.headers.update({"Fiware-ServicePath": "/{}".format(context.servicepath)})
+
+
+
 def after_feature(context, feature):
     if 'ft-cb2mysql' in context.feature_data["tags"]:
         __logger__.info("***********Cleaning DB {} --->>>>>>>>".format(context.o["db2remove"]))
@@ -147,3 +164,6 @@ def after_feature(context, feature):
     context.o = {}
     context.feature_data = {}
     context.arrays = {}
+
+
+
