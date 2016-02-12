@@ -327,9 +327,6 @@ def orc_delete_subservice(context, service_id, subservice_id, admin_token=None):
         "x-auth-token": admin_token
     }
 
-    context.user_admin = "admin_bb"
-    context.password_admin = "password"
-
     # access with credentials
     if admin_token is None:
         payload = {
