@@ -48,7 +48,7 @@ Feature: Black Button Smoke tests
   Scenario Outline: SM_03 Instances are WORKING
     Given the instance of "<INSTANCE>" is accessible
     And a Client of "blackbutton01" and a ThirdParty called "testpizza"
-    And user "admin_bb" and password "4passw0rd"
+    And user "admin_bb" and password "4pass1w0rd"
     When I send a request type "<REQUEST>" and action "<ACTION>"
     Then the result should be "<HTTP_RESPONSE>"
 

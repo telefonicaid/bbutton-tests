@@ -1,8 +1,8 @@
 Feature: Happy path E2E functionality Sync-Async
   In order to check if a blackbutton that can order a product
-  In a Service servicewwf and Subservice thinkinthing
-  As a client has SYNC  BlackButtons: SSwwf1011 and SAwwf1022
-  As a client has ASYNC BlackButtons: ASwwf1033 and SSwwf1044
+  In a Service servicewwj and Subservice thinkinthing
+  As a client has SYNC  BlackButtons: SSwwj1011 and SAwwj1022
+  As a client has ASYNC BlackButtons: ASwwj1033 and SSwwj1044
   I should validate the state of the platform to process the buttons requests to a third party
 
 
@@ -63,11 +63,11 @@ Feature: Happy path E2E functionality Sync-Async
 
     Examples:
       | SERVICE     | SERVICEPATH  | SERVICE_ADMIN_USER | SERVICE_PWD | DEVICE_ID | ATT_INTERACTION_TYPE | TP_INTERACTION | TP_URL          |
-      | servicewwf1 | thinkinthing | admin_bb           | password    | SSwwf1011 | synchronous          | synchronous    | TP/sync/request |
-      | servicewwf2 | thinkinthing | admin_bb           | password    | SAwwf1022 | synchronous          | asynchronous   | TP/async/create |
-      | servicewwf3 | thinkinthing | admin_bb           | password    | ASwwf1033 | asynchronous         | synchronous    | TP/sync/request |
-      | servicewwf4 | thinkinthing | admin_bb           | password    | AAwwf1044 | asynchronous         | asynchronous   | TP/async/create |
-      | servicewwf5 | thinkinthing | admin_bb           | password    | SSwwf1055 | synchronous          | synchronous    | TP/sync/request |
+      | servicewwj1 | thinkinthing | admin_bb           | password    | SSwwj1011 | synchronous          | synchronous    | TP/sync/request |
+      | servicewwj2 | thinkinthing | admin_bb           | password    | SAwwj1022 | synchronous          | asynchronous   | TP/async/create |
+      | servicewwj3 | thinkinthing | admin_bb           | password    | ASwwj1033 | asynchronous         | synchronous    | TP/sync/request |
+      | servicewwj4 | thinkinthing | admin_bb           | password    | AAwwj1044 | asynchronous         | asynchronous   | TP/async/create |
+      | servicewwj5 | thinkinthing | admin_bb           | password    | SSwwj1055 | synchronous          | synchronous    | TP/sync/request |
 
   @ft-happypath @hp-provision-check @hp_sc02
   Scenario Outline: SC_2 User check a BlackButton is registered in BB-platform
@@ -77,10 +77,10 @@ Feature: Happy path E2E functionality Sync-Async
 
     Examples:
       | SERVICE     | SERVICEPATH  | SERVICE_ADMIN_USER | SERVICE_PWD | DEVICE_ID |
-      | servicewwf1 | thinkinthing | admin_bb           | password    | SSwwf1011 |
-      | servicewwf2 | thinkinthing | admin_bb           | password    | SAwwf1022 |
-#      | servicewwf3 | thinkinthing | admin_bb           | password    | ASwwf1033 |
-#      | servicewwf4 | thinkinthing | admin_bb           | password    | AAwwf1044 |
+      | servicewwj1 | thinkinthing | admin_bb           | password    | SSwwj1011 |
+      | servicewwj2 | thinkinthing | admin_bb           | password    | SAwwj1022 |
+      | servicewwj3 | thinkinthing | admin_bb           | password    | ASwwj1033 |
+      | servicewwj4 | thinkinthing | admin_bb           | password    | AAwwj1044 |
 
   @ft-happypath  @hp-button-flows @hp-button-sync @hp_sc03
   Scenario Outline: SC_3 Client push the button in the SYNC mode
@@ -91,8 +91,8 @@ Feature: Happy path E2E functionality Sync-Async
 
     Examples:
       | SERVICE     | SERVICEPATH  | DEVICE_ID | SYNC_MODE   | BT_REQUEST                        | TP_NAME | OP_RESULT                                  |
-      | servicewwf1 | thinkinthing | SSwwf1011 | synchronous | #3,BT,S,4,5,2000$WakeUp,#0,K1,30$ | TP      | #3,BT,S,1,rt-20;rrgb-00FF00;,0$#0,K1,300$, |
-      | servicewwf2 | thinkinthing | SAwwf1022 | synchronous | #1,BT,S,2,1,2000$WakeUp,#0,K1,30$ | TP      | #1,BT,S,1,rt-20;rrgb-00FF00;,0$#0,K1,300$, |
+      | servicewwj1 | thinkinthing | SSwwj1011 | synchronous | #3,BT,S,4,5,2000$WakeUp,#0,K1,30$ | TP      | #3,BT,S,1,rt-20;rrgb-00FF00;,0$#0,K1,300$, |
+      | servicewwj2 | thinkinthing | SAwwj1022 | synchronous | #1,BT,S,2,1,2000$WakeUp,#0,K1,30$ | TP      | #1,BT,S,1,rt-20;rrgb-00FF00;,0$#0,K1,300$, |
 
 
   @ft-happypath @hp-button-flows @hp-button-async @hp_sc04
@@ -106,8 +106,8 @@ Feature: Happy path E2E functionality Sync-Async
 
     Examples:
       | SERVICE     | SERVICEPATH  | DEVICE_ID | SYNC_MODE    | BT_REQUEST                        | STATUS | FINAL_STATUS |
-      | servicewwf3 | thinkinthing | ASwwf1033 | asynchronous | #1,BT,C,3,2,2000$WakeUp,#0,K1,30$ | C.S    | C.S          |
-      | servicewwf4 | thinkinthing | AAwwf1044 | asynchronous | #1,BT,C,1,1,2000$WakeUp,#0,K1,30$ | C.S    | C.S          |
+      | servicewwj3 | thinkinthing | ASwwj1033 | asynchronous | #1,BT,C,3,2,2000$WakeUp,#0,K1,30$ | C.S    | C.S          |
+      | servicewwj4 | thinkinthing | AAwwj1044 | asynchronous | #1,BT,C,1,1,2000$WakeUp,#0,K1,30$ | C.S    | C.S          |
 
 
   @ft-happypath  @hp-service-clean @hp_sc05
@@ -122,8 +122,8 @@ Feature: Happy path E2E functionality Sync-Async
 
     Examples:
       | SERVICE     | SERVICEPATH  | SERVICE_ADMIN_USER | SERVICE_ADM_PWD | SERVICE_PWD |
-#      | servicewwf1 | thinkinthing | admin_bb           | 4pass1w0rd       | password    |
-#      | servicewwf2 | thinkinthing | admin_bb           | 4pass1w0rd       | password    |
-#      | servicewwf3 | thinkinthing | admin_bb           | 4pass1w0rd       | password    |
-#      | servicewwf4 | thinkinthing | admin_bb           | 4pass1w0rd       | password    |
-      | servicewwf5 | thinkinthing | admin_bb           | 4pass1w0rd       | password    |
+      | servicewwj1 | thinkinthing | admin_bb           | 4pass1w0rd       | password    |
+      | servicewwj2 | thinkinthing | admin_bb           | 4pass1w0rd       | password    |
+      | servicewwj3 | thinkinthing | admin_bb           | 4pass1w0rd       | password    |
+      | servicewwj4 | thinkinthing | admin_bb           | 4pass1w0rd       | password    |
+      | servicewwj5 | thinkinthing | admin_bb           | 4pass1w0rd       | password    |

@@ -127,7 +127,6 @@ def happy_path_request_collector(context, INSTANCE, REQUEST, ACTION):
                                   headers=context.headers,
                                   data=json_payload)
 
-        # print (context.r.content)
         __logger__.debug(context.r.content)
         __logger__.debug(context.r.status_code)
         eq_(context.r.status_code, 201,
@@ -151,10 +150,13 @@ def happy_path_request_collector(context, INSTANCE, REQUEST, ACTION):
         # Get config test env credentials
         context.user_admin = context.config["env_data"]["users"]["user_1"]["user_name"]
         context.password_admin = context.config["env_data"]["users"]["user_1"]["user_password"]
+        context.domain_admin = context.config["env_data"]["users"]["user_1"]["user_service"]
 
-        context.domain_admin = "admin_domain"
-        domain_token = ks_get_token(context, service=context.domain_admin, user=context.user_admin,
-                                    password=context.password_admin)
+        # In case delete using token is needed
+        # domain_token = ks_get_token(context,
+        #                             service=context.domain_admin,
+        #                             user=context.user_admin,
+        #                             password=context.password_admin)
 
         if "service_id" in context:
             delete_response = orc_delete_service(context, context.service_id)
