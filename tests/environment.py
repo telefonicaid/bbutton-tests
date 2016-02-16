@@ -138,22 +138,19 @@ def after_scenario(context, scenario):
             client = MongoClient(mongo_instance, mongo_port)
             client.drop_database('sth_' + context.service)
 
-
         if "rm-mqttdevice" in context.tags:
             if "device_id" in context and "mqtt_create_url" in context:
                 print ("[MQTT] DELETE DEVICE")
                 url = "{}/{}".format(context.mqtt_create_url, context.device_id)
+
+                context.headers.update({"Fiware-Service": "{}".format(context.service)})
+                context.headers.update({"Fiware-ServicePath": "/{}".format(context.servicepath)})
 
                 response = mqtt_delete_device(context,
                                               url=url,
                                               headers=context.headers)
 
                 __logger__.debug("[MQTT] DELETE Device request: \n url: {}".format(url, response.status_code))
-
-
-            context.headers.update({"Fiware-Service": "{}".format(context.service)})
-            context.headers.update({"Fiware-ServicePath": "/{}".format(context.servicepath)})
-
 
 
 def after_feature(context, feature):

@@ -116,10 +116,9 @@ def happy_path_request_collector(context, INSTANCE, REQUEST, ACTION):
 
     if INSTANCE == "ORC" and REQUEST == "SERVICE" and ACTION == "CREATE":
         url = str("{0}/v1.0/service".format(context.url_component))
-        if context.table:
-            json_payload = json.dumps(dict(context.table))
-        else:
-            json_payload = json.dumps(context.table_create_service)
+
+        payload = dict(context.table) if context.table else context.table_create_service
+        json_payload = json.dumps(payload)
 
         print ("\n JSON TABLE SERVICE: \n {}\n".format(json_payload))
         __logger__.debug("Create service: {}, \n url: {}".format(json_payload, url))
@@ -133,8 +132,12 @@ def happy_path_request_collector(context, INSTANCE, REQUEST, ACTION):
             "[ERROR] when calling {} responsed a HTTP {}".format(url, context.r.status_code))
         context.create_service = context.r.content
         jsobject = json.loads(context.create_service)
+
         context.service_id = jsobject["id"]
         context.token_service = jsobject["token"]
+        context.service_admin = payload["NEW_SERVICE_ADMIN_USER"]
+        context.service_admin_pass = payload["NEW_SERVICE_ADMIN_PASSWORD"]
+
         print ("\n --->>  ID service: {} <<--- \n".format(context.service_id))
         print ("TOKEN service: {} \n".format(context.token_service))
 
@@ -831,6 +834,16 @@ def service_subservice_default_provision(context):
     # provision using the common steps
     happy_path_request_collector(context, "ORC", "SERVICE", "CREATE")
     happy_path_service_creation(context, context.servicepath)
+
+
+@step('service and subservice are deleted')
+def service_subservice_delete(context):
+    """
+    Remove the service and its subservices using the service admin credentials available in context.
+    It uses the user credentials to list all the subservices.
+    """
+
+    service_subservice_default_delete(context, context.service_admin, context.service_admin_pass)
 
 
 @step('service and subservice are deleted with "(?P<ADMIN>.+)" and "(?P<PWD>.+)" credentials')

@@ -24,7 +24,7 @@ import re
 import requests
 import logging
 import json
-import paho.mqtt.client as mqtt
+
 from iotqatools.cb_utils import CbNgsi10Utils, PayloadUtils, ContextElements
 from iotqatools.ks_utils import KeystoneCrud
 from iotqatools.iota_utils import Rest_Utils_IoTA
