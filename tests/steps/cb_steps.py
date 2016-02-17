@@ -77,6 +77,13 @@ def create_subscription(context):
                                                                             duration="PT" + duration + "S",
                                                                             notify_conditions=notify_cond,
                                                                             throttling=throttling)
+
+    # is authenticated?
+    if 'token_scope' in context:
+        context.o['CB'].set_auth_token(context.token_scope)
+    elif 'token' in context:
+        context.o['CB'].set_auth_token(context.token)
+
     # resp = cb.standard_subscribe_context_onchange(subscription_pl)
     resp = getattr(cb, "standard_subscribe_context_" + context.table[0]['notify_type'].lower())(subscription_pl)
     eq_(200, resp.status_code)
@@ -159,6 +166,12 @@ def update_context(context, service, subservice, nEntities, entity_id, entity_ty
                                         'entity_type': entity_type})
 
     payload = PayloadUtils.build_standard_entity_creation_payload(context_element)
+
+    # is authenticated?
+    if 'token_scope' in context:
+        context.o['CB'].set_auth_token(context.token_scope)
+    elif 'token' in context:
+        context.o['CB'].set_auth_token(context.token)
 
     # Launch the requests to CB
     resp = context.o['CB'].standard_entity_creation(payload)

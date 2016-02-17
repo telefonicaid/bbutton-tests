@@ -70,7 +70,7 @@
       "heartbeat": "/",
       "notify_path": "/notify",
       "notify_port": "18666",
-      "port": "18666",
+      "port": "8666",
       "protocol": "http",
       "version": ""
     },

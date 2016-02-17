@@ -341,6 +341,26 @@ def happy_path_retrieve_token(context, SERVICE_ADMIN, SERVICE_PWD):
     print ("\n #>> Token to use: {} \n".format(context.token))
 
 
+@step('a valid token is retrieved for service admin user')
+def happy_path_retrieve_service_admin_token(context):
+    """
+    Retrieve a token using the service admin credentials available in context
+    :param context: behave.runner.Context
+    """
+    happy_path_retrieve_token(context, context.service_admin, context.service_admin_pass)
+
+
+@step('a valid token with scope is retrieved for service admin user')
+def happy_path_retrieve_service_admin_token_with_scope(context):
+    """
+    Retrieve a token with context.subservice scope using admin credentials available in context
+    :param context: behave.runner.Context
+    """
+    happy_path_retrieve_service_admin_token(context)
+    context.token_scope = ks_get_token_with_scope(context, context.token, context.service, context.subservice)
+    print ("\n #>> Token to use: {} \n".format(context.token))
+
+
 @step('an admin_token is retrieved')
 def step_impl(context):
     """
@@ -812,7 +832,7 @@ def service_subservice_default_provision(context):
                                     }"""
     payload_service = json.loads(json_data_s)
     payload_service["NEW_SERVICE_NAME"] = context.service
-    payload_service["NEW_SERVICE_ADMIN_PASSWORD"] = context.config["env_data"]["users"]["user_2"]["user_password"]
+    payload_service["NEW_SERVICE_ADMIN_PASSWORD"] = context.config["env_data"]["users"]["user_3"]["user_password"]
     payload_service["DOMAIN_ADMIN_PASSWORD"] = context.config["env_data"]["users"]["user_1"]["user_password"]
     context.table_create_service = payload_service
 
@@ -827,7 +847,7 @@ def service_subservice_default_provision(context):
     payload_subservice = json.loads(json_data_ss)
     payload_subservice["NEW_SUBSERVICE_NAME"] = context.servicepath
     payload_subservice["SERVICE_NAME"] = context.service
-    payload_subservice["SERVICE_ADMIN_PASSWORD"] = context.config["env_data"]["users"]["user_1"]["user_password"]
+    payload_subservice["SERVICE_ADMIN_PASSWORD"] = context.config["env_data"]["users"]["user_3"]["user_password"]
 
     context.table_create_subservice = payload_subservice
 
