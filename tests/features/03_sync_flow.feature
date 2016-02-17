@@ -12,7 +12,7 @@ Feature: Complete path E2E functionality Sync-Async / Sync-Sync
       | key                        | value           |
       | DOMAIN_NAME                | admin_domain    |
       | DOMAIN_ADMIN_USER          | cloud_admin     |
-      | DOMAIN_ADMIN_PASSWORD      | 4passw0rd        |
+      | DOMAIN_ADMIN_PASSWORD      | 4pass1w0rd        |
       | NEW_SERVICE_NAME           | <SERVICE>       |
       | NEW_SERVICE_ADMIN_USER     | <SERVICE_ADMIN> |
       | NEW_SERVICE_ADMIN_PASSWORD | <SERVICE_PWD>   |
@@ -21,7 +21,7 @@ Feature: Complete path E2E functionality Sync-Async / Sync-Sync
       | key                   | value             |
       | SERVICE_NAME          | <SERVICE>         |
       | SERVICE_USER_NAME     | admin_bb          |
-      | SERVICE_USER_PASSWORD | 4passw0rd         |
+      | SERVICE_USER_PASSWORD | 4pass1w0rd         |
       | SUBSERVICE_NAME       | <SERVICEPATH>     |
       | ENTITY_TYPE           | service           |
       | ENTITY_ID             | <SERVICE>         |
@@ -47,10 +47,10 @@ Feature: Complete path E2E functionality Sync-Async / Sync-Sync
 
     Examples:
       | SERVICE    | SERVICEPATH | SERVICE_ADMIN | SERVICE_PWD | DEVICE_ID | ENTITY_TYPE | TOKEN | ATT_LOCATION | BT_REQUEST                         | TP_URL          | OP_RESULT                                  |
-      | servsyncaa | testpizza   | admin_bb      | 4passw0rd   | device1   | BlackButton | no    | 33,-122      | #1,BT,S,1,1,2000$WakeUp,#0,K1,30$  | TP/sync/request | #1,BT,S,1,rt-20;rrgb-00FF00;,0$#0,K1,300$, |
-      | servsyncaa | testpizza   | admin_bb      | 4passw0rd   | device2   | BlackButton | no    | 15,-2        | #2,BT,S,3,0,#0,K1,0$               | TP/sync/request | #2,BT,S,1,rt-20;rrgb-00FF00;,0$#0,K1,300$, |
-      | servsyncaa | testpizza   | admin_bb      | 4passw0rd   | device3   | BlackButton | no    | 16,21        | #3,BT,S,0,0,512WakeUp#0,K1,0$,     | TP/sync/request | #3,BT,S,1,rt-20;rrgb-00FF00;,0$#0,K1,300$, |
-      | servsyncaa | testpizza   | admin_bb      | 4passw0rd   | device4   | BlackButton | yes   | 31,-40       | #4,BT,S,9,10,2000$WakeUp,#0,K1,30$ | TP/sync/request | #4,BT,S,1,rt-20;rrgb-00FF00;,0$#0,K1,300$, |
+      | servsyncaa | testpizza   | admin_bb      | 4pass1w0rd   | device1   | BlackButton | no    | 33,-122      | #1,BT,S,1,1,2000$WakeUp,#0,K1,30$  | TP/sync/request | #1,BT,S,1,rt-20;rrgb-00FF00;,0$#0,K1,300$, |
+      | servsyncaa | testpizza   | admin_bb      | 4pass1w0rd   | device2   | BlackButton | no    | 15,-2        | #2,BT,S,3,0,#0,K1,0$               | TP/sync/request | #2,BT,S,1,rt-20;rrgb-00FF00;,0$#0,K1,300$, |
+      | servsyncaa | testpizza   | admin_bb      | 4pass1w0rd   | device3   | BlackButton | no    | 16,21        | #3,BT,S,0,0,512WakeUp#0,K1,0$,     | TP/sync/request | #3,BT,S,1,rt-20;rrgb-00FF00;,0$#0,K1,300$, |
+      | servsyncaa | testpizza   | admin_bb      | 4pass1w0rd   | device4   | BlackButton | yes   | 31,-40       | #4,BT,S,9,10,2000$WakeUp,#0,K1,30$ | TP/sync/request | #4,BT,S,1,rt-20;rrgb-00FF00;,0$#0,K1,300$, |
 
 
   @ft-syncflow @sf-button-flows @sf-02
@@ -60,7 +60,7 @@ Feature: Complete path E2E functionality Sync-Async / Sync-Sync
       | key                        | value           |
       | DOMAIN_NAME                | admin_domain    |
       | DOMAIN_ADMIN_USER          | cloud_admin     |
-      | DOMAIN_ADMIN_PASSWORD      | 4passw0rd        |
+      | DOMAIN_ADMIN_PASSWORD      | 4pass1w0rd        |
       | NEW_SERVICE_NAME           | <SERVICE>       |
       | NEW_SERVICE_ADMIN_USER     | <SERVICE_ADMIN> |
       | NEW_SERVICE_ADMIN_PASSWORD | <SERVICE_PWD>   |
@@ -69,7 +69,7 @@ Feature: Complete path E2E functionality Sync-Async / Sync-Sync
       | key                   | value             |
       | SERVICE_NAME          | <SERVICE>         |
       | SERVICE_USER_NAME     | admin_bb          |
-      | SERVICE_USER_PASSWORD | 4passw0rd         |
+      | SERVICE_USER_PASSWORD | 4pass1w0rd         |
       | SUBSERVICE_NAME       | <SERVICEPATH>     |
       | ENTITY_TYPE           | service           |
       | ENTITY_ID             | <SERVICE>         |
@@ -98,11 +98,11 @@ Feature: Complete path E2E functionality Sync-Async / Sync-Sync
 
     Examples:
       | PROTOCOL       | DEVICE_ID | ENTITY_TYPE | SERVICE_NAME | SUBSERVICE_NAME | SERVICE_USER_NAME | SERVICE_USER_PASSWORD | TOKEN | SERVICE    | SERVICEPATH | SERVICE_ADMIN | SERVICE_PWD | TP_URL          |
-      | TT_BLACKBUTTON | device_f  | BlackButton | NaN          | NaN             | NaN               | NaN                   | no    | servsyncaa | testpizza   | admin_bb      | 4passw0rd   | TP/sync/request |
-      | TT_BLACKBUTTON | device_f  | BlackButton | servsyncaa   | testpizza       | NaN               | NaN                   | no    | servsyncaa | testpizza   | admin_bb      | 4passw0rd   | TP/sync/request |
-#      | TT_BLACKBUTTON | device_f  | BlackButton | NaN          | testpizza       | admin_bb          | 4passw0rd             | no    | servsyncaa | testpizza   | admin_bb      | 4passw0rd   | TP/sync/request |
-#      | TT_BLACKBUTTON | device_f  | BlackButton | servsyncaa   | NaN             | admin_bb          | 4passw0rd             | no    | servsyncaa | testpizza   | admin_bb      | 4passw0rd   | TP/sync/request |
-      | TT_BLACKBUTTON | device_f  | BlackButton | servsyncaa   | testpizza       | NaN               | 4passw0rd             | no    | servsyncaa | testpizza   | admin_bb      | 4passw0rd   | TP/sync/request |
+      | TT_BLACKBUTTON | device_f  | BlackButton | NaN          | NaN             | NaN               | NaN                   | no    | servsyncaa | testpizza   | admin_bb      | 4pass1w0rd   | TP/sync/request |
+      | TT_BLACKBUTTON | device_f  | BlackButton | servsyncaa   | testpizza       | NaN               | NaN                   | no    | servsyncaa | testpizza   | admin_bb      | 4pass1w0rd   | TP/sync/request |
+#      | TT_BLACKBUTTON | device_f  | BlackButton | NaN          | testpizza       | admin_bb          | 4pass1w0rd             | no    | servsyncaa | testpizza   | admin_bb      | 4pass1w0rd   | TP/sync/request |
+#      | TT_BLACKBUTTON | device_f  | BlackButton | servsyncaa   | NaN             | admin_bb          | 4pass1w0rd             | no    | servsyncaa | testpizza   | admin_bb      | 4pass1w0rd   | TP/sync/request |
+      | TT_BLACKBUTTON | device_f  | BlackButton | servsyncaa   | testpizza       | NaN               | 4pass1w0rd             | no    | servsyncaa | testpizza   | admin_bb      | 4pass1w0rd   | TP/sync/request |
 
 
   @ft-syncflow @sf-button-flows @sf-03
@@ -112,7 +112,7 @@ Feature: Complete path E2E functionality Sync-Async / Sync-Sync
       | key                        | value           |
       | DOMAIN_NAME                | admin_domain    |
       | DOMAIN_ADMIN_USER          | cloud_admin     |
-      | DOMAIN_ADMIN_PASSWORD      | 4passw0rd        |
+      | DOMAIN_ADMIN_PASSWORD      | 4pass1w0rd        |
       | NEW_SERVICE_NAME           | <SERVICE>       |
       | NEW_SERVICE_ADMIN_USER     | <SERVICE_ADMIN> |
       | NEW_SERVICE_ADMIN_PASSWORD | <SERVICE_PWD>   |
@@ -120,7 +120,7 @@ Feature: Complete path E2E functionality Sync-Async / Sync-Sync
     And the "ORC" receive the request "SERVICE_ENTITY" and action "CREATE"
       | SERVICE_NAME          | <SERVICE>         |
       | SERVICE_USER_NAME     | admin_bb          |
-      | SERVICE_USER_PASSWORD | 4passw0rd         |
+      | SERVICE_USER_PASSWORD | 4pass1w0rd         |
       | SUBSERVICE_NAME       | <SERVICEPATH>     |
       | ENTITY_TYPE           | service           |
       | ENTITY_ID             | <SERVICE>         |
@@ -150,4 +150,4 @@ Feature: Complete path E2E functionality Sync-Async / Sync-Sync
 
     Examples:
       | DEVICE_ID | ENTITY_TYPE | TOKEN | SERVICE    | SERVICEPATH | SERVICE_ADMIN | SERVICE_PWD | TP_URL          | BT_REQUEST                        |
-      | deviceA   | BlackButton | no    | servsyncaa | testpizza   | admin_bb      | 4passw0rd   | TP/sync/request | #1,BT,S,1,1,2000$WakeUp,#0,K1,30$ |
+      | deviceA   | BlackButton | no    | servsyncaa | testpizza   | admin_bb      | 4pass1w0rd   | TP/sync/request | #1,BT,S,1,1,2000$WakeUp,#0,K1,30$ |

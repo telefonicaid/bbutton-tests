@@ -257,10 +257,10 @@ def orc_get_services(context):
 
 def orc_get_subservices(context, service_id):
     orc_url = "{}://{}:{}/v1.0/service/{}/subservice".format(
-            context.config["components"]["ORC"]["protocol"],
-            context.config["components"]["ORC"]["instance"],
-            context.config["components"]["ORC"]["port"],
-            service_id)
+        context.config["components"]["ORC"]["protocol"],
+        context.config["components"]["ORC"]["instance"],
+        context.config["components"]["ORC"]["port"],
+        service_id)
 
     # get token with scope from previous token
     context.token_scope = ks_get_token_with_scope(context, context.token, context.service, context.subservice)
@@ -286,18 +286,19 @@ def orc_get_subservices(context, service_id):
 
 
 def orc_delete_service(context, service_id):
-    orc_url = context.config["components"]["ORC"]["protocol"] + "://" + \
-              context.config["components"]["ORC"]["instance"] + ":" + \
-              context.config["components"]["ORC"]["port"] + \
-              "/v1.0/service/{}".format(service_id)
+    orc_url = "{}://{}:{}/v1.0/service/{}".format(
+        context.config["components"]["ORC"]["protocol"],
+        context.config["components"]["ORC"]["instance"],
+        context.config["components"]["ORC"]["port"],
+        service_id)
 
     headers = {
         'content-type': "application/json"
     }
 
     payload = {
-        'SERVICE_ADMIN_USER': "cloud_admin",
-        'SERVICE_ADMIN_PASSWORD': "4passw0rd"
+        'SERVICE_ADMIN_USER': context.config["env_data"]["users"]["user_1"]["user_name"],
+        'SERVICE_ADMIN_PASSWORD': context.config["env_data"]["users"]["user_1"]["user_password"]
     }
 
     payload = json.dumps(payload)
@@ -326,9 +327,6 @@ def orc_delete_subservice(context, service_id, subservice_id, admin_token=None):
         "content-type": "application/json",
         "x-auth-token": admin_token
     }
-
-    context.user_admin = "admin_bb"
-    context.password_admin = "password"
 
     # access with credentials
     if admin_token is None:

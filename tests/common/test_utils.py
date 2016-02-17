@@ -382,16 +382,12 @@ def bb_delete_method(context):
     # Get list of services
     context.service_admin = "admin_domain"
     context.user_admin = "cloud_admin"
-    context.password_admin = "password"
+    context.password_admin = context.config["env_data"]["users"]["user_1"]["user_password"]
     context.services = orc_get_services(context)
     for service in context.services:
         if context.service == service["name"]:
             context.service_id = service["id"]
             break
-
-    # Get config env credentials
-    context.user_admin = "cloud_admin"
-    context.password_admin = "password"
 
     try:
         if "service_id" in context:

@@ -17,9 +17,9 @@ Feature: Context Broker connection with MySQL
 
     Examples:
       | SERVICE     | SERVICEPATH | ENTITY_ID | ENTITY_TYPE | ATTNAME   | ATTVALUE | METANAME | METATYPE | METAVALUE |
-      | testservice | /testpath   | entity1   | bbutton     | position | 254156   | met1     | type1    | val1      |
-      | testservice | /testpath   | entity2   | bbutton     | imei_name | 8348938  | met2     | type2    | val2      |
-      | testservice | /testpath   | entity3   | bbutton     | attrName  | 291371   | met3     | type3    | val3      |
+      | mysqlserv | /testpath   | entity1   | bbutton     | position | 254156   | met1     | type1    | val1      |
+      | mysqlserv | /testpath   | entity2   | bbutton     | imei_name | 8348938  | met2     | type2    | val2      |
+      | mysqlserv | /testpath   | entity3   | bbutton     | attrName  | 291371   | met3     | type3    | val3      |
 
 
   @ft-cb2mysql @c2m-02 @ready
@@ -36,7 +36,7 @@ Feature: Context Broker connection with MySQL
 
     Examples:
       | SERVICE     | SERVICEPATH | ENTITY_ID | ENTITY_TYPE | ATTNAMES            | ATTVALUES  | METANAME | METATYPE | METAVALUE |
-      | testservice | /testpath   | entity4   | bbutton     | ccid_name;imei_name | 84324;2832 | met1     | type1    | val1      |
-      | testservice | /testpath   | entity3   | bbutton     | imsi_name           | 291371     | met3     | type3    | val3      |
+      | mysqlserv | /testpath   | entity4   | bbutton     | ccid_name;imei_name | 84324;2832 | met1     | type1    | val1      |
+      | mysqlserv | /testpath   | entity3   | bbutton     | imsi_name           | 291371     | met3     | type3    | val3      |
 
 

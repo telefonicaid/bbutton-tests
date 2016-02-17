@@ -40,7 +40,7 @@ __logger__ = logging.getLogger("sync_flow")
 def provision_atorchestrator(context, instance):
 
     context.user_admin = context.config["env_data"]["users"]["user_1"]["user_name"]
-    context.password_admin = context.config["env_data"]["users"]["user_2"]["user_password"]
+    context.password_admin = context.config["env_data"]["users"]["user_1"]["user_password"]
     context.service_admin = context.config["env_data"]["users"]["user_1"]["user_service"]
 
     context.services = orc_get_services(context)
