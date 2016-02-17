@@ -122,6 +122,7 @@ def after_scenario(context, scenario):
         if "ft-cb2mysql" in context.tags or "rm-entity" in context.tags:
             if context.o and "CB" in context.o:
                 print (context.o["CB"])
+                context.o['CB'].remove_content_type_header()
                 if 'entity_list' in context:
                     for entity in context.entity_list:
                         context.o['CB'].convenience_entity_delete_url_method(entity_id=entity["entity_id"],
@@ -129,6 +130,7 @@ def after_scenario(context, scenario):
 
         if "rm-subs" in context.tags:
             if context.o and "CB" in context.o:
+                context.o['CB'].remove_content_type_header()
                 context.o['CB'].convenience_unsubscribe_context(context.remember["subscription_id"])
 
         if "rm-sth" in context.tags:
