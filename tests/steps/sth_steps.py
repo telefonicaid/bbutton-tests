@@ -32,10 +32,18 @@ def _check_attr_exists(context, entity, attname, n_values):
     """
     Checks if the sth has registered values for an entity an attribute. If no values, it returns an empty array
     """
+    # is authenticated?
+    token = None
+    if 'token_scope' in context:
+        token = context.token_scope
+    elif 'token' in context:
+        token = context.token
+
     resp = context.o["STH"].request_raw_data(entity['entity_type'],
                                              entity['entity_id'],
                                              attname,
-                                             lastN=n_values)
+                                             lastN=n_values,
+                                             token=token)
     eq_(200, resp.status_code)
 
     resp_json = json.loads(resp.content)
@@ -48,14 +56,18 @@ def _check_attr_exists(context, entity, attname, n_values):
 
 @step(u'service and subservice are provisioned in ContextBroker and STH')
 def init_clients(context):
+    """
+    Configures CB and STH clients with service and subservice.
+    """
+    servicePath = context.servicepath if context.servicepath.startswith("/") else "/" + context.servicepath
 
     initialize_sth(context)
     context.o["STH"].set_service(context.service)
-    context.o["STH"].set_subservice(context.servicepath)
+    context.o["STH"].set_subservice(servicePath)
 
     initialize_cb(context)
     context.o["CB"].set_service(context.service)
-    context.o["CB"].set_subservice(context.servicepath)
+    context.o["CB"].set_subservice(servicePath)
 
 
 @step(u'I check entity with "{entity_id}" and "{entity_type}" has the attribute "{attname}" registered in STH ' +
