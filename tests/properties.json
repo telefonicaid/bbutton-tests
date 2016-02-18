@@ -70,7 +70,7 @@
       "heartbeat": "/",
       "notify_path": "/notify",
       "notify_port": "18666",
-      "port": "8666",
+      "port": "18666",
       "protocol": "http",
       "version": ""
     },
@@ -139,14 +139,14 @@
     "users": {
       "user_1": {
         "user_name": "cloud_admin",
-        "user_password": "test",
+        "user_password": "cloud_admin_password_default",
         "user_service": "admin_domain",
         "user_subservice": "/sub1",
         "user_role": "admin"
       },
       "user_2": {
         "user_name": "user2",
-        "user_password": "test",
+        "user_password": "service_password_default",
         "user_service": "admin_domain",
         "user_subservice": "/sub1",
         "user_role": "service_customer"
