@@ -45,18 +45,14 @@ Feature: IotAgent for MQTT
       | serialID | 02598347 |
     When I publish a MQTT message with device_id "<DEVICE_ID>", attribute "<ATT>", msg "<MSG>" and apikey "TEF"
     Then CB should have received the entity update in the entity_id "<ENT_NAME>" and entity_type "<ENT_TYPE>" with values from "<MSG>"
-    And a list of services for admin_cloud is retrieved
-    And a valid token is retrieved for user "admin_bb" and password "4pass1w0rd"
-    And a list of subservices for service_admin "admin_bb" and service_pwd "4pass1w0rd" are retrieved
-    And the "ORC" receive the request "SUBSERVICE" and action "DELETE"
-    And the "ORC" receive the request "SERVICE" and action "DELETE"
-    And the service "<SERVICE>" should not be listed
+    And service and subservice are deleted
+
 
     Examples:
       | SERVICE     | SERVICEPATH  | DEVICE_ID | ENT_NAME  | ENT_TYPE  | ATT        | MSG         |
-      | servicennr1 | thinkinthing | devnnr1   | mqttname  | mqtttype  | attributes | {"T": 31.4} |
-      | servicennr2 | gdl          | devnnr2   | entmqtt   | typemqtt  | attributes | {"H": 200}  |
-      | servicennr3 | trace123     | devnnr3   | mqtt_name | mqtt_type | attributes | {"a": 31.4} |
+      | servicennt1 | thinkinthing | devnnt1   | mqttname  | mqtttype  | attributes | {"T": 31.4} |
+      | servicennt2 | gdl          | devnnt2   | entmqtt   | typemqtt  | attributes | {"H": 200}  |
+      | servicennt3 | trace123     | devnnt3   | mqtt_name | mqtt_type | attributes | {"a": 31.4} |
 
 
   @ft-mqtt @mqtt-measure @mqtt_sc02 @mqtt_multiplemeasure @rm-mqttdevice
@@ -91,8 +87,8 @@ Feature: IotAgent for MQTT
 
     Examples:
       | SERVICE         | SERVICEPATH  | DEVICE_ID | ENT_NAME  | ENT_TYPE  | ATT        | MSG                                                       |
-      | gdlservicennr11 | gdltt1       | multinnr1 | mqttname1 | mqtttype1 | attributes | {"T": 31.4, "H":200}                                      |
-      | gdlservicennr22 | thinkinthing | multinnr2 | mqttname3 | 3mqtttype | attributes | {"NORTH": "3.0", "EAST":9.1,"HIGH":9.000001,"Z":9.999999} |
+      | gdlservicennt11 | gdltt1       | multinnt1 | mqttname1 | mqtttype1 | attributes | {"T": 31.4, "H":200}                                      |
+      | gdlservicennt22 | thinkinthing | multinnt2 | mqttname3 | 3mqtttype | attributes | {"NORTH": "3.0", "EAST":9.1,"HIGH":9.000001,"Z":9.999999} |
 
 
   @ft-mqtt @mqtt-measure @mqtt_sc03 @mqtt_special_values @rm-mqttdevice
@@ -127,12 +123,12 @@ Feature: IotAgent for MQTT
 
     Examples: #mcc:mnc:lac:cell-id:dbm or #volt,stat,charger,charging,Mode,Desc
       | SERVICE     | SERVICEPATH | DEVICE_ID   | MSG                                                                                                  |
-      | servespnnr1 | achar1a     | devspecnnr1 | {"tt":"20160122T121208Z","L":4,"T": 30.2,"H":30,"G":0,"M":3784,"V":"L","C1":"00D600070B000D22"}      |
-      | servespnnr2 | char1a      | devspecnnr2 | {"tt":"20160122T121208Z","L":4,"T": 31.2,"H":30,"G":0,"M":3784,"V":"L","C1":"AAAABBBBCCCCDDDD"}      |
-      | servespnnr3 | char2a      | devspepnnr3 | {"tt":"20160122T121208Z","L":4,"T": 33.2,"H":31,"G":0,"M":3784,"V":"L","P1":"214,7,d22,b00,-64,"}    |
-      | servespnnr4 | char2a      | devspepnnr4 | {"tt":"20160122T121208Z","L":4,"T": 34.2,"H":200,"G":0,"M":3784,"V":"L","P1":"999,888,777,666,-55,"} |
-      | servespnnr5 | char3a      | devspebnnr5 | {"tt":"20160122T121208Z","L":4,"T": 35.2,"H":10,"G":0,"M":3784,"V":"L","B":"4.70,1,1,1,1,0,"}        |
-      | servespnnr6 | char3a      | devspebnnr6 | {"tt":"20160122T121208Z","L":4,"T": 36.2,"H":99,"G":0,"M":3784,"V":"L","B":"0.01,0,0,0,0,0,"}        |
+      | servespnnt1 | achar1a     | devspecnnt1 | {"tt":"20160122T121208Z","L":4,"T": 30.2,"H":30,"G":0,"M":3784,"V":"L","C1":"00D600070B000D22"}      |
+      | servespnnt2 | char1a      | devspecnnt2 | {"tt":"20160122T121208Z","L":4,"T": 31.2,"H":30,"G":0,"M":3784,"V":"L","C1":"AAAABBBBCCCCDDDD"}      |
+      | servespnnt3 | char2a      | devspepnnt3 | {"tt":"20160122T121208Z","L":4,"T": 33.2,"H":31,"G":0,"M":3784,"V":"L","P1":"214,7,d22,b00,-64,"}    |
+      | servespnnt4 | char2a      | devspepnnt4 | {"tt":"20160122T121208Z","L":4,"T": 34.2,"H":200,"G":0,"M":3784,"V":"L","P1":"999,888,777,666,-55,"} |
+      | servespnnt5 | char3a      | devspebnnt5 | {"tt":"20160122T121208Z","L":4,"T": 35.2,"H":10,"G":0,"M":3784,"V":"L","B":"4.70,1,1,1,1,0,"}        |
+      | servespnnt6 | char3a      | devspebnnt6 | {"tt":"20160122T121208Z","L":4,"T": 36.2,"H":99,"G":0,"M":3784,"V":"L","B":"0.01,0,0,0,0,0,"}        |
 
   @ft-mqtt-permanent @mqtt-measure @mqtt_sc04 @mqtt-permanent-service
   Scenario Outline: SC_4 Permanent device receive a measure

@@ -1,4 +1,4 @@
-Feature: Context Broker connection with MySQL
+Feature: Context Broker connection with STH (Short Term Historic)
   In order to validate the interaction between CB and STH
   As a Long Tail Platform backend checker
   I should validate the ability of the platform to store historical data in a database
