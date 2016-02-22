@@ -28,10 +28,12 @@ from common.test_utils import initialize_sth, initialize_cb
 __logger__ = logging.getLogger("sth")
 
 
-def _check_attr_exists(context, entity, attname, n_values):
+def _check_attr_exists(context, entity, attname, expected_values):
     """
     Checks if the sth has registered values for an entity an attribute. If no values, it returns an empty array
     """
+
+    n_values = len(expected_values)
     # is authenticated?
     token = None
     if 'token_scope' in context:
@@ -42,7 +44,7 @@ def _check_attr_exists(context, entity, attname, n_values):
     resp = context.o["STH"].request_raw_data(entity['entity_type'],
                                              entity['entity_id'],
                                              attname,
-                                             lastN=n_values,
+                                             lastN=100,
                                              token=token)
     eq_(200, resp.status_code)
 
@@ -51,7 +53,10 @@ def _check_attr_exists(context, entity, attname, n_values):
     resp_list = resp_json['contextResponses']
     eq_(len(resp_list), 1)
     eq_(resp_list[0]['contextElement']['attributes'][0]['name'], attname)
-    eq_(len(resp_list[0]['contextElement']['attributes'][0]['values']), n_values)
+    values = [sample['attrValue'] for sample in resp_list[0]['contextElement']['attributes'][0]['values']]
+    eq_(len(values), n_values)
+    for i, val in enumerate(expected_values):
+        eq_(val, values[i])
 
 
 @step(u'service and subservice are provisioned in ContextBroker and STH')
@@ -73,14 +78,14 @@ def init_clients(context):
 @step(u'I check entity with "{entity_id}" and "{entity_type}" has the attribute "{attname}" registered in STH ' +
       u'and has samples for "{att_values}"')
 def check_attr_exists_in_entity(context, entity_id, entity_type, attname, att_values):
-    n_values = len(att_values.split(";"))
+    values = att_values.split(";")
     entity = {'entity_id': entity_id, 'entity_type': entity_type}
-    _check_attr_exists(context, entity, attname, n_values)
+    _check_attr_exists(context, entity, attname, values)
 
 
 @step(u'I check attribute "{attname}" was registered in STH for every entity created and ' +
       u'has samples for "{att_values}"')
 def check_attr_exists_all_entities(context, attname, att_values):
-    n_values = len(att_values.split(";"))
+    values = att_values.split(";")
     for entity in context.entity_list:
-        _check_attr_exists(context, entity, attname, n_values)
+        _check_attr_exists(context, entity, attname, values)
