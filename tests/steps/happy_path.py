@@ -25,11 +25,14 @@ import requests
 import logging
 import json
 import time
+import datetime
 
 from iotqatools.orchestator_utils import Orchestrator
 from iotqatools.iota_utils import Rest_Utils_IoTA
-from common.common import cb_sample_entity_create, cb_sample_entity_recover, ks_get_token, \
-    component_verifyssl_check, orc_get_services, orc_delete_service
+from common.common import cb_sample_entity_create, cb_sample_entity_recover, \
+    ks_get_token, ks_get_token_with_scope, \
+    component_verifyssl_check, \
+    orc_get_services, orc_get_subservices, orc_delete_service, orc_delete_subservice
 from common.test_utils import *
 from nose.tools import eq_, assert_in, assert_true, assert_greater_equal, assert_not_in
 from pymongo import MongoClient
@@ -38,7 +41,7 @@ __logger__ = logging.getLogger("happy_path")
 use_step_matcher("re")
 
 
-@given('a Client of "(?P<SERVICE>.+)" and a ThirdParty called "(?P<SERVICEPATH>.+)"')
+@given('a Client of "(?P<SERVICE>.+)" and a Subservice called "(?P<SERVICEPATH>.+)"')
 def step_impl(context, SERVICE, SERVICEPATH):
     """
     :type context behave.runner.Context
@@ -51,7 +54,7 @@ def step_impl(context, SERVICE, SERVICEPATH):
 
 
 @step('the "(?P<INSTANCE>.+)" receive the request "(?P<REQUEST>.+)" and action "(?P<ACTION>.+)"')
-def step_impl(context, INSTANCE, REQUEST, ACTION):
+def happy_path_request_collector(context, INSTANCE, REQUEST, ACTION):
     """
     :type context behave.runner.Context
     :type INSTANCE str
@@ -80,9 +83,11 @@ def step_impl(context, INSTANCE, REQUEST, ACTION):
 
         context.headers.update({"Fiware-Service": "{}".format(context.service)})
         context.headers.update({"Fiware-ServicePath": "/{}".format(context.servicepath)})
-        print (context.headers)
+
         payload_table = dict(context.table)
-        payload_table['ATT_TIMEOUT'] = int(payload_table['ATT_TIMEOUT'])
+
+        # Depends on Orquestator version, in old version is needed:
+        # payload_table['ATT_TIMEOUT'] = int(payload_table['ATT_TIMEOUT'])
 
         # Properties replacement Var environment
         tp_url = payload_table['ATT_ENDPOINT']
@@ -107,54 +112,113 @@ def step_impl(context, INSTANCE, REQUEST, ACTION):
             context.create_service_entity = context.r.content
             print (context.create_service_entity)
         except:
-            print ("# Error Creating SERVICE_ENTITY")
+            eq_(True, False, "# Exception # Error Creating SERVICE_ENTITY")
 
     if INSTANCE == "ORC" and REQUEST == "SERVICE" and ACTION == "CREATE":
         url = str("{0}/v1.0/service".format(context.url_component))
-        json_payload = json.dumps(dict(context.table))
 
-        # print (json_payload)
+        payload = dict(context.table) if context.table else context.table_create_service
+        json_payload = json.dumps(payload)
+
+        print ("\n JSON TABLE SERVICE: \n {}\n".format(json_payload))
         __logger__.debug("Create service: {}, \n url: {}".format(json_payload, url))
         context.r = requests.post(url=url,
                                   headers=context.headers,
                                   data=json_payload)
 
-        # print (context.r.content)
         __logger__.debug(context.r.content)
         __logger__.debug(context.r.status_code)
         eq_(context.r.status_code, 201,
             "[ERROR] when calling {} responsed a HTTP {}".format(url, context.r.status_code))
         context.create_service = context.r.content
         jsobject = json.loads(context.create_service)
+
         context.service_id = jsobject["id"]
         context.token_service = jsobject["token"]
+        context.service_admin = payload["NEW_SERVICE_ADMIN_USER"]
+        context.service_admin_pass = payload["NEW_SERVICE_ADMIN_PASSWORD"]
+
         print ("\n --->>  ID service: {} <<--- \n".format(context.service_id))
         print ("TOKEN service: {} \n".format(context.token_service))
 
     if INSTANCE == "ORC" and REQUEST == "SERVICE" and ACTION == "DELETE":
-        url = str("{0}/v1.0/service".format(context.url_component))
+        # Get list of services if needed
+        if "service_id" not in context:
+            for service in context.services:
+                if context.service == service["name"]:
+                    print ("#>> Service Targeted: {} {}".format(service["name"], service["id"]))
+                    context.service_id = service["id"]
+                    break
 
-        # Get list of services
-        for service in context.services:
-            if context.service == service["name"]:
-                print ("service retrieved: {} {}".format(service["name"], service["id"]))
-                context.service_id = service["id"]
-                break
+        # Get config test env credentials
+        context.user_admin = context.config["env_data"]["users"]["user_1"]["user_name"]
+        context.password_admin = context.config["env_data"]["users"]["user_1"]["user_password"]
+        context.domain_admin = context.config["env_data"]["users"]["user_1"]["user_service"]
 
-        # Get config env credentials
-        context.user_admin = "cloud_admin"
-        context.password_admin = "password"
+        # In case delete using token is needed
+        # domain_token = ks_get_token(context,
+        #                             service=context.domain_admin,
+        #                             user=context.user_admin,
+        #                             password=context.password_admin)
 
         if "service_id" in context:
             delete_response = orc_delete_service(context, context.service_id)
             eq_(204, delete_response,
-                "[ERROR] Deleting Service {} responsed a HTTP {}".format(context.service_id, delete_response))
+                "[ERROR] Deleting Service {} \n Orch responded: {}".format(context.service_id, delete_response))
         else:
             eq_(True, False, "[Error] Service to delete ({}) not found".format(context.service))
 
+    if INSTANCE == "ORC" and REQUEST == "SUBSERVICE" and ACTION == "DELETE":
+        # Get service id if needed
+        if "service_id" not in context:
+            for service in context.services:
+                if context.service == service["name"]:
+                    print ("service retrieved: {} {}".format(service["name"], service["id"]))
+                    context.service_id = service["id"]
+                    break
 
-@then('subservice "(?P<SERVICEPATH>.+)" under the service is created')
-def step_impl(context, SERVICEPATH):
+        # Get subservice id
+        for subservice in context.subservices:
+            if "/" + context.subservice == subservice["name"]:
+                print ("#>> Subservice Targeted: {} {}".format(subservice["name"], subservice["id"]))
+                context.subservice_id = subservice["id"]
+                break
+            else:
+                print ("#>> Subservice Targeted: {} {}".format(subservice["name"], subservice["id"]))
+
+        context.user_admin = context.config["env_data"]["users"]["user_3"]["user_name"]
+        context.password_admin = context.config["env_data"]["users"]["user_3"]["user_password"]
+
+        context.token_scope = ks_get_token_with_scope(context, context.token, context.service, context.subservice)
+
+        delete_response = orc_delete_subservice(context,
+                                                context.service_id,
+                                                context.subservice_id,
+                                                context.token_scope)
+
+        eq_(204, delete_response,
+            "[ERROR] Deleting Service {} responsed a HTTP {}".format(context.service_id, delete_response))
+
+    if INSTANCE == "IOTA_MQTT" and REQUEST == "DEVICE" and ACTION == "CREATE":
+        url = str("{0}/iot/devices".format(context.url_component))
+
+        dictio = dict(context.table)
+        print ("\n{}\n".format(dictio))
+
+        # create dict to contain the payload
+        payload = dict({})
+        payload["devices"] = [dictio]
+
+        context.headers.update({"Fiware-Service": "{}".format(context.service)})
+        context.headers.update({"Fiware-ServicePath": "/{}".format(context.servicepath)})
+
+        __logger__.debug("[MQTT] Create Device request: {}, \n url: {}".format(payload, url))
+        context.mqtt_create_request = payload
+        context.mqtt_create_url = url
+
+
+@step('subservice "(?P<SERVICEPATH>.+)" under the service is created')
+def happy_path_service_creation(context, SERVICEPATH):
     """
     :type context behave.runner.Context
     :type SERVICEPATH str
@@ -170,14 +234,17 @@ def step_impl(context, SERVICEPATH):
     context.instance_port = context.config['components'][context.instance]['port']
     context.instance_protocol = context.config['components'][context.instance]['protocol']
 
-    context.url_component = context.instance_protocol + "://" + \
-                            context.instance_ip + ":" + \
-                            context.instance_port
+    context.url_component = "{}://{}:{}".format(context.instance_protocol,
+                                                context.instance_ip,
+                                                context.instance_port)
 
-    url = context.url_component + '/v1.0/service/' + context.service_id + '/subservice'
-    json_payload = json.dumps(dict(context.table))
+    url = "{}/v1.0/service/{}/subservice".format(context.url_component, context.service_id)
 
-    # print (json_payload)
+    if context.table:
+        json_payload = json.dumps(dict(context.table))
+    else:
+        json_payload = json.dumps(context.table_create_subservice)
+
     __logger__.debug("Create service: {}, \n url: {}".format(json_payload, url))
     context.r = requests.post(url=url,
                               headers=context.headers,
@@ -209,23 +276,25 @@ def step_impl(context):
     context.instance_port = context.config['components'][context.instance]['port']
     context.instance_protocol = context.config['components'][context.instance]['protocol']
 
-    context.url_component = context.instance_protocol + "://" + \
-                            context.instance_ip + ":" + \
-                            context.instance_port
+    context.url_component = "{}://{}:{}".format(context.instance_protocol,
+                                                context.instance_ip,
+                                                context.instance_port)
 
-    url = context.url_component + '/v1.0/service/' + \
-          context.service_id + '/subservice/' + \
-          context.subservice_id + '/register_device'
+    url = "{}/v1.0/service/{}/subservice/{}/register_device".format(context.url_component,
+                                                                    context.service_id,
+                                                                    context.subservice_id)
 
     json_payload = json.dumps(dict(context.table))
 
-    # print (json_payload)
     __logger__.debug("Create service: {}, \n url: {}".format(json_payload, url))
-    context.r = requests.post(url=url,
-                              headers=context.headers,
-                              data=json_payload)
+    try:
+        context.r = requests.post(url=url,
+                                  headers=context.headers,
+                                  data=json_payload)
+    except requests.exceptions.RequestException, e:
+        print ("#Error {} \n Sending the request: {} with \n{} ".format(e, url, json_payload))
+        eq_(True, False, "ERROR: Exception trying to register the Device in ORC")
 
-    # print(context.r.content)
     __logger__.debug(context.r.content)
     __logger__.debug(context.r.status_code)
     eq_(context.r.status_code, 201,
@@ -246,34 +315,114 @@ def step_impl(context, SERVICE_ID, SUBSERVICE_ID):
 
 
 @step('a valid token is retrieved for user "(?P<SERVICE_ADMIN>.+)" and password "(?P<SERVICE_PWD>.+)"')
-def step_impl(context, SERVICE_ADMIN, SERVICE_PWD):
+def happy_path_retrieve_token(context, SERVICE_ADMIN, SERVICE_PWD):
     """
     :type context behave.runner.Context
     :type SERVICE_ADMIN str
     :type SERVICE_PWD str
     """
+
     # Recover a Token
     context.user = SERVICE_ADMIN
     context.password = SERVICE_PWD
-    # context.service = context.service
-    context.subservice = context.servicepath
-    context.token = ks_get_token(context)
+
+    if "service" in context and "servicepath" in context:
+        # context.service = context.service
+        context.subservice = context.servicepath
+    else:
+        print ("\n #>> Token data needed FAIL: {} \n".format(context.service))
+        return False
+
+    context.token = ks_get_token(context,
+                                 service=context.service,
+                                 user=context.user,
+                                 password=context.password)
+
     print ("\n #>> Token to use: {} \n".format(context.token))
 
 
-@step('a list of services for admin_cloud is retrieved')
+@step('a valid token is retrieved for service admin user')
+def happy_path_retrieve_service_admin_token(context):
+    """
+    Retrieve a token using the service admin credentials available in context
+    :param context: behave.runner.Context
+    """
+    happy_path_retrieve_token(context, context.service_admin, context.service_admin_pass)
+
+
+@step('a valid token with scope is retrieved for service admin user')
+def happy_path_retrieve_service_admin_token_with_scope(context):
+    """
+    Retrieve a token with context.subservice scope using admin credentials available in context
+    :param context: behave.runner.Context
+    """
+    happy_path_retrieve_service_admin_token(context)
+    context.token_scope = ks_get_token_with_scope(context, context.token, context.service, context.subservice)
+    print ("\n #>> Token to use: {} \n".format(context.token))
+
+
+@step('an admin_token is retrieved')
 def step_impl(context):
     """
     :type context behave.runner.Context
     :type SERVICE_ADMIN str
     :type SERVICE_PWD str
     """
+
     # Recover a Token
-    context.user_admin = "cloud_admin"
-    context.password_admin = "password"
-    context.service_admin = "admin_domain"
+    user = context.config["env_data"]["users"]["user_1"]["user_name"]
+    password = context.config["env_data"]["users"]["user_1"]["user_password"]
+    service = context.config["env_data"]["users"]["user_1"]["user_service"]
+    subservice = None
+
+    context.admin_token = ks_get_token(context,
+                                       service=service,
+                                       user=user,
+                                       password=password,
+                                       subservice=subservice
+                                       )
+
+    print ("\n#>> Admin Token to use: {} \n".format(context.admin_token))
+
+
+@step('a list of services for admin_cloud is retrieved')
+def happy_path_list_services(context):
+    """
+    :type context behave.runner.Context
+    :type SERVICE_ADMIN str
+    :type SERVICE_PWD str
+    """
+    # Recover a Token for a test default user
+    context.user_admin = context.config["env_data"]["users"]["user_1"]["user_name"]
+    context.password_admin = context.config["env_data"]["users"]["user_1"]["user_password"]
+    context.service_admin = context.config["env_data"]["users"]["user_1"]["user_service"]
+
     context.services = orc_get_services(context)
-    print ("\n #>> Services availables: {} \n".format(context.services))
+    print ("\n#>> Services availables: {} \n".format(context.services))
+
+    # Get target service_id
+    if "service" in context:
+        for service in context.services:
+            if context.service == service["name"]:
+                context.service_id = service["id"]
+                print ("#>> Service info: {} {}".format(service["name"], service["id"]))
+                break
+
+
+@step('a list of subservices for service_admin "(?P<SERVICE_ADMIN>.+)" '
+      'and service_pwd "(?P<SERVICE_PWD>.+)" are retrieved')
+def happy_path_list_subservices(context, SERVICE_ADMIN, SERVICE_PWD):
+    """
+    :type context: behave.runner.Context
+    :type SERVICE_ADMIN: str
+    :type SERVICE_PWD: str
+    """
+    pass
+
+    context.service_admin = SERVICE_ADMIN
+    context.service_password = SERVICE_PWD
+
+    context.subservices = orc_get_subservices(context, context.service_id)
 
 
 @step("the new service should be available in the IOTA")
@@ -320,6 +469,7 @@ def step_impl(context, DEVICE_ID):
     :type context behave.runner.Context
     :type DEVICE_ID str
     """
+    context.device_id = DEVICE_ID
     # Recover created services (if any)
     iota_url = context.config["components"]["IOTA"]["protocol"] + "://" + \
                context.config["components"]["IOTA"]["instance"] + ":" + \
@@ -332,7 +482,7 @@ def step_impl(context, DEVICE_ID):
         'fiware-servicepath': "/{}".format(context.servicepath)
     }
 
-    iota_url = iota_url + "/devices?detailed=on"
+    iota_url = "{}/devices?detailed=on".format(iota_url)
 
     # Add the token to the headers
     headers.update({'X-Auth-Token': context.token})
@@ -341,23 +491,25 @@ def step_impl(context, DEVICE_ID):
 
     eq_(200, context.r.status_code, "ERROR: Devices request IOTA failed: {}".format(context.r.status_code))
 
-    devices_array = json.loads(context.r.content)
-    print ("devices {}".format(context.r.content))
-    eq_(DEVICE_ID, devices_array[0]["name"], "ERROR: Device not found")
-    eq_("BlackButton", devices_array[0]["type"], "ERROR: Device type does not match")
-    eq_(context.service, devices_array[0]["service"], "ERROR: Service does not match")
-    eq_("/{}".format(context.servicepath), devices_array[0]["subservice"], "ERROR: ServicePath does not match")
+    response = json.loads(context.r.content)
 
+    print ("response".format(context.r.content))
+    devices_array = response["devices"]
+    print ("devices {}".format(devices_array[0]))
+    eq_(DEVICE_ID, devices_array[0]["device_id"], "ERROR: Device not found")
+    eq_("BlackButton", devices_array[0]["entity_type"], "ERROR: Device type does not match")
+    eq_(context.service, devices_array[0]["service"], "ERROR: Service does not match")
+    eq_("/{}".format(context.servicepath), devices_array[0]["service_path"], "ERROR: ServicePath does not match")
 
     # show returned response
     __logger__.debug("IOTA (devices_list) returns {} ".format(devices_array))
 
     for device in devices_array:
         __logger__.debug(device)
-        if device["id"] == DEVICE_ID:
+        if device["device_id"] == DEVICE_ID:
             print ("Device found: {}".format(device))
             eq_(context.service, device["service"])
-            eq_("/" + context.subservice, device["subservice"])
+            eq_("/" + context.subservice, device["service_path"])
 
 
 @then('the button "(?P<DEVICE_ID>.+)" is pulling every "(?P<SECONDS>.+)" seconds '
@@ -424,24 +576,19 @@ def step_impl(context, DEVICE_ID, SECONDS, TIMES, STATUS):
     eq_(b_module_0, "0,K1,300$,")
 
     measure = "#{0}#{1}#{2}".format(DEVICE_ID, b_module_1, b_module_0)
-    data = {"cadena": measure}
-    print (iota_url)
-    print (data)
-    print (headers)
+    data = {"c": measure}
+    print ("\nUrl: {},\nData: {}\nHeaders: {}".format(iota_url, data, headers))
 
     for x in xrange(int(TIMES)):
         context.r = requests.post(url=iota_url, data=data, headers=headers)
-        print (context.r.status_code)
-        print (context.r.content)
         eq_(200, context.r.status_code, "ERROR: MEASURE request IOTA failed: {}".format(context.r.status_code))
-
+        print ("\nResponse: {} #{}-{} ".format(context.r.content, x, datetime.datetime.now()))
         # chop the response:
         iota_answer = context.r.content.split("#")
         context.answer_device_id = iota_answer[1]
         context.answer_mod1 = iota_answer[2]
         context.answer_mod0 = iota_answer[3]
 
-        print (context.answer_mod1.split(","))
         try:
             if context.answer_mod1.split(",")[3].split(":")[1] == STATUS:
                 print ("STATUS CHANGED to {}".format(context.answer_mod1.split(",")[3].split(":")[1]))
@@ -462,14 +609,12 @@ def step_impl(context, DEVICE_ID, FINAL_STATUS):
     :type FINAL_STATUS str
     """
 
-    if context.final_state is not None:
+    if "final_state" in context:
         eq_(FINAL_STATUS,
             context.final_state,
             "# Error final status ({}) does not match the expected result ({})".format(
                 FINAL_STATUS,
                 context.final_state))
-
-        # TODO: Close the request to TP
 
 
 @step('the ThirdParty "(?P<THIRDPARTY>.+)" changed the status to "(?P<OP_RESULT>.+)"')
@@ -479,15 +624,37 @@ def step_impl(context, THIRDPARTY, OP_RESULT):
     :type THIRDPARTY str
     :type OP_RESULT str
     """
+    if "NaN" in OP_RESULT:
+        OP_RESULT = ""
     # chop the response:
     iota_answer = context.r.content.split("#")
+    # chop the expected_result:
+    expected = OP_RESULT.split("#")
+
+    print ("\n IOTA resp={} \n".format(iota_answer))
+    print ("\n Expected resp={} \n".format(expected))
+
+    # check device_id
+    eq_(iota_answer[1], context.device_id, "Device_id does not match")
+
+    # check mod1
+    mod1 = expected[1]
+    rec_mod1 = iota_answer[2]
+    eq_(rec_mod1, mod1,
+        "Expected result mod1 does not match \n "
+        "Received: {} \n Expected: {}".format(
+            rec_mod1, mod1))
+
+    # check mod2
+    mod0 = expected[2]
+    rec_mod0 = iota_answer[3]
+    eq_(rec_mod0, mod0,
+        "Expected result mod0 does not match \n "
+        "Received: {} \n Expected: {}".format(
+            rec_mod0, mod0))
 
     print ("\n iota resp={} \n".format(iota_answer))
-    eq_(iota_answer[1], context.device_id, "Device id does not match")
 
-    eq_(iota_answer[2].split(",")[5], OP_RESULT,
-        "Expected result does not match \n Received: {} \n Expected: {}".format(iota_answer[2].split(",")[5],
-                                                                                OP_RESULT))
     # extract the relevant info
     # bb_request_id = context.answer_mod1.split(",")[4]
 
@@ -516,11 +683,13 @@ def step_impl(context, DEVICE_ID):
     }
 
     measure = "#{},{}".format(DEVICE_ID, context.bt_request)
-    data = {"cadena": measure}
+    data = {"c": measure}
+
+    print ("\n >> Push info: {}".format(data))
 
     context.r = requests.post(url=iota_url, data=data, headers=headers)
-    print (context.r.status_code)
-    print (context.r.content)
+    print ("\n << {}".format(context.r.status_code))
+    print ("<< {}".format(context.r.content))
 
     eq_(200, context.r.status_code, "ERROR: MEASURE request IOTA failed: {}".format(context.r.status_code))
 
@@ -537,7 +706,7 @@ def step_impl(context, DEVICE_ID):
     __logger__.debug("IOTA (send_measure) returns {} ".format(context.r.content))
 
 
-@when('the button "(?P<DEVICE_ID>.+)" is pressed in mode "synchronous" the IOTA should receive the request')
+@step('the button "(?P<DEVICE_ID>.+)" is pressed in mode "synchronous" the IOTA should receive the request')
 def step_impl(context, DEVICE_ID):
     """
     :type context behave.runner.Context
@@ -562,7 +731,9 @@ def step_impl(context, DEVICE_ID):
     }
 
     measure = "#{},{}".format(DEVICE_ID, context.bt_request)
-    data = {"cadena": measure}
+    data = {"c": measure}
+    print(iota_url)
+    print(data)
 
     context.r = requests.post(url=iota_url, data=data, headers=headers)
     print (context.r.status_code)
@@ -609,13 +780,6 @@ def step_impl(context, DEVICE_ID, TP_RETURN):
     result = context.answer_mod1.split(",")[3].split(":")[2]
     eq_(result, TP_RETURN, "Returned result does not match \n {} \n {} \n".format(result, TP_RETURN))
 
-    """
-    print (iota_url)
-    print (headers)
-    print (context.r.status_code)
-    print (context.r.content)
-    """
-
 
 @then('the service "(?P<SERVICE>.+)" should not be listed')
 def step_impl(context, SERVICE):
@@ -650,3 +814,66 @@ def step_impl(context, DEVICE_ID):
     for doc in result:
         delete = devices.remove({"id": DEVICE_ID})
         print ("Deleted device {}, result: {}".format(DEVICE_ID, delete))
+
+
+@step("a service and subservice are provisioned")
+def service_subservice_default_provision(context):
+    """
+    :type context: behave.runner.Context
+    """
+    json_data_s = """{
+                                    "DOMAIN_ADMIN_USER": "cloud_admin",
+                                    "NEW_SERVICE_ADMIN_PASSWORD": "ADMIN_PASS",
+                                    "DOMAIN_NAME": "admin_domain",
+                                    "DOMAIN_ADMIN_PASSWORD": "ADMIN_DOMAIN_PASS",
+                                    "NEW_SERVICE_NAME": "CHANGE_SERVICE_NAME",
+                                    "NEW_SERVICE_ADMIN_USER": "admin_bb",
+                                    "NEW_SERVICE_DESCRIPTION": "default service description"
+                                    }"""
+    payload_service = json.loads(json_data_s)
+    payload_service["NEW_SERVICE_NAME"] = context.service
+    payload_service["NEW_SERVICE_ADMIN_PASSWORD"] = context.config["env_data"]["users"]["user_3"]["user_password"]
+    payload_service["DOMAIN_ADMIN_PASSWORD"] = context.config["env_data"]["users"]["user_1"]["user_password"]
+    context.table_create_service = payload_service
+
+    json_data_ss = """{
+                    "NEW_SUBSERVICE_DESCRIPTION": "SUBSERVICE NAME DESCRIPTION",
+                    "SERVICE_NAME": "CHANGE_SERVICE_NAME",
+                    "SERVICE_ADMIN_PASSWORD": "SERVICE_ADMIN_PWD",
+                    "NEW_SUBSERVICE_NAME": "CHANGE_SUBSERVICE_NAME",
+                    "SERVICE_ADMIN_USER": "admin_bb"
+                    }"""
+
+    payload_subservice = json.loads(json_data_ss)
+    payload_subservice["NEW_SUBSERVICE_NAME"] = context.servicepath
+    payload_subservice["SERVICE_NAME"] = context.service
+    payload_subservice["SERVICE_ADMIN_PASSWORD"] = context.config["env_data"]["users"]["user_3"]["user_password"]
+
+    context.table_create_subservice = payload_subservice
+
+    # provision using the common steps
+    happy_path_request_collector(context, "ORC", "SERVICE", "CREATE")
+    happy_path_service_creation(context, context.servicepath)
+
+
+@step('service and subservice are deleted')
+def service_subservice_delete(context):
+    """
+    Remove the service and its subservices using the service admin credentials available in context.
+    It uses the user credentials to list all the subservices.
+    """
+
+    service_subservice_default_delete(context, context.service_admin, context.service_admin_pass)
+
+
+@step('service and subservice are deleted with "(?P<ADMIN>.+)" and "(?P<PWD>.+)" credentials')
+def service_subservice_default_delete(context, ADMIN, PWD):
+    """
+    Reused steps in just one step
+
+    """
+    happy_path_list_services(context)
+    happy_path_retrieve_token(context, ADMIN, PWD)
+    happy_path_list_subservices(context, ADMIN, PWD)
+    happy_path_request_collector(context, "ORC", "SUBSERVICE", "DELETE")
+    happy_path_request_collector(context, "ORC", "SERVICE", "DELETE")

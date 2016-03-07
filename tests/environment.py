@@ -21,11 +21,14 @@ __author__ = 'xvc'
 
 import logging
 import json
-
+import time
 from nose.tools import assert_true
+from pymongo import MongoClient
+from iotqatools.cb_utils import CbNgsi10Utils
+from common.test_utils import bb_delete_method, devices_delete_method, remove_mysql_databases, mqtt_delete_device
 
 logging.basicConfig(filename="./tests/logs/behave.log", level=logging.DEBUG)
-__logger__ = logging.getLogger("qa")
+__logger__ = logging.getLogger("Environment")
 
 
 def merge(a, b, path=None):
@@ -43,7 +46,7 @@ def merge(a, b, path=None):
             elif a[key] == b[key]:
                 pass  # same leaf value
             else:
-                raise Exception('Conflict at %s' % '.'.join(path + [str(key)]))
+                raise Exception('Conflict at {} with {} and {} / {}'.format(path, (key), a[key], b[key]))
         else:
             a[key] = b[key]
     return a
@@ -88,18 +91,78 @@ def before_all(context):
 
 def before_feature(context, feature):
     # model.init(environment='test')
+
     if 'specialtag' in feature.tags:
         __logger__.info("***********SPECIAL TAG BEFORE FEATURE --->>>>>>>>")
 
+    print(feature.tags)
     context.remember = {}
     context.o = {}
+    context.feature_data = {}
+    context.feature
+    context.arrays = {}
+    context.o['db2remove'] = []
+    # Jenkins needed time between features
+    time.sleep(1)
 
 
 def before_scenario(context, scenario):
+    context.feature_data["tags"] = context.tags
     if 'init_db' in context.tags:
         __logger__.info("*********** Init DB to be used in scenario {} --->>>>>>>>".format(scenario))
 
 
 def after_scenario(context, scenario):
-    if 'entity_clean' in context.tags:
-        __logger__.info("*********** Cleaning entities in scenario {} --->>>>>>>>".format(scenario))
+    if "tags" in context:
+        if "ft-syncflow" in context.tags:
+            if "sf-02" not in context.tags:
+                devices_delete_method(context)
+            bb_delete_method(context)
+
+        if "ft-cb2mysql" in context.tags or "rm-entity" in context.tags:
+            if context.o and "CB" in context.o:
+                print (context.o["CB"])
+                context.o['CB'].remove_content_type_header()
+                if 'entity_list' in context:
+                    for entity in context.entity_list:
+                        context.o['CB'].convenience_entity_delete_url_method(entity_id=entity["entity_id"],
+                                                                             entity_type=entity["entity_type"])
+
+        if "rm-subs" in context.tags:
+            if context.o and "CB" in context.o:
+                context.o['CB'].remove_content_type_header()
+                context.o['CB'].convenience_unsubscribe_context(context.remember["subscription_id"])
+
+        if "rm-sth" in context.tags:
+            mongo_instance = context.config["backend"]["mongodb"]["instance"]
+            mongo_port = context.config["components"]["backend"]["mongodb"]["port"]
+
+            client = MongoClient(mongo_instance, mongo_port)
+            client.drop_database('sth_' + context.service)
+
+        if "rm-mqttdevice" in context.tags:
+            if "device_id" in context and "mqtt_create_url" in context:
+                print ("[MQTT] DELETE DEVICE")
+                url = "{}/{}".format(context.mqtt_create_url, context.device_id)
+
+                context.headers.update({"Fiware-Service": "{}".format(context.service)})
+                context.headers.update({"Fiware-ServicePath": "/{}".format(context.servicepath)})
+
+                response = mqtt_delete_device(context,
+                                              url=url,
+                                              headers=context.headers)
+
+                __logger__.debug("[MQTT] DELETE Device request: \n url: {}".format(url, response.status_code))
+
+
+def after_feature(context, feature):
+    if 'ft-cb2mysql' in context.feature_data["tags"]:
+        __logger__.info("***********Cleaning DB {} --->>>>>>>>".format(context.o["db2remove"]))
+        remove_mysql_databases(context)
+    context.remember = {}
+    context.o = {}
+    context.feature_data = {}
+    context.arrays = {}
+
+
+

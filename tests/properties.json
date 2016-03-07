@@ -1,7 +1,8 @@
 {
   "environment": {
     "name": "BB-TEST",
-    "test_mode": "REMOTE"
+    "test_mode": "REMOTE",
+    "version": "v0.11"
   },
   "components": {
     "CA": {
@@ -16,33 +17,6 @@
       "path": "/NGSI10",
       "port": "10026",
       "protocol": "http",
-      "verifyssl": "True"
-    },
-    "TP": {
-      "basiccheck": "/version",
-      "path": "/async",
-      "port": "6500",
-      "protocol": "http",
-      "verifyssl": "True"
-    },
-    "IOTA": {
-      "defaultservice": "test",
-      "heartbeat": "/",
-      "path": "/iot",
-      "port": "4041",
-      "south_port": "8885",
-      "protocol": "http",
-      "iota_type": "node",
-      "version": "",
-      "verifyssl": "True"
-    },
-    "IOTM": {
-      "defaultservice": "test",
-      "heartbeat": "/",
-      "path": "/iot",
-      "port": "8081",
-      "protocol": "http",
-      "version": "",
       "verifyssl": "True"
     },
     "ORC": {
@@ -60,6 +34,95 @@
       "version": "",
       "verifyssl": "True"
     },
+    "IOTA": {
+      "defaultservice": "test",
+      "heartbeat": "/",
+      "path": "/iot",
+      "port": "14041",
+      "south_port": "8885",
+      "protocol": "http",
+      "iota_type": "node",
+      "version": "",
+      "verifyssl": "True"
+    },
+    "IOTM": {
+      "defaultservice": "test",
+      "heartbeat": "/",
+      "path": "/iot",
+      "port": "8081",
+      "protocol": "http",
+      "version": "",
+      "verifyssl": "True"
+    },
+    "IOTA_MQTT": {
+      "defaultservice": "test",
+      "heartbeat": "/",
+      "path": "/iot",
+      "port": "14052",
+      "south_port": "1883",
+      "protocol": "http",
+      "iota_type": "mqtt",
+      "version_port": "14052",
+      "verifyssl": "True"
+    },
+    "STH": {
+      "basiccheck": "/",
+      "heartbeat": "/",
+      "notify_path": "/notify",
+      "notify_port": "18666",
+      "port": "18666",
+      "protocol": "http",
+      "version": ""
+    },
+    "TP": {
+      "basiccheck": "/version",
+      "path": "/async",
+      "port": "6500",
+      "protocol": "http",
+      "verifyssl": "True"
+    },
+    "CYGNUS": {
+      "basiccheck": "/",
+      "heartbeat": "/",
+      "port": "8089",
+      "norhport": "5050",
+      "protocol": "http",
+      "version": "",
+      "verifyssl": "True"
+    },
+    "PEP": {
+      "basiccheck": "/",
+      "heartbeat": "/",
+      "port": "11211",
+      "protocol": "http",
+      "version": "",
+      "verifyssl": "True"
+    },
+    "MYSQL": {
+      "cygnus_path": "/notify",
+      "cygnus_port": "5050",
+      "cygnus_protocol": "http",
+      "cygnus_version_port": "8081",
+      "cygnus_version_path": "/version",
+      "defaultservice": "testservice",
+      "password": "cygnus",
+      "path": "/",
+      "port": "3306",
+      "protocol": "http",
+      "user": "cygnus",
+      "version" : "1"
+    },
+    "KEYPASS": {
+      "defaultservice": "testservice",
+      "password": "cygnus",
+      "path": "/",
+      "port": "9999",
+      "protocol": "http",
+      "user": "cygnus"
+    },
+    "PERSEO": {
+      "port": "27017"
+    },
     "backend": {
       "mongodb": {
         "_id": "_id",
@@ -68,19 +131,34 @@
         "password": "x",
         "port": 27017,
         "user": "orion",
-        "version": ""
+        "version": "3"
       }
     }
   },
   "env_data": {
     "users": {
       "user_1": {
-        "user_name": "defaultuser",
-        "user_password": "password",
-        "user_service": "service1",
+        "user_name": "cloud_admin",
+        "user_password": "cloud_admin_password_default",
+        "user_service": "admin_domain",
+        "user_subservice": "/sub1",
+        "user_role": "admin"
+      },
+      "user_2": {
+        "user_name": "user2",
+        "user_password": "service_password_default",
+        "user_service": "admin_domain",
         "user_subservice": "/sub1",
         "user_role": "service_customer"
+      },
+      "user_3": {
+        "user_name": "admin_bb",
+        "user_password": "password",
+        "user_service": "whatever",
+        "user_subservice": "/tt",
+        "user_role": "service_admin"
       }
+
     },
     "services": {
       "service_1": {
