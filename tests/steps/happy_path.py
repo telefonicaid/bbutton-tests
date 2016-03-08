@@ -52,14 +52,6 @@ def step_impl(context, SERVICE, SERVICEPATH):
     context.servicepath = SERVICEPATH
     context.subservice = "/{}".format(SERVICEPATH)
 
-    # ensure the service and subservice don't exist (with default service admin credentials)
-    service_admin = context.config["env_data"]["users"]["user_3"]["user_name"]
-    service_password = context.config["env_data"]["users"]["user_3"]["user_password"]
-    try:
-        service_subservice_default_delete(context, service_admin, service_password)
-    except Exception as e:
-        __logger__.info(">>>> SERVICE does not exist. Checked by {}. Continue...".format(e))
-
 
 @step('the "(?P<INSTANCE>.+)" receive the request "(?P<REQUEST>.+)" and action "(?P<ACTION>.+)"')
 def happy_path_request_collector(context, INSTANCE, REQUEST, ACTION):
@@ -829,6 +821,15 @@ def service_subservice_default_provision(context):
     """
     :type context: behave.runner.Context
     """
+
+    # ensure the service and subservice don't exist (with default service admin credentials)
+    service_admin = context.config["env_data"]["users"]["user_3"]["user_name"]
+    service_password = context.config["env_data"]["users"]["user_3"]["user_password"]
+    try:
+        service_subservice_default_delete(context, service_admin, service_password)
+    except Exception as e:
+        __logger__.info(">>>> SERVICE does not exist. Checked by {}. Continue...".format(e))
+
     json_data_s = """{
                                     "DOMAIN_ADMIN_USER": "cloud_admin",
                                     "NEW_SERVICE_ADMIN_PASSWORD": "ADMIN_PASS",
