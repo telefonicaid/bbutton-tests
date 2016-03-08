@@ -8,7 +8,7 @@ Feature: STH (Short Term Historic) component tests for deletion features
   Scenario Outline: Entity attribute data should be removed from STH but the rest of attributes should remain
     Given a Client of "<SERVICE>" and a Subservice called "<SERVICEPATH>"
     And service and subservice are provisioned in STH
-    And I send a notification with "aaa111id" and "1" context elements with id "<ENTITY_ID>" and type "<ENTITY_TYPE>"
+    And I send a notification with subscription id "aaa111id" and "1" context elements with id "<ENTITY_ID>" and type "<ENTITY_TYPE>"
       | attribute_name | attribute_type | attribute_value | metadata_list |
       | <ATTNAME>      | attrType       | <ATTVALUE>      |     None      |
       | <ATTNAME2>     | attrType       | <ATTVALUE2>     |     None      |
@@ -21,7 +21,7 @@ Feature: STH (Short Term Historic) component tests for deletion features
       |  entity_id       |  <ENTITY_ID>   |
       |  entity_type     |  <ENTITY_TYPE> |
       |  attribute_name  |  <ATTNAME>     |
-    Then I check entity with "<ENTITY_ID>" and "<ENTITY_TYPE>" does not have the attribute "<ATTNAME>" registered in STH
+    Then I check entity with entity id "<ENTITY_ID>" and entity type "<ENTITY_TYPE>" does not have the attribute "<ATTNAME>" registered in STH
     And I check entity with "<ENTITY_ID>" and "<ENTITY_TYPE>" has the attribute "<ATTNAME2>" registered in STH and has samples for "<ATTVALUE2>"
 
     Examples:
@@ -34,7 +34,7 @@ Feature: STH (Short Term Historic) component tests for deletion features
   Scenario Outline: All Entity attribute data should be removed from STH but the rest of entities should remain
     Given a Client of "<SERVICE>" and a Subservice called "<SERVICEPATH>"
     And service and subservice are provisioned in STH
-    And I send a notification with "aaa111id" and "2" context elements with id "<ENTITY_ID>" and type "<ENTITY_TYPE>"
+    And I send a notification with subscription id "aaa111id" and "2" context elements with id "<ENTITY_ID>" and type "<ENTITY_TYPE>"
       | attribute_name | attribute_type | attribute_value | metadata_list |
       | <ATTNAME>      | attrType       | <ATTVALUE>      |     None      |
       | <ATTNAME2>     | attrType       | <ATTVALUE2>     |     None      |
@@ -46,8 +46,8 @@ Feature: STH (Short Term Historic) component tests for deletion features
       |  subservice      |  <SERVICEPATH> |
       |  entity_id       |  <ENTITY_ID>   |
       |  entity_type     |  <ENTITY_TYPE> |
-    Then I check entity with "<ENTITY_ID>" and "<ENTITY_TYPE>" does not have the attribute "<ATTNAME>" registered in STH
-    And I check entity with "<ENTITY_ID>" and "<ENTITY_TYPE>" does not have the attribute "<ATTNAME2>" registered in STH
+    Then I check entity with entity id "<ENTITY_ID>" and entity type "<ENTITY_TYPE>" does not have the attribute "<ATTNAME>" registered in STH
+    And I check entity with entity id "<ENTITY_ID>" and entity type "<ENTITY_TYPE>" does not have the attribute "<ATTNAME2>" registered in STH
     And I check entity with "<ENTITY_ID>_1" and "<ENTITY_TYPE>" has the attribute "<ATTNAME>" registered in STH and has samples for "<ATTVALUE>"
     And I check entity with "<ENTITY_ID>_1" and "<ENTITY_TYPE>" has the attribute "<ATTNAME2>" registered in STH and has samples for "<ATTVALUE2>"
 
@@ -60,7 +60,7 @@ Feature: STH (Short Term Historic) component tests for deletion features
   Scenario Outline: All entities attribute data of a subservice should be removed from STH
     Given a Client of "<SERVICE>" and a Subservice called "<SERVICEPATH>"
     And service and subservice are provisioned in STH
-    And I send a notification with "aaa111id" and "2" context elements with id "<ENTITY_ID>" and type "<ENTITY_TYPE>"
+    And I send a notification with subscription id "aaa111id" and "2" context elements with id "<ENTITY_ID>" and type "<ENTITY_TYPE>"
       | attribute_name | attribute_type | attribute_value | metadata_list |
       | <ATTNAME>      | attrType       | <ATTVALUE>      |     None      |
       | <ATTNAME2>     | attrType       | <ATTVALUE2>     |     None      |
@@ -70,10 +70,10 @@ Feature: STH (Short Term Historic) component tests for deletion features
       |  key             |     value      |
       |  service         |  <SERVICE>     |
       |  subservice      |  <SERVICEPATH> |
-    Then I check entity with "<ENTITY_ID>" and "<ENTITY_TYPE>" does not have the attribute "<ATTNAME>" registered in STH
-    And I check entity with "<ENTITY_ID>" and "<ENTITY_TYPE>" does not have the attribute "<ATTNAME2>" registered in STH
-    And I check entity with "<ENTITY_ID>_1" and "<ENTITY_TYPE>" does not have the attribute "<ATTNAME>" registered in STH
-    And I check entity with "<ENTITY_ID>_1" and "<ENTITY_TYPE>" does not have the attribute "<ATTNAME2>" registered in STH
+    Then I check entity with entity id "<ENTITY_ID>" and entity type "<ENTITY_TYPE>" does not have the attribute "<ATTNAME>" registered in STH
+    And I check entity with entity id "<ENTITY_ID>" and entity type "<ENTITY_TYPE>" does not have the attribute "<ATTNAME2>" registered in STH
+    And I check entity with entity id "<ENTITY_ID>_1" and entity type "<ENTITY_TYPE>" does not have the attribute "<ATTNAME>" registered in STH
+    And I check entity with entity id "<ENTITY_ID>_1" and entity type "<ENTITY_TYPE>" does not have the attribute "<ATTNAME2>" registered in STH
 
   Examples:
     | SERVICE        | SERVICEPATH | ENTITY_ID | ENTITY_TYPE | ATTNAME     | ATTVALUE |     ATTNAME2     | ATTVALUE2 |

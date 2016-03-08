@@ -108,14 +108,14 @@ def check_attr_exists_all_entities(context, attname, att_values):
         _check_attr_exists(context, entity, attname, values)
 
 
-@step(u'I check entity with "{entity_id}" and "{entity_type}" does not have the attribute "{attname}" ' +
+@step(u'I check entity with entity id "{entity_id}" and entity type "{entity_type}" does not have the attribute "{attname}" ' +
       u'registered in STH')
 def check_attr_not_exist_in_entity(context, entity_id, entity_type, attname):
     entity = {'entity_id': entity_id, 'entity_type': entity_type}
     _check_attr_exists(context, entity, attname, [])  # when attr doesn't exist, STH returns an attr with values = []
 
 
-@step(u'I send a notification with "{subs_id}" and "{n_elements}" context elements ' +
+@step(u'I send a notification with subscription id "{subs_id}" and "{n_elements}" context elements ' +
       u'with id "{entity_id}" and type "{entity_type}"')
 def send_notification(context, subs_id, n_elements, entity_id, entity_type):
     """
