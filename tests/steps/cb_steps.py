@@ -22,6 +22,58 @@ from iotqatools.cb_utils import EntitiesConsults, PayloadUtils, NotifyConditions
 __logger__ = logging.getLogger("cb_utils")
 
 
+def compose_context_elements_list(entity_id, entity_type, n_entities, context):
+
+    if not 'entity_list' in context or context.entity_list is None:
+        context.entity_list = []
+
+    context_elements = ContextElements()
+    for n in range(0, int(n_entities)):
+        curr_entity_id = entity_id if n == 0 else entity_id + "_" + str(n)
+        # Go through the step and creates the attributes
+        attributes = AttributesCreation()
+        for attribute in context.table:
+            if attribute['metadata_list'] != "None":
+                md = MetadatasCreation()
+                metadata_list = attribute['metadata_list'].split(";")
+                for metadata in metadata_list:
+                    ms = metadata.split(",")
+                    md.add_metadata(ms[0], ms[1], ms[2])
+
+                # Search and split for several attributes
+                if ";" in attribute["attribute_type"]:
+                    attribute_names = attribute["attribute_name"].split(";")
+                    attribute_types = attribute["attribute_type"].split(";")
+                    attribute_values = attribute["attribute_value"].split(";")
+
+                    for i in range(len(attribute_names)):
+                        attributes.add_attribute(attribute_names[i],
+                                                 attribute_types[i],
+                                                 attribute_values[i],
+                                                 md)
+
+                else:
+                    attributes.add_attribute(attribute['attribute_name'],
+                                             attribute['attribute_type'],
+                                             attribute['attribute_value'],
+                                             md)
+
+            else:
+                attributes.add_attribute(attribute['attribute_name'],
+                                         attribute['attribute_type'],
+                                         attribute['attribute_value'])
+
+        # Compose the payload
+        context_elements.add_context_element(curr_entity_id, entity_type, attributes, is_pattern=False)
+        # store entity data for following steps
+        if not any(entity['entity_id'] == curr_entity_id
+                   and entity['entity_type'] == entity_type for entity in context.entity_list):
+            context.entity_list.append({'entity_id': curr_entity_id,
+                                        'entity_type': entity_type})
+
+    return context_elements
+
+
 @step(u'I create a subscription in context broker')
 def create_subscription(context):
     """
@@ -117,54 +169,7 @@ def update_context(context, service, subservice, nEntities, entity_id, entity_ty
     elif "NaN" in subservice:
         subservice = ""
 
-    if not 'entity_list' in context or context.entity_list is None:
-        context.entity_list = []
-
-    context_element = ContextElements()
-    for n in range(0, int(nEntities)):
-        curr_entity_id = entity_id if n == 0 else entity_id + "_" + str(n)
-        # Go through the step and creates the attributes
-        attributes = AttributesCreation()
-        for attribute in context.table:
-            if attribute['metadata_list'] != "None":
-                md = MetadatasCreation()
-                metadata_list = attribute['metadata_list'].split(";")
-                for metadata in metadata_list:
-                    ms = metadata.split(",")
-                    md.add_metadata(ms[0], ms[1], ms[2])
-
-                # Search and split for several attributes
-                if ";" in attribute["attribute_type"]:
-                    attribute_names = attribute["attribute_name"].split(";")
-                    attribute_types = attribute["attribute_type"].split(";")
-                    attribute_values = attribute["attribute_value"].split(";")
-
-                    for i in range(len(attribute_names)):
-                        attributes.add_attribute(attribute_names[i],
-                                                 attribute_types[i],
-                                                 attribute_values[i],
-                                                 md)
-
-                else:
-                    attributes.add_attribute(attribute['attribute_name'],
-                                             attribute['attribute_type'],
-                                             attribute['attribute_value'],
-                                             md)
-
-            else:
-                attributes.add_attribute(attribute['attribute_name'],
-                                         attribute['attribute_type'],
-                                         attribute['attribute_value'])
-
-        # Compose the payload
-        context_element.add_context_element(curr_entity_id, entity_type, attributes, is_pattern=False)
-
-        # store entity data for following steps
-        if not any(entity['entity_id'] == curr_entity_id
-                   and entity['entity_type'] == entity_type for entity in context.entity_list):
-            context.entity_list.append({'entity_id': curr_entity_id,
-                                        'entity_type': entity_type})
-
+    context_element = compose_context_elements_list(entity_id, entity_type, nEntities, context)
     payload = PayloadUtils.build_standard_entity_creation_payload(context_element)
 
     # is authenticated?
